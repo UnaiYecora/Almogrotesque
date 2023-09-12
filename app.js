@@ -123,7 +123,7 @@ function generatePaths(levelArray) {
 
 				const roomTitle = /*html*/`
 					<p class="pathTitle">${roomName}</p>
-					<button>${btnTxt}</button>
+					<button class="main-path-button">${btnTxt}</button>
 					<button data-skip-path>Skip</button>
 				`;
 
@@ -384,10 +384,16 @@ document.querySelector("#start #newGame").addEventListener("click", function () 
 document.querySelector("#crossroad").addEventListener("click", function (e) {
 	const type = e.target.parentNode.dataset.pathtype;
 
-	if (type === "encounter") {
-		const mob = e.target.parentNode.dataset.mobname;
-		loadEncounter(mob);
+	// Main button
+	if (e.target.classList.contains("main-path-button")) {
+		
+		// Mob encounter
+		if (type === "encounter") {
+			const mob = e.target.parentNode.dataset.mobname;
+			loadEncounter(mob);
+		}
 	}
+
 });
 
 /*==========================================*/
