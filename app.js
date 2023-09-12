@@ -187,6 +187,11 @@ async function generateEncounterCard(mobname) {
 				heart.classList.add("heart");
 				playerHpEl.appendChild(heart);
 			}
+			for (let i = 0; i < (state.player.maxHp - state.player.hp); i++) {
+				let heart = document.createElement("span");
+				heart.classList.add("empty-heart");
+				playerHpEl.appendChild(heart);
+			}
 
 			//Discs
 			generateDisc(mobject.soul, "#mobSoul");

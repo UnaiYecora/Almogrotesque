@@ -2,6 +2,7 @@ export var state = {
 	player: {
 		soul: [50],
 		hp: 5,
+		maxHp: 5,
 		playerTurn: false,
 		fateLeft: 12,
 	},
