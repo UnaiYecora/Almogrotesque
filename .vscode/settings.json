@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		".gitattributes": true,
+		"README.md": true,
+		".vscode": true
+	}
+}

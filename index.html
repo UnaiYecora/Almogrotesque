@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Almogrotesque</title>
+	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="svgs.css">
+	<script src="app.js" type="module"></script>
+</head>
+<body>
+	<main>
+		<section id="start">
+			<h1>Almogrotesque</h1>
+			<div>
+				<button disabled>Continue</button>
+				<button id="newGame">New Game</button>
+				<button>How to play</button>
+			</div>
+		</section>
+
+		<section id="crossroad"></section>
+
+		<section id="encounter">
+			<div class="topbar">
+				<div class="hp enemy-hp"></div>
+				<button data-goto="crossroad">Exit</button>
+			</div>
+
+			<div id="mobBoard">
+				<img src="../assets/img/mobs/0.jpg" alt="" srcset="">
+				<p class="mobName"></p>
+				<div class="mobSkills"></div>
+				<p class="mobDesc"></p>
+			</div>
+
+			<div id="soulbar">
+				<span>Your soul</span>
+				<div class="soul-disc" id="playerSoul"></div>
+				<div class="soul-disc" id="mobSoul"></div>
+				<span>Enemy's soul</span>
+			</div>
+
+			<div id="playerBoard">
+				<div class="main-action">
+					<button>Use item</button>
+					or
+					<button id="attackBtn">Attack</button>
+				</div>
+				<div class="secondary-action">
+					<button class="change-fate" disabled>Change fate (-<span class="fate-price">1</span> <span class="fate"></span>)</button>
+					<button class="end-turn">End turn</button>
+				</div>
+				<div class="no-action">
+					<p>The enemy is attacking you.</p>
+				</div>
+			</div>
+
+			<div class="bottombar">
+				<div class="hp player-hp">
+				</div>
+				<div class="fate-left-wrapper">
+					<span class="fate-left">0</span>
+					<span class="fate"></span>
+				</div>
+			</div>
+			
+		</section>
+	</main>
+</body>
+</html>
