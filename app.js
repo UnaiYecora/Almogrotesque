@@ -182,7 +182,7 @@ async function generateEncounterCard(mobname) {
 				mobHpEl.appendChild(heart);
 			}
 			playerHpEl.innerHTML = "";
-			for (let i = 0; i < 5; i++) {
+			for (let i = 0; i < state.player.hp; i++) {
 				let heart = document.createElement("span");
 				heart.classList.add("heart");
 				playerHpEl.appendChild(heart);
