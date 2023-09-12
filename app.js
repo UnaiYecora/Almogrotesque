@@ -374,6 +374,7 @@ async function enemyAttack() {
 // Start button
 /*==========================================*/
 document.querySelector("#start #newGame").addEventListener("click", function () {
+	document.documentElement.requestFullscreen();
 	setLevel("home");
 });
 
