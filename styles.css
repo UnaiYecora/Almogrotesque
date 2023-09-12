@@ -46,7 +46,7 @@ body{
 main{
 	/* Aspect ratio */
 	--ratio: calc( 1 / 2);
-	--h: min(calc(100vw / var(--ratio)), 100vh);
+	--h: min(calc(100vw / var(--ratio)), 100dvh);
 	height: var(--h);
 	width: calc(var(--h) * var(--ratio));
 	max-width: 600px;
@@ -216,7 +216,7 @@ div#playerBoard button{
 	padding: 1rem 2rem;
 	border-radius: 0.5rem;
 	font-weight: 700;
-    font-size: 100%;
+    font-size: 1.6rem;
 	display: flex;
     align-items: center;
 }
@@ -295,8 +295,8 @@ div#soulbar > span{
 .arrow{
 	top: 50%;
     left: 50%;
-    width: 8%;
-    height: 48%;
+    width: 0.56rem;
+    height: 3.87rem;
     background: var(--black);
     border: 0.125rem solid var(--white);
     position: absolute;
