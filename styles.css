@@ -19,6 +19,7 @@
 :root{
 	--black: #000;
 	--white: #D9D9D9;
+	font-size: var(--width-based-font);
 }
 
 /*==========================================
@@ -44,13 +45,11 @@ body{
 
 main{
 	/* Aspect ratio */
-	/* --ratio: calc( 1 / 2);
+	--ratio: calc( 1 / 2);
 	--h: min(calc(100vw / var(--ratio)), 100vh);
 	height: var(--h);
-	width: calc(var(--h) * var(--ratio)); */
+	width: calc(var(--h) * var(--ratio));
 	max-width: 600px;
-	width: 100vw;
-	height: 100dvh;
 
 	/* Styles */
 	background: var(--black);
@@ -73,7 +72,7 @@ section#start {
     flex-direction: column;
     height: 100%;
     justify-content: space-evenly;
-	padding: 15px;
+	padding: 1rem;
 }
 
 section#start h1{
@@ -93,7 +92,7 @@ section#start div{
 ============================================*/
 #crossroad{
 	display: flex;
-	gap: 10px;
+	gap: 0.6rem;
 	width: 100%;
 	height: 100%;
     justify-content: space-evenly;
@@ -116,7 +115,7 @@ section#start div{
 	background-color: var(--black);
 	color: var(--white);
 	padding: 1rem;
-	min-width: calc(33% - 20px);
+	min-width: calc(33% - 1.2rem);
 	display: flex;
     flex-direction: column;
     align-items: center;
@@ -156,7 +155,7 @@ section#encounter {
     display: flex;
     justify-content: space-between;
 	align-items: center;
-	height: 80px;
+	height: 5rem;
 	padding-block: 1rem;
 }
 
@@ -164,7 +163,7 @@ div#mobBoard,
 div#playerBoard{
 	background-color: var(--white);
 	color: var(--black);
-	border-radius: 12px;
+	border-radius: 0.75rem;
 }
 
 div#mobBoard{
@@ -181,10 +180,10 @@ div#mobBoard > *:not(img){
 }
 
 div#mobBoard img{
-	width: 100%;
-	max-height: 100%;
-	border-radius: 12px 12px 0 0;
-    object-fit: cover;
+    width: 100%;
+    max-height: 100%;
+    border-radius: 0.75rem 0.75rem 0 0;
+    object-fit: contain;
 }
 
 p.mobName {
@@ -198,8 +197,8 @@ p.mobName {
 }
 
 div#playerBoard{
-    height: 200px;
-    min-height: 200px;
+    height: 15%;
+    min-height: 15%;
 }
 
 div#playerBoard .main-action,
@@ -217,15 +216,15 @@ div#playerBoard button{
 	padding: 1rem 2rem;
 	border-radius: 0.5rem;
 	font-weight: 700;
-    font-size: 1.3rem;
+    font-size: 100%;
 	display: flex;
     align-items: center;
 }
 
 #playerBoard .secondary-action .fate{
-	width: 18px;
-	height: 18px;
-	margin-left: 5px;
+	width: 1.125rem;
+	height: 1.125rem;
+	margin-left: 0.3rem;
 }
 
 .hp {
@@ -234,8 +233,8 @@ div#playerBoard button{
 
 span.heart,
 span.empty-heart {
-	width: 30px;
-    height: 50px;
+	width: 1.85rem;
+    height: 3.15rem;
     display: block;
     background-size: contain;
     background-repeat: no-repeat;
@@ -249,8 +248,8 @@ span.empty-heart {
 
 .fate{
 	display: inline-block;
-	width: 25px;
-	height: 25px;
+	width: 1.5rem;
+	height: 1.5rem;
 	vertical-align: text-bottom;
 }
 
@@ -262,11 +261,11 @@ div#soulbar {
     display: flex;
     justify-content: space-around;
     align-items: center;
-	height: 100px;
+	height: 6.25rem;
 }
 
 div#soulbar > span{
-	max-width: 65px;
+	max-width: 4rem;
 	text-align: center;
 }
 
@@ -274,10 +273,12 @@ div#soulbar > span{
     position: relative;
     aspect-ratio: 1 / 1;
 	display: flex;
-	outline: 15px solid var(--black);
+	outline: 1rem solid var(--black);
     border-radius: 100%;
 	background: var(--black);
-	box-shadow: 0 0 0 2px black;
+	box-shadow: 0 0 0 0.125rem black;
+	width: 7.8rem;
+	height: 7.8rem;
 }
 .soul-disc svg{
     width: 100%;
@@ -297,11 +298,11 @@ div#soulbar > span{
     width: 8%;
     height: 48%;
     background: var(--black);
-    border: 2px solid var(--white);
+    border: 0.125rem solid var(--white);
     position: absolute;
     transform: translate(-50%, -100%) rotate(0deg);
     transform-origin: bottom;
-    border-radius: 5px;
+    border-radius: 0.3rem;
     /* box-shadow: 0 0 8px #00000057; */
     transition: 3s transform;
 }
@@ -311,7 +312,7 @@ div#soulbar > span{
     width: 500%;
     aspect-ratio: 1 / 1;
     background: var(--black);
-	border: 2px solid var(--white);
+	border: 0.125rem solid var(--white);
 	display: block;
     position: absolute;
 	bottom: -30.2%;

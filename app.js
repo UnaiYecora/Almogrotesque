@@ -18,6 +18,16 @@ import { generateDisc, spin } from "./soul.js";
 /* ·························  F I R S T   L O A D  ··························*/
 /* ··········································································*/
 /* ··········································································*/
+window.addEventListener("resize", widthBasedFontSize);
+function widthBasedFontSize() {
+	const root = document.querySelector(':root');
+	const main = document.querySelector("main");
+	root.style.setProperty('--width-based-font', main.clientWidth / 40 + "px");
+	
+	// to get css variable from :root
+	//const color = getComputedStyle(root).getPropertyValue('--width-based-font'); //
+}
+widthBasedFontSize();
 
 displayFate();
 

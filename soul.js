@@ -31,7 +31,7 @@ export async function generateDisc(data, disc, customColors) {
         try {
 
             //SVG size
-            const svgSize = 125;
+            const svgSize = 100;
 
             //Final segment array (adding to 100)
             const segmentRest = 100 - data;
@@ -52,15 +52,9 @@ export async function generateDisc(data, disc, customColors) {
 
             //Create svg
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttribute("width", svgSize + "px");
-            svg.setAttribute("height", svgSize + "px");
-
-            // Ensure the SVG has dimensions
-            const svgWidth = svgSize;
-            const svgHeight = svgSize;
-            if (svgWidth === 0 || svgHeight === 0) {
-                throw new Error("SVG dimensions are zero.");
-            }
+            svg.setAttribute("width", svgSize + "%");
+            svg.setAttribute("height", svgSize + "%");
+            svg.setAttribute("viewBox", `0 0 ${svgSize} ${svgSize}`);
     
             const total = segmentSizes.reduce((a, b) => a + b, 0);
             if (total <= 0 || total > 100) throw new Error("Total segment size is invalid");
@@ -139,8 +133,8 @@ async function logResults(id, degreesRotated) {
                 cumulativeDegrees += segmentDegrees;
             }
         
-            console.log('Segment: ' + r);
-            console.log('Grados: ' + degreesRotated);
+            /* console.log('Segment: ' + r);
+            console.log('Grados: ' + degreesRotated); */
             resolve(r);
         } catch (error) {
 			console.log("An error occurred trying to get attack results: " + error.message);
