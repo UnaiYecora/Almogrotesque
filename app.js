@@ -3,7 +3,7 @@
 /* ···························  I M P O R T S  ······························*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray } from "/helpers.js";
+import { goTo, shuffleArray } from "./helpers.js";
 import { db, state } from "./db.js";
 import { generateDisc, spin } from "./soul.js";
 
