@@ -277,6 +277,16 @@ div#playerBoard button{
     display: flex;
 }
 
+.hp .full,
+.hp .empty{
+	display: flex;
+	z-index: 1;
+}
+.hp .empty{
+	position: absolute;
+	z-index: 0;
+}
+
 span.heart,
 span.empty-heart {
 	width: 1.85rem;

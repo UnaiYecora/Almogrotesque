@@ -186,25 +186,36 @@ async function generateEncounterCard(mobname) {
 			skillsEl.innerHTML = skills;
 			descEl.textContent = mobject.desc;
 
-			//HPs
+			//Enemy HP
 			const mobHpEl = document.querySelector(".enemy-hp");
-			const playerHpEl = document.querySelector(".player-hp");
-			mobHpEl.innerHTML = "";
+			const mobHpFull = mobHpEl.querySelector(".full");
+			const mobHpEmpty = mobHpEl.querySelector(".empty");
+			mobHpFull.innerHTML = "";
+			mobHpEmpty.innerHTML = "";
 			for (let i = 0; i < state.currentMob.hp; i++) {
-				let heart = document.createElement("span");
-				heart.classList.add("heart");
-				mobHpEl.appendChild(heart);
+				let fullHeart = document.createElement("span");
+				fullHeart.classList.add("heart");
+				mobHpFull.appendChild(fullHeart);
+				let emptyHeart = document.createElement("span");
+				emptyHeart.classList.add("empty-heart");
+				mobHpEmpty.appendChild(emptyHeart);
 			}
-			playerHpEl.innerHTML = "";
+
+			//Player HP
+			const playerHpEl = document.querySelector(".player-hp");
+			const playerHpFull = playerHpEl.querySelector(".full");
+			const playerHpEmpty = playerHpEl.querySelector(".empty");
+			playerHpFull.innerHTML = "";
+			playerHpEmpty.innerHTML = "";
 			for (let i = 0; i < state.player.hp; i++) {
 				let heart = document.createElement("span");
 				heart.classList.add("heart");
-				playerHpEl.appendChild(heart);
+				playerHpFull.appendChild(heart);
 			}
-			for (let i = 0; i < (state.player.maxHp - state.player.hp); i++) {
+			for (let i = 0; i < (state.player.maxHp); i++) {
 				let heart = document.createElement("span");
 				heart.classList.add("empty-heart");
-				playerHpEl.appendChild(heart);
+				playerHpEmpty.appendChild(heart);
 			}
 
 			//Discs
@@ -320,10 +331,26 @@ async function changeFate() {
 /*==========================================*/
 async function damageToEnemy() {
 	state.currentMob.hp--;
-	const hearts = document.querySelectorAll('.enemy-hp > .heart');
+	const hearts = document.querySelectorAll('.enemy-hp > .full > .heart');
 	const lastHeart = hearts[hearts.length - 1];
-	lastHeart.classList.remove("heart");
-	lastHeart.classList.add("empty-heart");
+	
+	let particlesOpts = {
+		particlesAmountCoefficient: 1,
+		direction: "bottom",
+		color: "red"
+	};
+	particlesOpts.complete = () => {
+		lastHeart.classList.remove("heart");
+		lastHeart.classList.add("empty-heart");
+		lastHeart.style.transform = "unset";
+		lastHeart.parentElement.style.transform = "unset";
+		lastHeart.parentElement.style.visibility = "unset";
+	};
+	const particles = new Particles(lastHeart, particlesOpts);
+	if ( !particles.isAnimating() ) {
+		particles.disintegrate();
+	}
+
 	if (state.currentMob.hp > 0) {
 		toggleTurn("mob");
 	} else {
@@ -346,10 +373,26 @@ function killMob() {
 /*==========================================*/
 async function damageToPlayer() {
 	state.player.hp--;
-	const hearts = document.querySelectorAll('.player-hp > .heart');
+	const hearts = document.querySelectorAll('.player-hp > .full > .heart');
 	const lastHeart = hearts[hearts.length - 1];
-	lastHeart.classList.remove("heart");
-	lastHeart.classList.add("empty-heart");
+
+	let particlesOpts = {
+		particlesAmountCoefficient: 1,
+		direction: "bottom",
+		color: "red"
+	};
+	particlesOpts.complete = () => {
+		lastHeart.classList.remove("heart");
+		lastHeart.classList.add("empty-heart");
+		lastHeart.style.transform = "unset";
+		lastHeart.parentElement.style.transform = "unset";
+		lastHeart.parentElement.style.visibility = "unset";
+	};
+	const particles = new Particles(lastHeart, particlesOpts);
+	if ( !particles.isAnimating() ) {
+		particles.disintegrate();
+	}
+	
 	if (state.player.hp > 0) {
 		toggleTurn("player");
 	} else {
