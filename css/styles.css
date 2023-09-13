@@ -388,8 +388,6 @@ div#soulbar > span{
 	position: relative;
 	display: grid;
 	grid-area: 1 / 1 / 2 / 2;
-	height: 100%;
-    width: 100%;
 }
 
 .particles-canvas {
@@ -398,7 +396,6 @@ div#soulbar > span{
 	top: 50%;
 	left: 50%;
 	transform: translate3d(-50%,-50%,0);
-	width: 265%;
 }
 
 .particles-wrapper {
