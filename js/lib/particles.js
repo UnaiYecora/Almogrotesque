@@ -21,7 +21,17 @@
             duration: 1000,
             easing: 'easeInOutCubic',
             direction: 'left',
-            size: function() { return Math.floor((Math.random() * 3) + 1); },
+            size: function() {
+                var minSizeInRem = 0.05;
+                var maxSizeInRem = 0.2;
+            
+                var fontSizeInPixels = parseFloat(getComputedStyle(document.body).getPropertyValue('--width-based-font'));
+            
+                var minSizeInPixels = minSizeInRem * fontSizeInPixels;
+                var maxSizeInPixels = maxSizeInRem * fontSizeInPixels;
+            
+                return Math.floor(Math.random() * (maxSizeInPixels - minSizeInPixels + 1)) + minSizeInPixels;
+            },
             speed: function() { return rand(4); },
             particlesAmountCoefficient: 3,
             oscillationCoefficient: 20
