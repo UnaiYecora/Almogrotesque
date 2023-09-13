@@ -10,7 +10,7 @@
 	font-family: 'Syne Mono';
 	font-style: normal;
 	font-weight: 400;
-	src: url('./assets/fonts/syne-mono-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+	src: url('../assets/fonts/syne-mono-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 /*==========================================
@@ -112,29 +112,69 @@ section#start div{
 }
 
 #crossroad .path{
-	background-color: var(--black);
-	color: var(--white);
-	padding: 1rem;
 	min-width: calc(33% - 1.2rem);
-	display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+	z-index: 1;
+	position: relative;
+	transition: .3s;
+}
+
+#crossroad .path.pathHide{
+	transition: 0s;
+	opacity: 0;
+}
+
+.path-content{
+	color: var(--white);
 	font-weight: 700;
 	font-size: 1.3rem;
-	z-index: 1;
+	transition: opacity 0.2s, scale 1s;
+	border-radius: 0.45rem;
+	background-color: var(--black);
+	padding: 1rem;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+	gap: 1rem;
+	min-height: 10rem;
+
 }
+
 #crossroad .path .pathTitle{
 	font-size: 1rem;
 	font-size: clamp(0.6rem, 0rem + 2.6667vw, 1rem);
 }
 
-#crossroad .path button{
+#crossroad .path .main-path-button{
 	background-color: var(--white);
 	color: var(--black);
 	width: 100%;
 	font-size: 1rem;
 	padding: 0.4rem 1.6rem;
+}
+
+#crossroad .path [data-skip-path]{
+    position: absolute;
+    top: -0.3rem;
+    right: -0.3rem;
+    color: var(--black);
+    background: var(--white);
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 1rem;
+    border-radius: 100%;
+    border: 1px solid var(--black);
+    line-height: 0;
+	z-index: 1;
+}
+
+#crossroad .path [data-skip-path].hideSkip{
+	pointer-events: none !important;
+	transition: opacity .1s;
+	transition-delay: .70s;
+	opacity: 0;
 }
 
 /*==========================================
@@ -319,4 +359,62 @@ div#soulbar > span{
     left: -201.3%;
     border-radius: 100%;
     /*box-shadow: 0 0 8px #00000057;*/
+}
+
+
+
+
+
+/*==========================================
+// PARTICLE ANIMATION 
+============================================*/
+.particles {
+	position: relative;
+	display: grid;
+	grid-area: 1 / 1 / 2 / 2;
+	min-width: calc(33% - 1.2rem);
+}
+
+.particles-canvas {
+	position: absolute;
+	pointer-events: none;
+	top: 50%;
+	left: 50%;
+	transform: translate3d(-50%,-50%,0);
+}
+
+.particles-wrapper {
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	will-change: transform;
+	width: 100%;
+}
+
+.particles-button {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	position: relative;
+	border-radius: 5px;
+	border-radius: var(--radius-button);
+	background: var(--color-button-bg);
+	color: var(--color-button-text);
+	border: 0;
+	border: var(--border-button);
+	margin: 0;
+	padding: 1.5rem 3rem;
+	padding: var(--button-padding);
+	will-change: transform;
+}
+
+.particles-button:focus {
+	outline: none;
+}
+
+.no-js .particles-button {
+	grid-area: 1 / 1 / 2 / 2;
 }

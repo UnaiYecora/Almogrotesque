@@ -6,7 +6,6 @@ export var state = {
 		playerTurn: false,
 		fateLeft: 12,
 	},
-	currentMob: {},
 	fatePrice: 1,
 }
 

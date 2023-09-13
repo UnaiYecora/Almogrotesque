@@ -69,69 +69,72 @@ function createLvlArray(lvl) {
 			const levelArray = [...mobArray, ...saferoomsArray];
 			shuffleArray(levelArray);
 
-			resolve(levelArray);
+			state.currentLevelArray = levelArray;
+
+			resolve();
 		} catch (error) {
 			reject(error);
 		}
 	});
 }
 
-// Function to generate paths
-function generatePaths(levelArray) {
+// Function to fill/generate paths
+function fillPaths() {
 	return new Promise((resolve, reject) => {
 		try {
-			const crossroads = document.querySelector("#crossroad");
-			crossroads.innerHTML = "";
+			const levelArray = state.currentLevelArray;
+			let emptyPaths = document.querySelectorAll("#crossroad div[data-filled='false']");
 
-			// Path builder
-			for (let i = 0; i < 3; i++) {
-				let path = document.createElement("div");
-				path.id = "path" + (i + 1);
-				path.classList.add("path");
+			emptyPaths.forEach(path => {
+				if (levelArray.length > 0) {
 
-				let roomName;
-				let btnTxt;
+					const roomName = path.querySelector(".pathTitle");
+					const btnTxt = path.querySelector(".main-path-button");
 
-				//MOB
-				if (levelArray[0].type === "mob") {
-					roomName = levelArray[0].name;
-					btnTxt = "Fight";
-					path.dataset.pathtype = "encounter";
-					path.dataset.mobname = roomName;
-				
-				//STORE
-				} else if (levelArray[0].type === "store") {
-					roomName = "Store";
-					btnTxt = "Enter";
-					path.dataset.pathtype = "store";
+					//MOB
+					if (levelArray[0].type === "mob") {
+						roomName.textContent = levelArray[0].name;
+						btnTxt.textContent = "Fight";
+						path.dataset.pathtype = "encounter";
+						path.dataset.mobname = levelArray[0].name;
+						path.dataset.skippable = true;
+					}
 
-				//CHEST
-				} else if (levelArray[0].type === "chest") {
-					roomName = "Chest";
-					btnTxt = "Open";
-					path.dataset.pathtype = "chest";
+					//STORE
+					else if (levelArray[0].type === "store") {
+						roomName.textContent = "Store";
+						btnTxt.textContent = "Enter";
+						path.dataset.pathtype = "store";
+						path.dataset.skippable = true;
+					}
 
-				//DOOR
-				} else if (levelArray[0].type === "door") {
-					let lvl = levelArray[0].level;
-					let lvlName = db.levels.find((x) => x.name === lvl).name;
-					roomName = "Go to " + lvlName;
-					btnTxt = "Exit";
-					path.dataset.pathtype = "door";
-					path.dataset.door = lvlName;
+					//CHEST
+					else if (levelArray[0].type === "chest") {
+						roomName.textContent = "Chest";
+						btnTxt.textContent = "Open";
+						path.dataset.pathtype = "chest";
+						path.dataset.skippable = true;
+					}
+
+					//DOOR
+					else if (levelArray[0].type === "door") {
+						let lvl = levelArray[0].level;
+						let lvlName = db.levels.find((x) => x.name === lvl).name;
+						roomName.textContent = "Go to " + lvlName;
+						btnTxt.textContent = "Exit";
+						path.dataset.pathtype = "door";
+						path.dataset.door = lvlName;
+					}
+
+					path.dataset.filled = true;
+
+					levelArray.shift();
+					
+				} else {
+					path.style.visibility = "hidden";
 				}
+			});
 
-				const roomTitle = /*html*/`
-					<p class="pathTitle">${roomName}</p>
-					<button class="main-path-button">${btnTxt}</button>
-					<button data-skip-path>Skip</button>
-				`;
-
-				path.insertAdjacentHTML('beforeend', roomTitle);
-				crossroads.appendChild(path);
-
-				levelArray.shift();
-			}
 			resolve();
 		} catch (error) {
 			reject(error);
@@ -141,8 +144,8 @@ function generatePaths(levelArray) {
 
 async function setLevel(lvl) {
     try {
-        const levelArray = await createLvlArray(lvl);
-        await generatePaths(levelArray);
+        await createLvlArray(lvl);
+        await fillPaths();
         goTo("crossroad");
     } catch (error) {
         console.error("An error occurred:", error);
@@ -323,8 +326,18 @@ async function damageToEnemy() {
 	if (state.currentMob.hp > 0) {
 		toggleTurn("mob");
 	} else {
-		goTo("crossroad");
+		killMob();
 	}
+}
+
+/*==========================================*/
+// Kill mob
+/*==========================================*/
+function killMob() {
+	const mob = state.currentMob;
+	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
+	goTo("crossroad");
+	burnPath(path);
 }
 
 /*==========================================*/
@@ -363,6 +376,45 @@ async function enemyAttack() {
 	});
 }
 
+/*==========================================*/
+// Burn path
+/*==========================================*/
+function burnPath(pathToBurn) {
+		const path = pathToBurn;
+		const pathContent = path.querySelector(".path-content");
+		const skipBtn = path.querySelector("[data-skip-path]")
+
+		skipBtn.classList.add("hideSkip");
+
+
+		let particlesOpts = {
+			particlesAmountCoefficient: 3,
+			direction: "bottom"
+		};
+		
+		particlesOpts.complete = () => {
+			path.classList.add("pathHide");
+			pathContent.style.transform = "unset";
+			path.appendChild(pathContent);
+			path.querySelector(".particles").remove();
+			pathContent.querySelector(".pathTitle").textContent = "";
+			pathContent.querySelector(".main-path-button").textContent = "";
+			path.dataset.filled = false;
+			path.dataset.pathtype = "";
+			path.dataset.mobname = "";
+			path.dataset.door = "true";
+			path.dataset.skippable = true;
+			fillPaths();
+			skipBtn.classList.remove("hideSkip")
+			setTimeout(() => {
+				path.classList.remove("pathHide");
+			}, 100);
+		};
+		const particles = new Particles(pathContent, particlesOpts);
+		if ( !particles.isAnimating() ) {
+			particles.disintegrate();
+		}
+}
 
 /* ··········································································*/
 /* ··········································································*/
@@ -374,7 +426,8 @@ async function enemyAttack() {
 // Start button
 /*==========================================*/
 document.querySelector("#start #newGame").addEventListener("click", function () {
-	document.documentElement.requestFullscreen();
+	//TO-DO: Activar el fullscreen cuando no me toque la polla
+	//document.documentElement.requestFullscreen();
 	setLevel("home");
 });
 
@@ -382,15 +435,18 @@ document.querySelector("#start #newGame").addEventListener("click", function () 
 // Path buttons
 /*==========================================*/
 document.querySelector("#crossroad").addEventListener("click", function (e) {
-	const type = e.target.parentNode.dataset.pathtype;
-
-	// Main button
-	if (e.target.classList.contains("main-path-button")) {
+	const path = e.target.closest(".path");
+	if (path) {
+		const type = path.dataset.pathtype;
 		
-		// Mob encounter
-		if (type === "encounter") {
-			const mob = e.target.parentNode.dataset.mobname;
-			loadEncounter(mob);
+		// Main button
+		if (e.target.classList.contains("main-path-button")) {
+			
+			// Mob encounter
+			if (type === "encounter") {
+				const mob = path.dataset.mobname;
+				loadEncounter(mob);
+			}
 		}
 	}
 
@@ -425,4 +481,14 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 /*==========================================*/
 document.querySelector(".end-turn").addEventListener("click", function () {
 	toggleTurn("mob");
+});
+
+/*==========================================*/
+// Skip path
+/*==========================================*/
+document.querySelectorAll("[data-skip-path]").forEach(el => {
+	
+	el.addEventListener("click", function() {
+		burnPath(el.parentElement);
+    })
 });

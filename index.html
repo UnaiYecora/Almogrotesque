@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="styles.css">
-	<link rel="stylesheet" href="svgs.css">
-	<script src="app.js" type="module"></script>
+	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/svgs.css">
+	<script src="js/app.js" type="module"></script>
 </head>
 <body>
 	<main>
@@ -19,7 +19,29 @@
 			</div>
 		</section>
 
-		<section id="crossroad"></section>
+		<section id="crossroad">
+			<div id="path1" class="path" data-position="1" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
+				<button data-skip-path="">X</button>
+				<div class="path-content" data-position="1">
+					<p class="pathTitle"></p>
+					<button class="main-path-button"></button>
+				</div>
+			</div>
+			<div id="path2" class="path" data-position="2" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
+				<button data-skip-path="">X</button>
+				<div class="path-content" data-position="2">
+					<p class="pathTitle"></p>
+					<button class="main-path-button"></button>
+				</div>
+			</div>
+			<div id="path3" class="path" data-position="3" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
+				<button data-skip-path="">X</button>
+				<div class="path-content" data-position="2">
+					<p class="pathTitle"></p>
+					<button class="main-path-button"></button>
+				</div>
+			</div>
+		</section>
 
 		<section id="encounter">
 			<div class="topbar">
@@ -67,5 +89,7 @@
 			
 		</section>
 	</main>
+	<script src="js/lib/anime.min.js"></script>
+	<script src="js/lib/particles.js"></script>
 </body>
 </html>
