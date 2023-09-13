@@ -22,7 +22,7 @@ window.addEventListener("resize", widthBasedFontSize);
 function widthBasedFontSize() {
 	const root = document.querySelector(':root');
 	const main = document.querySelector("main");
-	root.style.setProperty('--width-based-font', main.clientWidth / 40 + "px");
+	root.style.setProperty('--width-based-font', Math.round(main.clientWidth / 40) + "px");
 	
 	// to get css variable from :root
 	//const color = getComputedStyle(root).getPropertyValue('--width-based-font'); //
@@ -90,11 +90,13 @@ function fillPaths() {
 
 					const roomName = path.querySelector(".pathTitle");
 					const btnTxt = path.querySelector(".main-path-button");
+					const lvlTxt = path.querySelector(".pathMobLvl");
 
 					//MOB
 					if (levelArray[0].type === "mob") {
 						roomName.textContent = levelArray[0].name;
 						btnTxt.textContent = "Fight";
+						lvlTxt.textContent = "(Lvl " + levelArray[0].lvl + ")";
 						path.dataset.pathtype = "encounter";
 						path.dataset.mobname = levelArray[0].name;
 						path.dataset.skippable = true;
@@ -340,8 +342,7 @@ async function damageToEnemy() {
 		color: "red"
 	};
 	particlesOpts.complete = () => {
-		lastHeart.classList.remove("heart");
-		lastHeart.classList.add("empty-heart");
+		lastHeart.style.opacity = "0";
 		lastHeart.style.transform = "unset";
 		lastHeart.parentElement.style.transform = "unset";
 		lastHeart.parentElement.style.visibility = "unset";
@@ -382,8 +383,7 @@ async function damageToPlayer() {
 		color: "red"
 	};
 	particlesOpts.complete = () => {
-		lastHeart.classList.remove("heart");
-		lastHeart.classList.add("empty-heart");
+		lastHeart.style.opacity = "0";
 		lastHeart.style.transform = "unset";
 		lastHeart.parentElement.style.transform = "unset";
 		lastHeart.parentElement.style.visibility = "unset";
@@ -443,6 +443,7 @@ function burnPath(pathToBurn) {
 			path.appendChild(pathContent);
 			path.querySelector(".particles").remove();
 			pathContent.querySelector(".pathTitle").textContent = "";
+			pathContent.querySelector(".pathMobLvl").textContent = "";
 			pathContent.querySelector(".main-path-button").textContent = "";
 			path.dataset.filled = false;
 			path.dataset.pathtype = "";
