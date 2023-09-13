@@ -10,7 +10,7 @@ export function goTo(destination) {
 	//Crossroad background
 	if (destination === "crossroad") {
 		let imgNumber = Math.round(Math.random() * 4) + 1;
-		document.querySelector("#crossroad").style.background = "url(./assets/img/test/"+imgNumber+".jpg)";
+		document.querySelector("#crossroad").style.background = "url(./assets/img/bg/"+imgNumber+".jpg)";
 	}
 	
 	// Display destination screen

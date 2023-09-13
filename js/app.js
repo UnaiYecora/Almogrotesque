@@ -124,6 +124,7 @@ function fillPaths() {
 						btnTxt.textContent = "Exit";
 						path.dataset.pathtype = "door";
 						path.dataset.door = lvlName;
+						path.dataset.skippable = false;
 					}
 
 					path.dataset.filled = true;
@@ -389,7 +390,8 @@ function burnPath(pathToBurn) {
 
 		let particlesOpts = {
 			particlesAmountCoefficient: 3,
-			direction: "bottom"
+			direction: "bottom",
+			color: "#fff"
 		};
 		
 		particlesOpts.complete = () => {
