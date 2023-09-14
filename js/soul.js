@@ -34,6 +34,7 @@ export async function generateDisc(data, disc, customColors) {
             const svgSize = 100;
 
             //Final segment array (adding to 100)
+            data[0] = Math.min(data, 95);
             const segmentRest = 100 - data;
             const segmentSizes = [segmentRest, ...data];
 
@@ -48,7 +49,10 @@ export async function generateDisc(data, disc, customColors) {
             
             const container = document.querySelector(disc);
             if (!container) throw new Error("SVG not found");
-            container.innerHTML = "";
+
+            if (container.querySelector("svg")) {
+                container.querySelector("svg").remove();
+            }
 
             //Create svg
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -95,9 +99,11 @@ export async function generateDisc(data, disc, customColors) {
             container.appendChild(svg);
 
             //Add arrow
-            const arrow = document.createElement("div");
-            arrow.classList.add("arrow");
-            container.appendChild(arrow);
+            if (!container.querySelector(".arrow")) {
+                const arrow = document.createElement("div");
+                arrow.classList.add("arrow");
+                container.appendChild(arrow);
+            }
 
             //Include data in disc dataset
             container.dataset.discdata = "[" + segmentSizes + "]";

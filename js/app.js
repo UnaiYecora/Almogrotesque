@@ -333,6 +333,8 @@ async function changeFate() {
 /*==========================================*/
 async function damageToEnemy() {
 	state.currentMob.hp--;
+	state.currentMob.soul[0] = state.currentMob.soul[0] + (state.currentMob.lvl * 2.3);
+	generateDisc(state.currentMob.soul, "#mobSoul");
 	const hearts = document.querySelectorAll('.enemy-hp > .full > .heart');
 	const lastHeart = hearts[hearts.length - 1];
 	
