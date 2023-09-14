@@ -86,6 +86,10 @@ section#start div{
     gap: 2rem;
 }
 
+section#start p{
+	text-align: center;
+}
+
 
 /*==========================================
 // CROSSROAD 
@@ -415,6 +419,7 @@ section#xpscreen .bar .progress{
 	display: block;
     background: var(--white);
     height: 3rem;
+	transition: 1s;
 }
 
 section#xpscreen .bar p{
@@ -427,6 +432,12 @@ section#xpscreen .bar p{
 
 section#xpscreen button{
 	border: 0.1rem solid var(--white);
+}
+
+.reward p {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 

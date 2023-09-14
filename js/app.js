@@ -363,8 +363,8 @@ async function damageToEnemy() {
 // Victory
 /*==========================================*/
 async function victory() {
-	await generateXpScreen();
 	goTo("xpscreen");
+	generateXpScreen();
 }
 
 /*==========================================*/
@@ -374,40 +374,76 @@ async function generateXpScreen() {
 	return new Promise(async(resolve, reject) => {
 		try {
 
-			//Elements
+			// Select elements
 			const xpscreen = document.querySelector("#xpscreen");
 			const lvl = xpscreen.querySelector(".lvl span");
-			const barCurrentXP = xpscreen.querySelectorAll(".bar span")[0];
-			const barNextXP = xpscreen.querySelectorAll(".bar span")[1];
-			const reward = xpscreen.querySelector(".reward span");
+			const [toTargetElement, targetElement] = xpscreen.querySelectorAll(".bar span");
 			const bar = xpscreen.querySelector(".progress");
+			const reward = document.querySelector("#xpscreen .reward span");
+			const lvlUpReward = document.querySelectorAll(".lvl-up-reward");
 
-			//Data
-			const previousXP = state.player.xp;
-			const xpGained = state.currentMob.lvl;
-			const newXP = previousXP + xpGained;
+			
+			// Update player's gold and display reward
+			const goldReward = state.currentMob.lvl; // TO-DO: Rewards per mob
+			state.player.gold = goldReward;
+			reward.textContent = goldReward;
 
-			//Save changes
-			state.player.xp = newXP;
-			state.player.gold = xpGained; //TO-DO: Rewards per mob
+			// Fetch XP data
+			const lvlArr = db.xpTiers;
+			let lvlIndex = state.player.lvl - 1;
+			let target = lvlArr[lvlIndex + 1];
+			const gainedXP = state.currentMob.lvl;
+			const oldTotalXP = state.player.xp;
+			const newTotalXP = oldTotalXP + gainedXP;
 
-			//Generate text
+			// Display current level and progress bar
+			lvlUpReward.forEach(el => {
+				el.style.display = "none";
+			});
 			lvl.textContent = state.player.lvl;
-			barCurrentXP.textContent = newXP;
-			barNextXP.textContent = db.xpTiers[state.player.lvl];
-			reward.textContent = xpGained;
+			targetElement.textContent = target - lvlArr[lvlIndex];
+			toTargetElement.textContent = Math.min(oldTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
+			bar.style.width = ((oldTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
 
-			//Draw bar
-			bar.style.transition = "0s";
-			bar.style.width = (previousXP * 100 / (db.xpTiers[state.player.lvl - 1] - previousXP)) + "%";
-			bar.style.transition = ".3s";
-			setTimeout(() => {
-				bar.style.width = (state.player.xp * 100 / (db.xpTiers[state.player.lvl])) + "%";
-			}, 300);
+			// Update player's XP
+			state.player.xp = newTotalXP;
+
+			// Update stats
+			await new Promise(resolve => setTimeout(resolve, 500));
+			toTargetElement.textContent = Math.min(newTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
+			bar.style.width = ((newTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			
+			if (newTotalXP >= target) {
+				state.player.lvl++;
+				bar.style.transition = "0s";
+				bar.style.width = "0%";
+				lvl.textContent = state.player.lvl;
+				const newLvlIndex = state.player.lvl - 1;
+				target = lvlArr[newLvlIndex + 1];
+				targetElement.textContent = target - lvlArr[newLvlIndex];
+				toTargetElement.textContent = Math.min(newTotalXP - lvlArr[newLvlIndex], target - lvlArr[newLvlIndex]);
+
+				// Level up reward
+				// TO-DO
+				lvlUpReward.forEach(el => {
+					el.style.display = "flex";
+				});
+				state.player.maxHp++;
+				state.player.hp = state.player.maxHp;
+				state.player.fateLeft += 5;
+				displayFate();
+
+				// Update stats again
+				await new Promise(resolve => setTimeout(resolve, 500));
+				bar.style.transition = "1s";
+				bar.style.width = ((newTotalXP - lvlArr[newLvlIndex]) * 100) / (target - lvlArr[newLvlIndex]) + "%";
+			}
 
 			resolve();
+
 		} catch (error) {
-			console.log("An error occurred killing the enemy: " + error.message);
+			console.log("An error occurred displaying XP screen: " + error.message);
 			reject(error);
 		}
 	});
@@ -458,7 +494,7 @@ async function enemyAttack() {
 			}
 			resolve();
 		} catch (error) {
-			console.log("An error occurred during attack: " + error.message);
+			console.log("An error occurred during the enemy's attack: " + error.message);
 			reject(error);
 		}
 	});
@@ -510,7 +546,7 @@ async function burnPath(pathToBurn) {
 			resolve();
 
 		} catch (error) {
-			console.log("An error occurred killing the enemy: " + error.message);
+			console.log("An error occurred trying to remove a path: " + error.message);
 			reject(error);
 		}
 	});
@@ -573,7 +609,6 @@ document.querySelector("#attackBtn").addEventListener("click", function () {
 /*==========================================*/
 document.querySelector(".change-fate").addEventListener("click", function () {
 	changeFate();
-	console.log("clickity");
 });
 
 /*==========================================*/
@@ -601,4 +636,4 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
 	await goTo("crossroad");
 	await burnPath(path);
-})
+});
