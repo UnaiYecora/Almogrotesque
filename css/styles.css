@@ -155,12 +155,16 @@ section#start div{
 }
 
 #crossroad .path .pathTitle{
-	font-size: 1rem;
+	font-size: 1.2rem;
 	font-weight: 700;
 }
 
 #crossroad .path .pathMobLvl{
 	font-size: 0.85rem;
+}
+
+#crossroad .path .pathMobLvl span{
+	opacity: 0.5;
 }
 
 #crossroad .path .main-path-button{
@@ -390,8 +394,40 @@ div#soulbar > span{
     /*box-shadow: 0 0 8px #00000057;*/
 }
 
+/*==========================================
+// XP SCREEN 
+============================================*/
+section#xpscreen {
+	display: flex;
+    flex-direction: column;
+    gap: 1rem;
+	font-size: 2rem;
+}
 
+section#xpscreen .bar {
+    border: 1px solid var(--white);
+	display: flex;
+    align-items: stretch;
+	position: relative;
+}
 
+section#xpscreen .bar .progress{
+	display: block;
+    background: var(--white);
+    height: 3rem;
+}
+
+section#xpscreen .bar p{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	mix-blend-mode: difference;
+}
+
+section#xpscreen button{
+	border: 0.1rem solid var(--white);
+}
 
 
 /*==========================================

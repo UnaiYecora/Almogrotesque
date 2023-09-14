@@ -96,7 +96,7 @@ function fillPaths() {
 					if (levelArray[0].type === "mob") {
 						roomName.textContent = levelArray[0].name;
 						btnTxt.textContent = "Fight";
-						lvlTxt.textContent = "(Lvl " + levelArray[0].lvl + ")";
+						lvlTxt.innerHTML = "<span>·<·</span> Lvl " + levelArray[0].lvl + " <span>·>·</span>";
 						path.dataset.pathtype = "encounter";
 						path.dataset.mobname = levelArray[0].name;
 						path.dataset.skippable = true;
@@ -355,18 +355,62 @@ async function damageToEnemy() {
 	if (state.currentMob.hp > 0) {
 		toggleTurn("mob");
 	} else {
-		killMob();
+		victory();
 	}
 }
 
 /*==========================================*/
-// Kill mob
+// Victory
 /*==========================================*/
-function killMob() {
-	const mob = state.currentMob;
-	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
-	goTo("crossroad");
-	burnPath(path);
+async function victory() {
+	await generateXpScreen();
+	goTo("xpscreen");
+}
+
+/*==========================================*/
+// Generate XP screen
+/*==========================================*/
+async function generateXpScreen() {
+	return new Promise(async(resolve, reject) => {
+		try {
+
+			//Elements
+			const xpscreen = document.querySelector("#xpscreen");
+			const lvl = xpscreen.querySelector(".lvl span");
+			const barCurrentXP = xpscreen.querySelectorAll(".bar span")[0];
+			const barNextXP = xpscreen.querySelectorAll(".bar span")[1];
+			const reward = xpscreen.querySelector(".reward span");
+			const bar = xpscreen.querySelector(".progress");
+
+			//Data
+			const previousXP = state.player.xp;
+			const xpGained = state.currentMob.lvl;
+			const newXP = previousXP + xpGained;
+
+			//Save changes
+			state.player.xp = newXP;
+			state.player.gold = xpGained; //TO-DO: Rewards per mob
+
+			//Generate text
+			lvl.textContent = state.player.lvl;
+			barCurrentXP.textContent = newXP;
+			barNextXP.textContent = db.xpTiers[state.player.lvl];
+			reward.textContent = xpGained;
+
+			//Draw bar
+			bar.style.transition = "0s";
+			bar.style.width = (previousXP * 100 / (db.xpTiers[state.player.lvl - 1] - previousXP)) + "%";
+			bar.style.transition = ".3s";
+			setTimeout(() => {
+				bar.style.width = (state.player.xp * 100 / (db.xpTiers[state.player.lvl])) + "%";
+			}, 300);
+
+			resolve();
+		} catch (error) {
+			console.log("An error occurred killing the enemy: " + error.message);
+			reject(error);
+		}
+	});
 }
 
 /*==========================================*/
@@ -423,43 +467,53 @@ async function enemyAttack() {
 /*==========================================*/
 // Burn path
 /*==========================================*/
-function burnPath(pathToBurn) {
-		const path = pathToBurn;
-		const pathContent = path.querySelector(".path-content");
-		const skipBtn = path.querySelector("[data-skip-path]")
+async function burnPath(pathToBurn) {
+	return new Promise(async(resolve, reject) => {
+		try {
+			const path = pathToBurn;
+			const pathContent = path.querySelector(".path-content");
+			const skipBtn = path.querySelector("[data-skip-path]")
 
-		skipBtn.classList.add("hideSkip");
+			skipBtn.classList.add("hideSkip");
 
 
-		let particlesOpts = {
-			particlesAmountCoefficient: 3,
-			direction: "bottom",
-			color: "#fff"
-		};
-		
-		particlesOpts.complete = () => {
-			path.classList.add("pathHide");
-			pathContent.style.transform = "unset";
-			path.appendChild(pathContent);
-			path.querySelector(".particles").remove();
-			pathContent.querySelector(".pathTitle").textContent = "";
-			pathContent.querySelector(".pathMobLvl").textContent = "";
-			pathContent.querySelector(".main-path-button").textContent = "";
-			path.dataset.filled = false;
-			path.dataset.pathtype = "";
-			path.dataset.mobname = "";
-			path.dataset.door = "true";
-			path.dataset.skippable = true;
-			fillPaths();
-			skipBtn.classList.remove("hideSkip")
-			setTimeout(() => {
-				path.classList.remove("pathHide");
-			}, 100);
-		};
-		const particles = new Particles(pathContent, particlesOpts);
-		if ( !particles.isAnimating() ) {
-			particles.disintegrate();
+			let particlesOpts = {
+				particlesAmountCoefficient: 3,
+				direction: "bottom",
+				color: "#fff"
+			};
+			
+			particlesOpts.complete = () => {
+				path.classList.add("pathHide");
+				pathContent.style.transform = "unset";
+				path.appendChild(pathContent);
+				path.querySelector(".particles").remove();
+				pathContent.querySelector(".pathTitle").textContent = "";
+				pathContent.querySelector(".pathMobLvl").textContent = "";
+				pathContent.querySelector(".main-path-button").textContent = "";
+				path.dataset.filled = false;
+				path.dataset.pathtype = "";
+				path.dataset.mobname = "";
+				path.dataset.door = "true";
+				path.dataset.skippable = true;
+				fillPaths();
+				skipBtn.classList.remove("hideSkip")
+				setTimeout(() => {
+					path.classList.remove("pathHide");
+				}, 100);
+			};
+			const particles = new Particles(pathContent, particlesOpts);
+			if ( !particles.isAnimating() ) {
+				particles.disintegrate();
+			}
+
+			resolve();
+
+		} catch (error) {
+			console.log("An error occurred killing the enemy: " + error.message);
+			reject(error);
 		}
+	});
 }
 
 /* ··········································································*/
@@ -538,3 +592,13 @@ document.querySelectorAll("[data-skip-path]").forEach(el => {
 		burnPath(el.parentElement);
     })
 });
+
+/*==========================================*/
+// XP Screen
+/*==========================================*/
+document.querySelector("#xpscreen button").addEventListener("click", async function () {
+	const mob = state.currentMob;
+	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
+	await goTo("crossroad");
+	await burnPath(path);
+})

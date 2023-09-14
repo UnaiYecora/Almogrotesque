@@ -4,7 +4,10 @@ export var state = {
 		hp: 5,
 		maxHp: 5,
 		playerTurn: false,
-		fateLeft: 12,
+		fateLeft: 120,
+		xp: 0,
+		lvl: 1,
+		gold: 0,
 	},
 	fatePrice: 1,
 }
@@ -18,6 +21,7 @@ export const db = {
 			doors: ["home"]
 		}
 	],
+	xpTiers: [1, 2, 4, 7, 12, 20, 25, 30, 35, 45, 45, 999],
 	mobs: [
 		{
 			name: "Goblin",
