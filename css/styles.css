@@ -253,11 +253,12 @@ div#mobBoard > *:not(img){
 }
 
 div#mobBoard img{
-    width: 100%;
+    width: 85%;
     max-height: 100%;
     border-radius: 0.75rem 0.75rem 0 0;
     object-fit: contain;
 	mix-blend-mode: color-burn;
+	margin-inline: auto;
 }
 
 p.mobName {
