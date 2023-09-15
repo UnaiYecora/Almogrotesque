@@ -235,7 +235,6 @@ section#encounter {
 
 div#mobBoard,
 div#playerBoard{
-	background-color: var(--white);
 	color: var(--black);
 	border-radius: 0.75rem;
 }
@@ -247,7 +246,6 @@ div#mobBoard{
 	gap: 1rem;
 	overflow: hidden;
 	padding-bottom: 1.5rem;
-	background-color: unset;
 }
 
 div#mobBoard > *:not(img){
