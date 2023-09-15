@@ -365,7 +365,7 @@ async function damageToEnemy() {
 // Victory
 /*==========================================*/
 async function victory() {
-	goTo("xpscreen");
+	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
 }
 
@@ -388,7 +388,7 @@ async function generateXpScreen() {
 			// Update player's gold and display reward
 			const goldReward = state.currentMob.lvl; // TO-DO: Rewards per mob
 			state.player.gold = goldReward;
-			reward.textContent = goldReward;
+			reward.textContent = "+" + goldReward;
 
 			// Fetch XP data
 			const lvlArr = db.xpTiers;
@@ -636,6 +636,7 @@ document.querySelectorAll("[data-skip-path]").forEach(el => {
 document.querySelector("#xpscreen button").addEventListener("click", async function () {
 	const mob = state.currentMob;
 	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
+	document.querySelector("#xpscreen").style.display = "none";
 	await goTo("crossroad");
 	await burnPath(path);
 });

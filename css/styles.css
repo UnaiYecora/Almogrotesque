@@ -30,6 +30,15 @@ button:disabled{
 	cursor: default;
 }
 
+.modal{
+	z-index: 10;
+    position: absolute;
+    background: black;
+    padding: 6rem 3rem;
+	width: 90%;
+	outline: 99rem solid #000000de;
+}
+
 /*==========================================
 // LAYOUT 
 ============================================*/
