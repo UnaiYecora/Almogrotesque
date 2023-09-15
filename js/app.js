@@ -99,7 +99,7 @@ function fillPaths() {
 						lvlTxt.innerHTML = "<span>·<·</span> Lvl " + levelArray[0].lvl + " <span>·>·</span>";
 						path.dataset.pathtype = "encounter";
 						path.dataset.mobname = levelArray[0].name;
-						path.dataset.skippable = true;
+						path.dataset.skippable = false;
 					}
 
 					//STORE

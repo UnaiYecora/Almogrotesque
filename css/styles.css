@@ -86,7 +86,7 @@ section#start {
 }
 
 section#start h1{
-	font-size: 2.5rem;
+	font-size: 5rem;
 }
 
 section#start div{
@@ -141,7 +141,6 @@ section#start p{
 }
 
 .path-content{
-	background-color: var(--white);
 	color: var(--black);
 	font-size: 1.3rem;
 	transition: opacity 0.2s, scale 1s;
@@ -427,7 +426,7 @@ section#xpscreen .bar {
 section#xpscreen .bar .progress{
 	display: block;
     background: var(--white);
-    height: 3rem;
+    height: 4rem;
 	transition: 1s;
 }
 
@@ -441,6 +440,12 @@ section#xpscreen .bar p{
 
 section#xpscreen button{
 	border: 0.1rem solid var(--white);
+    background: var(--white);
+    color: black;
+    padding: 1rem 0;
+    margin-top: 4rem;
+    font-weight: 700;
+    border-radius: 0.3rem;
 }
 
 .reward p {
