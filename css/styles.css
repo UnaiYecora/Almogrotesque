@@ -12,6 +12,14 @@
 	font-weight: 400;
 	src: url('../assets/fonts/syne-mono-v15-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+/* rock-salt-regular - latin */
+@font-face {
+	font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+	font-family: 'Rock Salt';
+	font-style: normal;
+	font-weight: 400;
+	src: url('../assets/fonts/rock-salt-v22-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
 
 /*==========================================
 // VARIABLES 
@@ -40,6 +48,15 @@ button:disabled{
 }
 
 /*==========================================
+// Tools 
+============================================*/
+
+.disabled{
+	opacity: 0.1;
+	pointer-events: none;
+}
+
+/*==========================================
 // LAYOUT 
 ============================================*/
 body{
@@ -58,7 +75,7 @@ main{
 	--h: min(calc(100vw / var(--ratio)), 100dvh);
 	height: var(--h);
 	width: calc(var(--h) * var(--ratio));
-	max-width: 600px;
+	/* max-width: 600px; */
 
 	/* Styles */
 	background: var(--black);
@@ -68,6 +85,18 @@ main{
     justify-content: center;
 	position: relative;
 	overflow: hidden;
+}
+
+main:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background: url(../assets/img/textures/paper1.png);
+    mix-blend-mode: multiply;
+	background-size: 50rem 95rem;
+    background-position: -5rem -5rem;
 }
 
 main section:not(#start){
@@ -113,19 +142,33 @@ section#start p{
 	background-color: var(--white);
 	background-size: cover !important;
 	background-position: center !important;
+	transition: filter 3s;
 }
 
-#crossroad:before {
+#crossroad:after {
     content: "";
-    width: 100%;
-    height: 100%;
-    background: #000000b3;
     position: absolute;
-    z-index: 0;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 8%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.8) 85%, rgba(0,0,0,1) 100%);
+	/* background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 25%); */
+}
+
+img.screen-background {
+    position: absolute;
+    object-fit: cover;
+    width: calc(100% + 2rem);
+    height: calc(100% + 2rem);
+    max-width: unset;
+    inset: -1rem;
+    filter: invert(0) saturate(0) brightness(0.3) blur(0px);
+    opacity: 1;
+	user-select: none;
+	-webkit-user-drag: none;
+	pointer-events: none;
 }
 
 #crossroad .path{
-	min-width: calc(33% - 1.2rem);
+	width: calc(33% - 1.2rem);
 	z-index: 1;
 	position: relative;
 	transition: .3s;
@@ -133,11 +176,6 @@ section#start p{
 
 #crossroad .path[data-skippable="false"] [data-skip-path]{
 	display: none;
-}
-
-#crossroad .path.pathHide{
-	transition: 0s;
-	opacity: 0;
 }
 
 .path-content{
@@ -169,6 +207,8 @@ section#start p{
 #crossroad .path .pathTitle{
 	font-size: 1.2rem;
 	font-weight: 700;
+	text-align: center;
+	text-wrap: balance;
 }
 
 #crossroad .path .pathMobLvl{
@@ -198,7 +238,7 @@ section#start p{
     height: 1.25rem;
     font-size: 1rem;
     border-radius: 100%;
-    border: 1px solid var(--black);
+    border: 0.1rem solid var(--black);
     line-height: 0;
 	z-index: 1;
 	font-weight: 700;
@@ -211,6 +251,45 @@ section#start p{
 	opacity: 0;
 }
 
+#crossroad.fadedCrossroad{
+	filter: brightness(0);
+	pointer-events: none;
+}
+
+div#lvl-top {
+    z-index: 1;
+    position: absolute;
+    top: 2rem;
+    text-align: center;
+	padding-inline: 3rem;
+}
+
+div#lvl-top .level-title{
+	font-size: 2rem;
+	font-weight: 700;
+}
+
+div#lvl-bottom {
+    position: absolute;
+    bottom: 0rem;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem;
+}
+
+div#lvl-bottom .level-title{
+	font-size: 2rem;
+	font-weight: 700;
+}
+
+.lvl-bottom-right{
+	display: flex;
+	gap: 2rem;
+	margin-left: auto;
+}
+
 /*==========================================
 // ENCOUNTER 
 ============================================*/
@@ -218,9 +297,7 @@ section#encounter {
     display: flex;
     flex-direction: column;
 	justify-content: flex-start;
-	padding-inline: 1rem;
 	height: 100%;
-	padding-inline: 1rem;
 	overflow: hidden;
 }
 
@@ -230,7 +307,7 @@ section#encounter {
     justify-content: space-between;
 	align-items: center;
 	height: 5rem;
-	padding-block: 1rem;
+	padding: 1rem;
 }
 
 div#mobBoard,
@@ -248,21 +325,40 @@ div#mobBoard{
 	padding-bottom: 1.5rem;
 }
 
-div#mobBoard > *:not(img){
-	padding-inline: 3.5rem;
-}
+.mob-info-wrapper[data-rotate="1"]{transform: rotate(4deg);}
+.mob-info-wrapper[data-rotate="2"]{transform: rotate(-4deg);}
+.mob-image-wrapper[data-rotate="1"]{transform: rotate(-8deg)}
+.mob-image-wrapper[data-rotate="2"]{transform: rotate(8deg)}
 
 div#mobBoard img{
-    width: 85%;
-    max-height: 100%;
-    border-radius: 0.75rem 0.75rem 0 0;
-    object-fit: contain;
-	mix-blend-mode: color-burn;
-	margin-inline: auto;
+	width: 100%;
+}
+
+.mob-info-wrapper{
+    display: flex;
+    flex-direction: column;
+	justify-content: space-evenly;
+    gap: 0.75rem;
+    width: 95%;
+    margin-inline: auto;
+    height: 21rem;
+	margin-top: -10rem;
+    padding: 2.5rem 3.5rem;
+    font-family: 'Rock Salt';
+	position: relative;
+    z-index: 1;
+}
+
+.mob-info-wrapper:before{
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	filter: drop-shadow(0 -0.5rem 0.4rem rgba(0, 0, 0, 0.47));
 }
 
 p.mobName {
-    font-size: 2rem;
+    font-size: 1.3rem;
     text-align: center;
     font-weight: 700;
 }
@@ -274,6 +370,8 @@ p.mobName {
 div#playerBoard{
     height: 15%;
     min-height: 15%;
+	font-family: 'Rock Salt';
+	font-weight: 700;
 }
 
 div#playerBoard .main-action,
@@ -286,20 +384,31 @@ div#playerBoard .main-action,
 }
 
 div#playerBoard button{
-	background-color: var(--black);
-	color: var(--white);
+	color: var(--black);
 	padding: 1rem 2rem;
 	border-radius: 0.5rem;
 	font-weight: 700;
     font-size: 1.6rem;
 	display: flex;
-    align-items: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+div#playerBoard button div{
+	display: flex;
+	align-items: center;
 }
 
 #playerBoard .secondary-action .fate{
-	width: 1.125rem;
-	height: 1.125rem;
-	margin-left: 0.3rem;
+	width: 1.6rem;
+    height: 1.6rem;
+    margin-left: 0.3rem;
+    filter: invert(1);
+}
+
+.no-action p {
+    font-size: 1.6rem;
+    font-weight: 700;
 }
 
 .hp {
@@ -309,12 +418,12 @@ div#playerBoard button{
 .hp .full,
 .hp .empty{
 	display: flex;
-	z-index: 1;
+	z-index: 2;
 	gap: 0.2rem;
 }
 .hp .empty{
 	position: absolute;
-	z-index: 0;
+	z-index: 1;
 }
 
 span.heart,
@@ -326,20 +435,28 @@ span.empty-heart {
     background-repeat: no-repeat;
 }
 
-.fate-left-wrapper {
+.fate-left-wrapper,
+.coins-left-wrapper {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+	z-index: 1;
 }
 
-.fate{
+.coins-left-wrapper{
+	z-index: 3;
+}
+
+.fate,
+.coin{
 	display: inline-block;
-	width: 1.5rem;
-	height: 1.5rem;
+	width: 2rem;
+	height: 2rem;
 	vertical-align: text-bottom;
 }
 
-.fate-left{
+.fate-left,
+.coins-left{
 	font-size: 2rem;
 }
 
@@ -348,6 +465,7 @@ div#soulbar {
     justify-content: space-around;
     align-items: center;
 	height: 6.25rem;
+	z-index: 1;
 }
 
 div#soulbar > span{
@@ -381,31 +499,81 @@ div#soulbar > span{
 .arrow{
 	top: 50%;
     left: 50%;
-    width: 0.56rem;
-    height: 3.87rem;
+    width: 0.6rem;
+    height: 3.5rem;
     background: var(--black);
     border: 0.125rem solid var(--white);
     position: absolute;
     transform: translate(-50%, -100%) rotate(0deg);
     transform-origin: bottom;
     border-radius: 0.3rem;
-    /* box-shadow: 0 0 8px #00000057; */
     transition: 3s transform;
 }
 
 .arrow:before{
     content: "";
-    width: 500%;
+    width: 2rem;
     aspect-ratio: 1 / 1;
     background: var(--black);
 	border: 0.125rem solid var(--white);
 	display: block;
     position: absolute;
-	bottom: -30.2%;
-    left: -201.3%;
+	/* bottom: -30.2%;
+    left: -201.3%; */
     border-radius: 100%;
-    /*box-shadow: 0 0 8px #00000057;*/
+	bottom: 0;
+    right: 50%;
+    transform: translate(50%, 50%);
 }
+
+.inventory {
+	flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+	width: 100%;
+    height: 100%;
+    background: #000000cc;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+	display: none;
+}
+
+.inventory-items{
+    z-index: 10;
+    display: flex;
+	flex-direction: column;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    width: 90%;
+    height: 90%;
+    min-height: 20rem;
+    background: #222;
+	margin-inline: auto;
+}
+
+.inventory-item{
+	border: .1rem solid;
+	padding: 1rem;
+}
+
+.inventory-item-wrapper{
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.inventory-item button{
+	margin-left: auto;
+	background-color: var(--black);
+	padding: 0.5rem 2rem;
+}
+
+button.close-inventory {
+    font-size: 2rem;
+    margin: 0 2rem;
+}
+
 
 /*==========================================
 // XP SCREEN 
@@ -413,12 +581,12 @@ div#soulbar > span{
 section#xpscreen {
 	display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 6rem;
 	font-size: 2rem;
 }
 
 section#xpscreen .bar {
-    border: 1px solid var(--white);
+    border: 0.1rem solid var(--white);
 	display: flex;
     align-items: stretch;
 	position: relative;
@@ -444,15 +612,111 @@ section#xpscreen button{
     background: var(--white);
     color: black;
     padding: 1rem 0;
-    margin-top: 4rem;
     font-weight: 700;
     border-radius: 0.3rem;
+}
+
+.reward {
+	display: flex;
+    align-items: center;
+    gap: 3rem 4rem;
+    flex-wrap: wrap;
+    justify-content: space-around;
+	min-height: 9rem;
 }
 
 .reward p {
     display: flex;
     align-items: center;
     gap: 0.6rem;
+}
+
+/*==========================================
+// STORE 
+============================================*/
+#store{
+	width: 100%;
+	height: 100%;
+	background: #000000cc;
+	position: absolute;
+    inset: 0;
+    align-items: center;
+	justify-content: center;
+    z-index: 2;
+}
+
+.store-wrapper{
+	z-index: 10;
+	position: absolute;
+	display: flex;
+    gap: 0.5rem;
+    padding: 3rem 0.5rem;
+	height: auto;
+	width: 100%;
+}
+
+.store-item{
+    display: flex;
+    flex-direction: column;
+	justify-content: space-between;
+    align-items: center;
+	gap: 0.8rem;
+    text-align: center;
+    padding: 3rem 1rem;
+	flex: 1;
+}
+
+.store-item-icon span {
+    width: 4rem;
+    height: 4rem;
+}
+
+.store-item-title {
+    font-size: 1.4rem;
+}
+
+.store-item-desc {
+    font-size: 0.85rem;
+}
+
+.store-item-icon {
+    border: 0.4rem solid black;
+    border-radius: 100%;
+    padding: 1.3rem;
+    background: #0000003d;
+}
+
+.store-item button{
+	border: 0.1rem solid var(--white);
+    background: var(--white);
+    color: black;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    line-height: 0;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.store-item button[disabled]{
+	opacity: 0.1;
+}
+
+.store-item button .coin{
+	filter: invert(1);
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+button.close-store {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1rem;
 }
 
 

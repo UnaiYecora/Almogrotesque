@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="css/styles.css?v=0.3">
-	<link rel="stylesheet" href="css/svgs.css">
-	<script src="js/app.js?v=0.3" type="module"></script>
+	<link rel="stylesheet" href="css/styles.css?v=0.4">
+	<link rel="stylesheet" href="css/svgs.css?v=0.4">
+	<script src="js/app.js?v=0.4" type="module"></script>
 </head>
 <body>
 	<main>
@@ -17,10 +17,15 @@
 				<button id="newGame">New Game</button>
 				<button>How to play</button>
 			</div>
-			<p>v0.3</p>
+			<p>v0.4</p>
 		</section>
 
 		<section id="crossroad">
+			<img src="" id="crossroadBg" class="screen-background">
+			<div id="lvl-top">
+				<p class="level-title"></p>
+				<p class="level-desc"></p>
+			</div>
 			<div id="path1" class="path" data-position="1" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
 				<button data-skip-path="">X</button>
 				<div class="path-content" data-position="1">
@@ -51,6 +56,22 @@
 					<button class="main-path-button"></button>
 				</div>
 			</div>
+			<div id="lvl-bottom">
+				<div class="hp player-hp">
+					<div class="full"></div>
+					<div class="empty"></div>
+				</div>
+				<div class="lvl-bottom-right">
+					<div class="coins-left-wrapper">
+						<span class="coins-left">0</span>
+						<span class="coin"></span>
+					</div>
+					<div class="fate-left-wrapper">
+						<span class="fate-left">0</span>
+						<span class="fate"></span>
+					</div>
+				</div>
+			</div>
 		</section>
 
 		<section id="encounter">
@@ -63,10 +84,14 @@
 			</div>
 
 			<div id="mobBoard">
-				<img src="./assets/img/mobs/0.jpg" alt="" srcset="">
-				<p class="mobName"></p>
-				<div class="mobSkills"></div>
-				<p class="mobDesc"></p>
+				<div class="mob-image-wrapper" data-rotate="0">
+					<img src="./assets/img/mobs/0.jpg" class="mob-image">
+				</div>
+				<div class="mob-info-wrapper" data-rotate="0">
+					<p class="mobName"></p>
+					<div class="mobSkills"></div>
+					<p class="mobDesc"></p>
+				</div>
 			</div>
 
 			<div id="soulbar">
@@ -78,12 +103,13 @@
 
 			<div id="playerBoard">
 				<div class="main-action">
-					<button>Use item</button>
+					<button id="openInventory">Use item</button>
 					or
 					<button id="attackBtn">Attack</button>
 				</div>
 				<div class="secondary-action">
-					<button class="change-fate" disabled>Change fate (-<span class="fate-price">1</span> <span class="fate"></span>)</button>
+					<button class="change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
+					or
 					<button class="end-turn">End turn</button>
 				</div>
 				<div class="no-action">
@@ -101,6 +127,11 @@
 					<span class="fate"></span>
 				</div>
 			</div>
+
+			<div class="inventory">
+				<button class="close-inventory">X</button>
+				<div class="inventory-items"></div>
+			</div>
 			
 		</section>
 
@@ -113,12 +144,36 @@
 				</div>
 			</div>
 			<div class="reward">
-				<p><span>0</span> gold</p>
-				<p class="lvl-up-reward">+1 Max. HP</p>
-				<p class="lvl-up-reward">+5<span class="fate"></span></p>
-				<p class="lvl-up-reward">All HP restored.</p>
+				<p><span>0</span> <span class="coin"></span></p>
+				<p class="lvl-up-reward">+5 <span class="fate"></span></p>
+				<p class="lvl-up-reward">+1 <span class="empty-heart"></span></p>
+				<p class="lvl-up-reward">All <span class="heart"></span> restored.</p>
 			</div>
 			<button>Continue</button>
+		</section>
+
+		<section id="store">
+			<div class="store-wrapper">
+				<button class="close-store">X</button>
+				<div class="store-item" id="store1">
+					<p class="store-item-title"></p>
+					<p class="store-item-icon"></span> </p>
+					<p class="store-item-desc"></p>
+					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+				</div>
+				<div class="store-item" id="store2">
+					<p class="store-item-title"></p>
+					<p class="store-item-icon"></p>
+					<p class="store-item-desc"></p>
+					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+				</div>
+				<div class="store-item" id="store3">
+					<p class="store-item-title"></p>
+					<p class="store-item-icon"></p>
+					<p class="store-item-desc"></p>
+					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+				</div>
+			</div>
 		</section>
 	</main>
 	<script src="js/lib/anime.min.js"></script>

@@ -34,8 +34,10 @@ export async function generateDisc(data, disc, customColors) {
             const svgSize = 100;
 
             //Final segment array (adding to 100)
-            data[0] = Math.min(data, 95);
-            const segmentRest = 100 - data;
+            data[0] = Math.min(data[0], 95); //TO-DO: Also avoid < 5%
+
+            const dataSum = data.reduce((acc, num) => acc + num, 0);
+            const segmentRest = 100 - dataSum;
             const segmentSizes = [segmentRest, ...data];
 
             //Colors

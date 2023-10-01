@@ -3,7 +3,8 @@
 /* ···························  I M P O R T S  ······························*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray } from "./helpers.js";
+import { goTo, shuffleArray, wait, updateHP, generateStoreItems, generateStore, buy, checkIfAbleToBuy, generateInventory } from "./helpers.js";
+import { useitem } from "./items.js";
 import { db, state } from "./db.js";
 import { generateDisc, spin } from "./soul.js";
 
@@ -30,6 +31,7 @@ function widthBasedFontSize() {
 widthBasedFontSize();
 
 displayFate();
+displayCoins();
 
 
 /* ··········································································*/
@@ -43,7 +45,13 @@ displayFate();
 /*==========================================*/
 function displayFate() {
 	document.querySelectorAll(".fate-left").forEach(el => {
-		el.textContent = state.player.fateLeft;
+		el.textContent = state.player.fate;
+	});
+}
+
+function displayCoins() {
+	document.querySelectorAll(".coins-left").forEach(el => {
+		el.textContent = state.player.coins;
 	});
 }
 
@@ -54,11 +62,13 @@ function displayFate() {
 function createLvlArray(lvl) {
 	return new Promise((resolve, reject) => {
 		try {
+			// Data
+			const lvlData = db.levels.find((x) => x.name === lvl);
+
 			// Get mob array
-			const mobArray = db.mobs.filter((x) => x.spawn.includes(lvl));
+			let mobArray = lvlData.spawns;
 
 			// Create saferooms array
-			const lvlData = db.levels.find((x) => x.name === lvl);
 			const saferoomsArray = [
 				...Array(lvlData.stores).fill({ type: "store" }),
 				...Array(lvlData.chests).fill({ type: "chest" }),
@@ -85,29 +95,28 @@ function fillPaths() {
 			const levelArray = state.currentLevelArray;
 			let emptyPaths = document.querySelectorAll("#crossroad div[data-filled='false']");
 
-			emptyPaths.forEach(path => {
+			emptyPaths.forEach(async path => {
 				if (levelArray.length > 0) {
 
 					const roomName = path.querySelector(".pathTitle");
 					const btnTxt = path.querySelector(".main-path-button");
 					const lvlTxt = path.querySelector(".pathMobLvl");
 
-					//MOB
-					if (levelArray[0].type === "mob") {
-						roomName.textContent = levelArray[0].name;
-						btnTxt.textContent = "Fight";
-						lvlTxt.innerHTML = "<span>·<·</span> Lvl " + levelArray[0].lvl + " <span>·>·</span>";
-						path.dataset.pathtype = "encounter";
-						path.dataset.mobname = levelArray[0].name;
-						path.dataset.skippable = false;
-					}
 
 					//STORE
-					else if (levelArray[0].type === "store") {
+					if (levelArray[0].type === "store") {
 						roomName.textContent = "Store";
 						btnTxt.textContent = "Enter";
 						path.dataset.pathtype = "store";
 						path.dataset.skippable = true;
+						
+						let emptyStore = 1;
+						while (state[`store${emptyStore}`]) {
+							emptyStore++;
+						}
+						
+						path.dataset.storeid = "store"+emptyStore;
+						generateStoreItems(emptyStore);
 					}
 
 					//CHEST
@@ -129,12 +138,30 @@ function fillPaths() {
 						path.dataset.skippable = false;
 					}
 
-					path.dataset.filled = true;
+					//MOB
+					else {
+						const mob = db.mobs[levelArray[0]];
+						roomName.textContent = mob.name;
+						btnTxt.textContent = "Fight";
+						lvlTxt.innerHTML = "<span>·<·</span> Lvl " + mob.lvl + " <span>·>·</span>";
+						path.dataset.pathtype = "encounter";
+						path.dataset.mobid = levelArray[0];
+						path.dataset.skippable = true;
+					}
 
+					setTimeout(() => {
+						//This comes from the particle animation
+						path.style.transition = "0.6s";
+						path.style.opacity = "1";
+					}, 100);
+					path.dataset.filled = true;
+					path.style.visibility = "visible";
+					
 					levelArray.shift();
 					
 				} else {
 					path.style.visibility = "hidden";
+					path.dataset.filled = false;
 				}
 			});
 
@@ -145,10 +172,46 @@ function fillPaths() {
 	});
 }
 
-async function setLevel(lvl) {
+async function setLevelUI(lvl) {
+	//Background
+	const lvlData = db.levels.find((x) => x.name === lvl);
+	const img = lvlData.bg;
+	document.querySelector("#crossroadBg").src = "./assets/img/bg/"+img+".png"
+
+	//Title and description
+	const title = document.querySelector("#crossroad .level-title");
+	const desc = document.querySelector("#crossroad .level-desc");
+	title.textContent = lvlData.name;
+	desc.textContent = lvlData.desc;
+
+	await updateHP();
+}
+
+async function setLevel(lvl, fast) {
     try {
-        await createLvlArray(lvl);
-        await fillPaths();
+
+		//Save new level
+		state.currentLevel = lvl;
+
+		//Get every path ready
+		document.querySelectorAll(".path").forEach(path => {
+			path.dataset.filled = false;
+		});
+
+		// Fade crossroad screen
+		const crossroadEl = document.querySelector("#crossroad");
+		crossroadEl.classList.add("fadedCrossroad");
+		if (!fast) { await wait(3000); } //wait for animation to finish
+		
+		// Functions to run
+		await createLvlArray(lvl);
+		await fillPaths();
+		await setLevelUI(lvl);
+
+		// Remove fade on crossroad screen
+		crossroadEl.classList.remove("fadedCrossroad");
+
+		//Go to crossroad screen
         goTo("crossroad");
     } catch (error) {
         console.error("An error occurred:", error);
@@ -158,7 +221,7 @@ async function setLevel(lvl) {
 /*==========================================*/
 // Load encounter
 /*==========================================*/
-async function generateEncounterCard(mobname) {
+async function generateEncounterCard(mobId) {
 	return new Promise((resolve, reject) => {
 		try {
 
@@ -167,16 +230,24 @@ async function generateEncounterCard(mobname) {
 			document.querySelector(".secondary-action").style.display = "none";
 			state.fatePrice = 1;
 			document.querySelector(".fate-price").textContent = state.fatePrice;
+			const mobCardImgRotation = Math.floor(0 + Math.random()*(3 - 1));
+			const mobCardTxtRotation = Math.floor(0 + Math.random()*(3 - 1));
+			document.querySelector(".mob-image-wrapper").dataset.rotate = mobCardImgRotation;
+			document.querySelector(".mob-info-wrapper").dataset.rotate = mobCardTxtRotation;
 			
 			//MOB
-			const mobject = db.mobs.find(mob => mob.name == mobname);
-			state.currentMob = mobject;
+			const mobject = db.mobs[mobId];
+			state.currentMob = JSON.parse(JSON.stringify(mobject));
 			state.currentMob.soul = mobject.soul;
 			state.currentMob.hp = mobject.lvl;
+			state.currentMob.mobid = mobId;
 			const encounter = document.querySelector("#encounter");
+			const imgEl = encounter.querySelector(".mob-image");
 			const nameEl = encounter.querySelector(".mobName");
 			const descEl = encounter.querySelector(".mobDesc");
 			const skillsEl = encounter.querySelector(".mobSkills");
+
+			imgEl.src = "./assets/img/mobs/" + mobject.img;
 			nameEl.textContent = mobject.name;
 			skillsEl.innerHTML = "";
 			let skills = "";
@@ -188,41 +259,12 @@ async function generateEncounterCard(mobname) {
 			skillsEl.innerHTML = skills;
 			descEl.textContent = mobject.desc;
 
-			//Enemy HP
-			const mobHpEl = document.querySelector(".enemy-hp");
-			const mobHpFull = mobHpEl.querySelector(".full");
-			const mobHpEmpty = mobHpEl.querySelector(".empty");
-			mobHpFull.innerHTML = "";
-			mobHpEmpty.innerHTML = "";
-			for (let i = 0; i < state.currentMob.hp; i++) {
-				let fullHeart = document.createElement("span");
-				fullHeart.classList.add("heart");
-				mobHpFull.appendChild(fullHeart);
-				let emptyHeart = document.createElement("span");
-				emptyHeart.classList.add("empty-heart");
-				mobHpEmpty.appendChild(emptyHeart);
-			}
-
-			//Player HP
-			const playerHpEl = document.querySelector(".player-hp");
-			const playerHpFull = playerHpEl.querySelector(".full");
-			const playerHpEmpty = playerHpEl.querySelector(".empty");
-			playerHpFull.innerHTML = "";
-			playerHpEmpty.innerHTML = "";
-			for (let i = 0; i < state.player.hp; i++) {
-				let heart = document.createElement("span");
-				heart.classList.add("heart");
-				playerHpFull.appendChild(heart);
-			}
-			for (let i = 0; i < (state.player.maxHp); i++) {
-				let heart = document.createElement("span");
-				heart.classList.add("empty-heart");
-				playerHpEmpty.appendChild(heart);
-			}
+			// Update HP
+			updateHP();
 
 			//Discs
-			generateDisc(mobject.soul, "#mobSoul");
-			generateDisc(state.player.soul, "#playerSoul");
+			generateDisc([mobject.soul], "#mobSoul");
+			generateDisc([state.player.soul], "#playerSoul");
 			document.querySelectorAll(".arrow").forEach(arrow => {
 				arrow.style.transform = "translate(-50%, -100%) rotate(0deg)";
 			});
@@ -236,9 +278,10 @@ async function generateEncounterCard(mobname) {
 	})
 }
 
-async function loadEncounter(mobname) {
+async function loadEncounter(mobId) {
     try {
-        await generateEncounterCard(mobname);
+		state.player.itemsInUse = {};
+        await generateEncounterCard(mobId);
         goTo("encounter");
 		toggleTurn("player")
     } catch (error) {
@@ -265,7 +308,7 @@ async function toggleTurn(whosTurn) {
 }
 
 async function secondaryAction() {
-	if (state.player.fateLeft >= state.fatePrice) {
+	if (state.player.fate >= state.fatePrice) {
 		document.querySelector(".change-fate").disabled = false;
 	}
 	document.querySelector("#playerBoard .secondary-action").style.display = "flex";
@@ -304,7 +347,7 @@ async function changeFate() {
 	endBtn.disabled = true;
 
 	//Subtract fate
-	state.player.fateLeft = state.player.fateLeft - state.fatePrice;
+	state.player.fate = state.player.fate - state.fatePrice;
 
 	//Update fate
 	displayFate();
@@ -319,7 +362,7 @@ async function changeFate() {
 	const attackResult = await spin("mobSoul");
 	if (attackResult === 1) {
 		//Enable buttons back
-		if (state.player.fateLeft >= state.fatePrice) {
+		if (state.player.fate >= state.fatePrice) {
 			fateBtn.disabled = false;
 		}
 	} else {
@@ -334,7 +377,7 @@ async function changeFate() {
 async function damageToEnemy() {
 	state.currentMob.hp--;
 	state.currentMob.soul[0] = state.currentMob.soul[0] + (state.currentMob.lvl * 2.3);
-	generateDisc(state.currentMob.soul, "#mobSoul");
+	generateDisc([state.currentMob.soul], "#mobSoul");
 	const hearts = document.querySelectorAll('.enemy-hp > .full > .heart');
 	const lastHeart = hearts[hearts.length - 1];
 	
@@ -348,6 +391,7 @@ async function damageToEnemy() {
 		lastHeart.style.transform = "unset";
 		lastHeart.parentElement.style.transform = "unset";
 		lastHeart.parentElement.style.visibility = "unset";
+		updateHP();
 	};
 	const particles = new Particles(lastHeart, particlesOpts);
 	if ( !particles.isAnimating() ) {
@@ -385,10 +429,11 @@ async function generateXpScreen() {
 			const lvlUpReward = document.querySelectorAll(".lvl-up-reward");
 
 			
-			// Update player's gold and display reward
-			const goldReward = state.currentMob.lvl; // TO-DO: Rewards per mob
-			state.player.gold = goldReward;
-			reward.textContent = "+" + goldReward;
+			// Update player's coins and display reward
+			const coinsReward = state.currentMob.lvl; // TO-DO: Rewards per mob
+			state.player.coins += coinsReward;
+			reward.textContent = "+" + coinsReward;
+			await displayCoins();
 
 			// Fetch XP data
 			const lvlArr = db.xpTiers;
@@ -411,10 +456,10 @@ async function generateXpScreen() {
 			state.player.xp = newTotalXP;
 
 			// Update stats
-			await new Promise(resolve => setTimeout(resolve, 500));
+			await wait(500);
 			toTargetElement.textContent = Math.min(newTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
 			bar.style.width = ((newTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			await wait(1000);
 			
 			if (newTotalXP >= target) {
 				state.player.lvl++;
@@ -433,11 +478,11 @@ async function generateXpScreen() {
 				});
 				state.player.maxHp++;
 				state.player.hp = state.player.maxHp;
-				state.player.fateLeft += 5;
+				state.player.fate += 5;
 				displayFate();
 
 				// Update stats again
-				await new Promise(resolve => setTimeout(resolve, 500));
+				await wait(500);
 				bar.style.transition = "1s";
 				bar.style.width = ((newTotalXP - lvlArr[newLvlIndex]) * 100) / (target - lvlArr[newLvlIndex]) + "%";
 			}
@@ -469,6 +514,7 @@ async function damageToPlayer() {
 		lastHeart.style.transform = "unset";
 		lastHeart.parentElement.style.transform = "unset";
 		lastHeart.parentElement.style.visibility = "unset";
+		updateHP();
 	};
 	const particles = new Particles(lastHeart, particlesOpts);
 	if ( !particles.isAnimating() ) {
@@ -489,11 +535,26 @@ async function enemyAttack() {
 	return new Promise(async(resolve, reject) => {
 		try {
 			const attackResult = await spin("playerSoul");
+
+			//Miss
 			if (attackResult === 1) {
 				toggleTurn("player");
-			} else {
+			}
+
+			//Soul
+			else if (attackResult === 2){
 				damageToPlayer();
 			}
+			
+			//Borrowed soul
+			else if(attackResult === 3) {
+				generateDisc([state.player.soul], "#playerSoul");
+				state.player.itemsInUse.borrowed_soul_15 = 0;
+				state.player.itemsInUse.borrowed_soul_30 = 0;
+				state.player.itemsInUse.borrowed_soul_55 = 0;
+				toggleTurn("player");
+			}
+
 			resolve();
 		} catch (error) {
 			console.log("An error occurred during the enemy's attack: " + error.message);
@@ -514,7 +575,6 @@ async function burnPath(pathToBurn) {
 
 			skipBtn.classList.add("hideSkip");
 
-
 			let particlesOpts = {
 				particlesAmountCoefficient: 3,
 				direction: "bottom",
@@ -522,7 +582,8 @@ async function burnPath(pathToBurn) {
 			};
 			
 			particlesOpts.complete = () => {
-				path.classList.add("pathHide");
+				path.style.opacity = "0";
+				path.style.transition = "0s";
 				pathContent.style.transform = "unset";
 				path.appendChild(pathContent);
 				path.querySelector(".particles").remove();
@@ -531,27 +592,41 @@ async function burnPath(pathToBurn) {
 				pathContent.querySelector(".main-path-button").textContent = "";
 				path.dataset.filled = false;
 				path.dataset.pathtype = "";
-				path.dataset.mobname = "";
-				path.dataset.door = "true";
+				path.dataset.mobid = "";
 				path.dataset.skippable = true;
-				fillPaths();
-				skipBtn.classList.remove("hideSkip")
-				setTimeout(() => {
-					path.classList.remove("pathHide");
-				}, 100);
+				skipBtn.classList.remove("hideSkip");
+				if (path.dataset.storeid) {
+					const storeid = "store" + path.dataset.storeid;
+					delete state[storeid];
+				}
+				path.dataset.storeid = "";
+				resolve();
 			};
+
 			const particles = new Particles(pathContent, particlesOpts);
 			if ( !particles.isAnimating() ) {
 				particles.disintegrate();
 			}
 
-			resolve();
 
 		} catch (error) {
 			console.log("An error occurred trying to remove a path: " + error.message);
 			reject(error);
 		}
 	});
+}
+
+/*==========================================*/
+// Take door
+/*==========================================*/
+async function takeDoor(path) {
+	const door = path.dataset.door;
+	const crossroad = document.querySelector("#crossroad");
+
+	crossroad.style["pointer-events"] = "none";
+	await burnPath(path);
+	await setLevel(door);
+	crossroad.style["pointer-events"] = "auto";
 }
 
 /* ··········································································*/
@@ -566,13 +641,13 @@ async function burnPath(pathToBurn) {
 document.querySelector("#start #newGame").addEventListener("click", function () {
 	//TO-DO: Activar el fullscreen cuando no me toque la polla
 	//document.documentElement.requestFullscreen();
-	setLevel("home");
+	setLevel("Crossroad", true);
 });
 
 /*==========================================*/
 // Path buttons
 /*==========================================*/
-document.querySelector("#crossroad").addEventListener("click", function (e) {
+document.querySelector("#crossroad").addEventListener("click", async function (e) {
 	const path = e.target.closest(".path");
 	if (path) {
 		const type = path.dataset.pathtype;
@@ -582,8 +657,21 @@ document.querySelector("#crossroad").addEventListener("click", function (e) {
 			
 			// Mob encounter
 			if (type === "encounter") {
-				const mob = path.dataset.mobname;
+				const mob = path.dataset.mobid;
 				loadEncounter(mob);
+			}
+
+			// Door
+			if (type === "door") {
+				takeDoor(path);
+			}
+
+			// Store
+			if (type === "store") {
+				const storeid = path.dataset.storeid;
+				await generateStore(storeid);
+				await checkIfAbleToBuy();
+				document.querySelector("#store").style.display = "flex";
 			}
 		}
 	}
@@ -625,8 +713,9 @@ document.querySelector(".end-turn").addEventListener("click", function () {
 /*==========================================*/
 document.querySelectorAll("[data-skip-path]").forEach(el => {
 	
-	el.addEventListener("click", function() {
-		burnPath(el.parentElement);
+	el.addEventListener("click", async function() {
+		await burnPath(el.parentElement);
+		await fillPaths();
     })
 });
 
@@ -634,9 +723,74 @@ document.querySelectorAll("[data-skip-path]").forEach(el => {
 // XP Screen
 /*==========================================*/
 document.querySelector("#xpscreen button").addEventListener("click", async function () {
-	const mob = state.currentMob;
-	const path = document.querySelector('#crossroad [data-mobname="'+ mob.name +'"]');
+	const path = document.querySelector('#crossroad [data-mobid="'+ state.currentMob.mobid +'"]');
 	document.querySelector("#xpscreen").style.display = "none";
 	await goTo("crossroad");
 	await burnPath(path);
+	await fillPaths();
 });
+
+/*==========================================*/
+// Close store
+/*==========================================*/
+document.querySelector(".close-store").addEventListener("click", async function () {
+	document.querySelector("#store").style.display = "none";
+});
+
+/*==========================================*/
+// Buy items
+/*==========================================*/
+document.querySelector("#store").addEventListener("click", async function (e) {
+	if (e.target.matches(".buy-item, .buy-item > *")) {
+		const storeItemEL = e.target.closest(".store-item");
+		
+		//Data
+		const group = storeItemEL.dataset.group;
+		const item = storeItemEL.dataset.item;
+		const store = storeItemEL.dataset.store;
+		const position = storeItemEL.dataset.position;
+		
+		await buy(group, item);
+		await checkIfAbleToBuy();
+		displayCoins();
+		displayFate();
+		updateHP();
+		state[store][position] = "";
+
+		storeItemEL.style.visibility = "hidden";
+
+		//If it's the last item, burn path
+		if (state[store][0] == "" && state[store][1] == "" && state[store][2] == "") {
+			document.querySelector("#store").style.display = "none";
+			await burnPath(document.querySelector('.path[data-storeid="' + store + '"'));
+			fillPaths();
+		}
+
+	}
+});
+
+
+/*==========================================*/
+// Open/Close inventory
+/*==========================================*/
+document.querySelector("#openInventory").addEventListener("click", async function() {
+	await generateInventory();
+	document.querySelector(".inventory").style.display = "flex";
+})
+
+document.querySelector(".close-inventory").addEventListener("click", function() {
+	document.querySelector(".inventory").style.display = "none";
+})
+
+/*==========================================*/
+// Use item
+/*==========================================*/
+document.querySelector(".inventory").addEventListener("click", async function(e) {
+
+	if (e.target.matches(".inventory-item button")) {
+		const itemId = e.target.closest(".inventory-item").dataset.item;
+		await useitem(itemId);
+		document.querySelector(".inventory").style.display = "none";
+		await generateInventory();
+	}
+})
