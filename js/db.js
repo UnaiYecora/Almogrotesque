@@ -4,11 +4,14 @@ export var state = {
 		hp: 6,
 		maxHp: 6,
 		playerTurn: false,
-		fate: 50,
+		fate: 5000,
 		xp: 0,
 		lvl: 1,
 		coins: 2300,
-		items: {},
+		items: {
+			test1: 99,
+			test2: 99
+		},
 		itemsInUse: {},
 	},
 	fatePrice: 1,
@@ -22,8 +25,8 @@ export const db = {
 			stores: 3,
 			chests: 1,
 			doors: ["Outskirts path"],
-			spawns: ["master_frog", "frog", "rat", "rat_bandit", "lagoon_dweller", "seridra"],
-			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
+			spawns: ["master_frog", "frog", "rat", "rat_bandit", "lagoon_dweller", "seridra", "eggman", "chest"],
+			items: ["test1", "test2"],
 			bg: "crossroad",
 		},
 		{
@@ -105,7 +108,7 @@ export const db = {
 		},
 	},
 	items: {
-		borrowed_soul_15: {
+		/* borrowed_soul_15: {
 			name: "Borrowed soul (15%)",
 			desc: "Shield 15% of your soul",
 			icon: "empty-heart",
@@ -125,8 +128,21 @@ export const db = {
 			icon: "empty-heart",
 			price: 55,
 			amount: 1
+		}, */
+		test1: {
+			name: "Second soul wheel",
+			desc: "Second soul wheel",
+			icon: "fate",
+			price: 1,
+			amount: 1
 		},
-		
+		test2: {
+			name: "Doble daño",
+			desc: "Doble daño",
+			icon: "fate",
+			price: 1,
+			amount: 1
+		},
 	},
 	mobs: {
 		frog: {
@@ -177,6 +193,24 @@ export const db = {
 		seridra: {
 			name: "Witch (Seridra)",
 			img: "seridra.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			soul: [37],
+			lvl: 3,
+		},
+		eggman: {
+			name: "Century egg",
+			img: "eggman.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			soul: [37],
+			lvl: 3,
+		},
+		chest: {
+			name: "Chest",
+			img: "chest.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",

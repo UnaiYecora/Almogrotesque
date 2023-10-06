@@ -104,6 +104,7 @@ export async function generateDisc(data, disc, customColors) {
             if (!container.querySelector(".arrow")) {
                 const arrow = document.createElement("div");
                 arrow.classList.add("arrow");
+                arrow.style.transform = "translate(-50%, -100%) rotate(0deg)";
                 container.appendChild(arrow);
             }
 

@@ -51,10 +51,10 @@ button:disabled{
 // Tools 
 ============================================*/
 
-.disabled{
+/* .disabled{
 	opacity: 0.1;
 	pointer-events: none;
-}
+} */
 
 /*==========================================
 // LAYOUT 
@@ -320,9 +320,7 @@ div#mobBoard{
     flex: 1;
     display: flex;
     flex-direction: column;
-	gap: 1rem;
-	overflow: hidden;
-	padding-bottom: 1.5rem;
+	position: relative;
 }
 
 .mob-info-wrapper[data-rotate="1"]{transform: rotate(4deg);}
@@ -335,18 +333,21 @@ div#mobBoard img{
 }
 
 .mob-info-wrapper{
+    position: absolute;
+    bottom: -3rem;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
-	justify-content: space-evenly;
+    justify-content: space-evenly;
     gap: 0.75rem;
     width: 95%;
     margin-inline: auto;
+    margin-top: 0;
     height: 21rem;
-	margin-top: -10rem;
     padding: 2.5rem 3.5rem;
-    font-family: 'Rock Salt';
-	position: relative;
     z-index: 1;
+    font-family: 'Rock Salt';
 }
 
 .mob-info-wrapper:before{
@@ -461,11 +462,12 @@ span.empty-heart {
 }
 
 div#soulbar {
-    display: flex;
+	display: flex;
     justify-content: space-around;
     align-items: center;
-	height: 6.25rem;
-	z-index: 1;
+    min-height: 6.25rem;
+    z-index: 1;
+    padding: 0.3rem;
 }
 
 div#soulbar > span{
@@ -473,57 +475,70 @@ div#soulbar > span{
 	text-align: center;
 }
 
-.soul-disc{
+#playerDiscs,
+#mobDiscs{
+	gap: 0.5rem 0.3rem;
+	align-items: center;
+	flex-wrap: wrap;
+	width: 100%;
+	justify-content: space-evenly;
+}
+
+.soul-disc,
+.disc{
     position: relative;
     aspect-ratio: 1 / 1;
 	display: flex;
-	outline: 1rem solid var(--black);
+	outline: 0.2rem solid #212121;
     border-radius: 100%;
 	background: var(--black);
 	box-shadow: 0 0 0 0.125rem black;
-	width: 7.8rem;
-	height: 7.8rem;
+	width: 7.5rem;
 }
-.soul-disc svg{
+.soul-disc svg,
+.disc svg{
     width: 100%;
     height: 100%;
     border-radius: 100%;
 	background: var(--black);
 }
 
-.soul-disc svg path{
+.soul-disc svg path
+.disc svg path{
 	stroke: var(--black);
 	stroke-width: 1;
+}
+
+.disc {
+    width: 5rem;
 }
 
 .arrow{
 	top: 50%;
     left: 50%;
-    width: 0.6rem;
-    height: 3.5rem;
-    background: var(--black);
-    border: 0.125rem solid var(--white);
+	width: 1.25rem;
+    height: 45%;
     position: absolute;
     transform: translate(-50%, -100%) rotate(0deg);
     transform-origin: bottom;
     border-radius: 0.3rem;
     transition: 3s transform;
+	mix-blend-mode: difference;
+    filter: invert(1);
 }
 
-.arrow:before{
+.soul-disc:after,
+.disc:after {
     content: "";
-    width: 2rem;
-    aspect-ratio: 1 / 1;
-    background: var(--black);
-	border: 0.125rem solid var(--white);
-	display: block;
     position: absolute;
-	/* bottom: -30.2%;
-    left: -201.3%; */
+    background: black;
     border-radius: 100%;
-	bottom: 0;
-    right: 50%;
-    transform: translate(50%, 50%);
+    width: 30%;
+    aspect-ratio: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    outline: 0.2rem solid;
 }
 
 .inventory {

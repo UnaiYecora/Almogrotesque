@@ -23,7 +23,7 @@ window.addEventListener("resize", widthBasedFontSize);
 function widthBasedFontSize() {
 	const root = document.querySelector(':root');
 	const main = document.querySelector("main");
-	root.style.setProperty('--width-based-font', Math.round(main.clientWidth / 40) + "px");
+	root.style.setProperty('--width-based-font', main.clientWidth / 40 + "px");
 	
 	// to get css variable from :root
 	//const color = getComputedStyle(root).getPropertyValue('--width-based-font'); //
@@ -143,7 +143,9 @@ function fillPaths() {
 						const mob = db.mobs[levelArray[0]];
 						roomName.textContent = mob.name;
 						btnTxt.textContent = "Fight";
-						lvlTxt.innerHTML = "<span>·<·</span> Lvl " + mob.lvl + " <span>·>·</span>";
+						if (mob.name !== "Chest") {
+							lvlTxt.innerHTML = "<span>·<·</span> Lvl " + mob.lvl + " <span>·>·</span>";
+						}
 						path.dataset.pathtype = "encounter";
 						path.dataset.mobid = levelArray[0];
 						path.dataset.skippable = true;
@@ -225,16 +227,24 @@ async function generateEncounterCard(mobId) {
 	return new Promise((resolve, reject) => {
 		try {
 
-			//UI & data
+			//Secondary action defaults
 			document.querySelector(".change-fate").disabled = true;
 			document.querySelector(".secondary-action").style.display = "none";
 			state.fatePrice = 1;
 			document.querySelector(".fate-price").textContent = state.fatePrice;
-			const mobCardImgRotation = Math.floor(0 + Math.random()*(3 - 1));
-			const mobCardTxtRotation = Math.floor(0 + Math.random()*(3 - 1));
+
+			//TO-DO: Image rotations
+			const mobCardImgRotation = Math.floor(Math.random()*3);
+			const mobCardTxtRotation = Math.floor(Math.random()*3);
 			document.querySelector(".mob-image-wrapper").dataset.rotate = mobCardImgRotation;
 			document.querySelector(".mob-info-wrapper").dataset.rotate = mobCardTxtRotation;
-			
+
+			//Soul bars
+			const playerDiscs = document.querySelector("#playerDiscs");
+			const mobDiscs = document.querySelector("#mobDiscs");
+			playerDiscs.style.display = "flex";
+			mobDiscs.style.display = "none";
+
 			//MOB
 			const mobject = db.mobs[mobId];
 			state.currentMob = JSON.parse(JSON.stringify(mobject));
@@ -262,12 +272,14 @@ async function generateEncounterCard(mobId) {
 			// Update HP
 			updateHP();
 
+			//Remove previous discs
+			document.querySelectorAll("#playerDiscs .additional-disc").forEach(el => {
+				el.remove();
+			});
+
 			//Discs
 			generateDisc([mobject.soul], "#mobSoul");
 			generateDisc([state.player.soul], "#playerSoul");
-			document.querySelectorAll(".arrow").forEach(arrow => {
-				arrow.style.transform = "translate(-50%, -100%) rotate(0deg)";
-			});
 
 			
 			resolve();
@@ -283,7 +295,7 @@ async function loadEncounter(mobId) {
 		state.player.itemsInUse = {};
         await generateEncounterCard(mobId);
         goTo("encounter");
-		toggleTurn("player")
+		toggleTurn("player");
     } catch (error) {
         console.error("An error occurred when trying to load the encounter: " + error);
     }
@@ -293,17 +305,31 @@ async function loadEncounter(mobId) {
 // Turn System
 /*==========================================*/
 async function toggleTurn(whosTurn) {
+	//Elements
+	const mainAction = document.querySelector("#playerBoard .main-action");
+	const secondaryAction = document.querySelector("#playerBoard .secondary-action");
+	const noAction = document.querySelector("#playerBoard .no-action");
+	const playerDiscs = document.querySelector("#playerDiscs");
+	const mobDiscs = document.querySelector("#mobDiscs");
+
 	if (whosTurn === "player") {
-		document.querySelector("#playerBoard .main-action").style.display = "flex";
-		document.querySelector("#playerBoard .secondary-action").style.display = "none";
-		document.querySelector("#playerBoard .no-action").style.display = "none";
+		mainAction.style.display = "flex";
+		secondaryAction.style.display = "none";
+		noAction.style.display = "none";
+		state.fatePrice = 1;
+		document.querySelector(".fate-price").textContent = state.fatePrice;
+		playerDiscs.style.display = "flex";
+		mobDiscs.style.display = "none";
 	}
 
 	if (whosTurn === "mob") {
-		document.querySelector("#playerBoard .main-action").style.display = "none";
-		document.querySelector("#playerBoard .secondary-action").style.display = "none";
-		document.querySelector("#playerBoard .no-action").style.display = "flex";
-		enemyAttack();
+		mainAction.style.display = "none";
+		secondaryAction.style.display = "none";
+		noAction.style.display = "flex";
+		playerDiscs.style.display = "none";
+		mobDiscs.style.display = "flex";
+		await wait(200);
+		await enemyAttack();
 	}
 }
 
@@ -321,12 +347,8 @@ async function attack() {
 	return new Promise(async(resolve, reject) => {
 		try {
 			document.querySelector("#playerBoard .main-action").style.display = "none";
-			const attackResult = await spin("mobSoul");
-			if (attackResult === 1) {
-				secondaryAction();
-			} else {
-				damageToEnemy();
-			}
+			await spinPlayerDiscs();
+			secondaryAction();
 			resolve();
 		} catch (error) {
 			console.log("An error occurred during attack: " + error.message);
@@ -334,6 +356,41 @@ async function attack() {
 		}
 	});
 }
+
+/*==========================================*/
+// Spin player discs
+/*==========================================*/
+async function spinPlayerDiscs() {
+	return new Promise(async(resolve, reject) => {
+		try {
+
+			const playerDiscs = document.querySelectorAll("#playerDiscs > div");
+			playerDiscs.forEach(async disc => {
+				await spin(disc.id);
+			});
+			resolve();
+		} catch (error) {
+			console.log("An error occurred during attack: " + error.message);
+			reject(error);
+		}
+	});
+}
+
+/*==========================================*/
+// Apply player discs' effects
+/*==========================================*/
+async function applyPlayerDiscsEffects() {
+	return new Promise(async(resolve, reject) => {
+		try {
+			console.log("effects");
+			resolve();
+		} catch (error) {
+			console.log("An error occurred during attack: " + error.message);
+			reject(error);
+		}
+	});
+}
+
 
 /*==========================================*/
 // Change fate
@@ -359,15 +416,13 @@ async function changeFate() {
 	document.querySelector(".fate-price").textContent = state.fatePrice;
 
 	//Spin
-	const attackResult = await spin("mobSoul");
-	if (attackResult === 1) {
-		//Enable buttons back
-		if (state.player.fate >= state.fatePrice) {
-			fateBtn.disabled = false;
-		}
-	} else {
-		damageToEnemy();
+	await spinPlayerDiscs();
+
+	//Enable buttons back
+	if (state.player.fate >= state.fatePrice) {
+		fateBtn.disabled = false;
 	}
+
 	endBtn.disabled = false;
 }
 
@@ -704,7 +759,8 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 /*==========================================*/
 // End turn
 /*==========================================*/
-document.querySelector(".end-turn").addEventListener("click", function () {
+document.querySelector(".end-turn").addEventListener("click", async function () {
+	await applyPlayerDiscsEffects();
 	toggleTurn("mob");
 });
 
