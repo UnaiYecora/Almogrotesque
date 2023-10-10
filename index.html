@@ -58,8 +58,11 @@
 			</div>
 			<div id="lvl-bottom">
 				<div class="hp player-hp">
-					<div class="full"></div>
-					<div class="empty"></div>
+					<div class="heart"></div>
+					<div class="bar">
+						<div class="progress"></div>
+						<p><span></span>/<span></span></p>
+					</div>
 				</div>
 				<div class="lvl-bottom-right">
 					<div class="coins-left-wrapper">
@@ -77,8 +80,14 @@
 		<section id="encounter">
 			<div class="topbar">
 				<div class="hp enemy-hp">
-					<div class="full"></div>
-					<div class="empty"></div>
+					<div class="heart"></div>
+					<div class="bar">
+						<div class="progress">
+							<div class="damage-bar"></div>
+						</div>
+						<div class="heal-bar"></div>
+						<p><span></span>/<span></span></p>
+					</div>
 				</div>
 				<button data-goto="crossroad">Exit</button>
 			</div>
@@ -95,24 +104,18 @@
 			</div>
 
 			<div id="soulbar">
-				<div id="mobDiscs">
-					<div class="soul-disc" id="playerSoul"></div>
-				</div>
-				<div id="playerDiscs">
-					<div class="soul-disc" id="mobSoul"></div>
-				</div>
+				<div id="mobDiscs"></div>
+				<div id="playerDiscs"></div>
 			</div>
 
 			<div id="playerBoard">
 				<div class="main-action">
-					<button id="openInventory">Use item</button>
-					or
 					<button id="attackBtn">Attack</button>
 				</div>
 				<div class="secondary-action">
 					<button class="change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
 					or
-					<button class="end-turn">End turn</button>
+					<button class="end-turn">Accept <br> fate</button>
 				</div>
 				<div class="no-action">
 					<p>The enemy is attacking you.</p>
@@ -121,8 +124,14 @@
 
 			<div class="bottombar">
 				<div class="hp player-hp">
-					<div class="full"></div>
-					<div class="empty"></div>
+					<div class="heart"></div>
+					<div class="bar">
+						<div class="progress">
+							<div class="damage-bar"></div>
+						</div>
+						<div class="heal-bar"></div>
+						<p><span></span>/<span></span></p>
+					</div>
 				</div>
 				<div class="fate-left-wrapper">
 					<span class="fate-left">0</span>
@@ -142,7 +151,7 @@
 				<p class="lvl">Lvl. <span></span></p>
 				<div class="bar">
 					<div class="progress"></div>
-					<p><span></span>/<span></span> </p>
+					<p><span></span>/<span></span></p>
 				</div>
 			</div>
 			<div class="reward">

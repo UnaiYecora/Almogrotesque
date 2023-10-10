@@ -1,55 +1,47 @@
-/*==========================================*/
-// Spin soul disc
-/*==========================================*/
-export async function spin(id) {
-    return new Promise(async (resolve, reject) => {
-		try {
-            const arrow = document.querySelector("#" + id + " .arrow");
-            let r = parseFloat(arrow.style.transform.match(/rotate\((.+)\)/)[1]);
-
-            r += Math.floor(Math.random() * (10720 - 720 + 1)) + 720;
-            arrow.style.transform = "translate(-50%, -100%) rotate(" + r + "deg)";
-            
-            //LOG
-            let newRotation = arrow.style.transform.match(/rotate\((.+)\)/)[1];
-            let degreesRotated = parseInt(newRotation, 10) % 360;
-            setTimeout(async () => {
-                const results = await logResults(id, degreesRotated);
-                resolve(results);
-            }, 3000);
-        }catch (error) {
-			reject(error);
-		}
-    })
-}
+/* ··········································································*/
+/* ··········································································*/
+/* ···························  I M P O R T S  ······························*/
+/* ··········································································*/
+/* ··········································································*/
+import { db } from "./db.js";
+import { wait, rand } from "./helpers.js";
 
 /*==========================================*/
 // Generate soul disc
 /*==========================================*/
-export async function generateDisc(data, disc, customColors) {
+export async function generateDisc(itemId, discId/* data, disc, customColors */) {
     return new Promise((resolve, reject) => {
         try {
+
+            //Get data
+            const hitrate = db.items[itemId].hitrate;
+			const colors = db.items[itemId].colors;
 
             //SVG size
             const svgSize = 100;
 
             //Final segment array (adding to 100)
-            data[0] = Math.min(data[0], 95); //TO-DO: Also avoid < 5%
+            hitrate[0] = Math.min(hitrate[0], 95); //TO-DO: Also avoid < 5%
 
-            const dataSum = data.reduce((acc, num) => acc + num, 0);
+            const dataSum = hitrate.reduce((acc, num) => acc + num, 0);
             const segmentRest = 100 - dataSum;
-            const segmentSizes = [segmentRest, ...data];
+            let segmentSizes;
+            if (segmentRest > 0) {
+                segmentSizes = [segmentRest, ...hitrate];
+            } else {
+                segmentSizes = [...hitrate];
+            }
 
             //Colors
             let colorArray;
-            if (customColors) {
-                colorArray = customColors;
+            if (colors) {
+                colorArray = colors;
             } else {
                 colorArray = ["#000", "#dbdbdb", '#6C6C6C'];
             }
     
             
-            const container = document.querySelector(disc);
+            const container = document.getElementById(discId);
             if (!container) throw new Error("SVG not found");
 
             if (container.querySelector("svg")) {
@@ -110,6 +102,7 @@ export async function generateDisc(data, disc, customColors) {
 
             //Include data in disc dataset
             container.dataset.discdata = "[" + segmentSizes + "]";
+            container.dataset.itemid = itemId;
 
             resolve();
 
@@ -117,6 +110,34 @@ export async function generateDisc(data, disc, customColors) {
             console.log("An error occurred when generating a disc for " + disc + ": " + error.message);
             reject(error);
         }
+    })
+}
+
+
+/*==========================================*/
+// Spin soul disc
+/*==========================================*/
+export async function spin(id) {
+    return new Promise(async (resolve, reject) => {
+		try {
+            const arrow = document.querySelector("#" + id + " .arrow");
+            let r = parseFloat(arrow.style.transform.match(/rotate\((.+)\)/)[1]);
+
+            const extraSpins = await rand(1, 4);
+
+            r += (await rand(0, 360)) + (360 * extraSpins);
+            arrow.style.transform = "translate(-50%, -100%) rotate(" + r + "deg)";
+            
+            //LOG
+            let newRotation = arrow.style.transform.match(/rotate\((.+)\)/)[1];
+            let degreesRotated = parseInt(newRotation, 10) % 360;
+            setTimeout(async () => {
+                const results = await logResults(id, degreesRotated);
+                resolve(results);
+            }, 1500);
+        }catch (error) {
+			reject(error);
+		}
     })
 }
 

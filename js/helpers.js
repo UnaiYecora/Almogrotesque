@@ -9,13 +9,13 @@ import { db, state } from "./db.js";
 // Go-to buttons
 /*==========================================*/
 export async function goTo(destination) {
-	return new Promise(async(resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		try {
 			// Hide all screens
 			document.querySelectorAll("main section").forEach(el => {
 				el.style.display = "none";
 			});
-			
+
 			// Display destination screen
 			document.querySelector("#" + destination).style.display = "flex";
 
@@ -27,6 +27,19 @@ export async function goTo(destination) {
 	});
 }
 
+/*==========================================*/
+// Random number between two numbers
+/*==========================================*/
+export async function rand(a, b) {
+	try {
+		const n = (a, b) => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0;
+		const result = n(a, b);
+		return result;
+	} catch (error) {
+		console.log("An error occurred while generating a random number with rand(): " + error.message);
+		throw error;
+	}
+}
 
 /*==========================================*/
 // Shuffle array
@@ -34,8 +47,8 @@ export async function goTo(destination) {
 export function shuffleArray(array) {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+		[array[i], array[j]] = [array[j], array[i]];
+	}
 }
 
 /*==========================================*/
@@ -52,48 +65,45 @@ export function wait(ms) {
 // Health bars
 /*==========================================*/
 export function updateHP() {
-	return new Promise(async(resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		try {
 			const bars = document.querySelectorAll(".hp");
-			
+
 			for (let i = 0; i < bars.length; i++) {
 				const hpEl = bars[i];
 				let hp;
 				let maxHP;
 
 				//Enemy data
-				if (hpEl.classList.contains("enemy-hp")){
+				if (hpEl.classList.contains("enemy-hp")) {
 					if (state.currentMob) {
 						hp = state.currentMob.hp;
-						maxHP = db.mobs[state.currentMob.mobid].lvl;
+						maxHP = db.mobs[state.currentMob.mobid].hp;
 					}
 				}
 
-				else if (hpEl.classList.contains("player-hp")){
+				else if (hpEl.classList.contains("player-hp")) {
 					//Player data
 					hp = state.player.hp;
 					maxHP = state.player.maxHp;
 				}
 
-				const hpFull =  hpEl.querySelector(".full");
+				/* const hpFull =  hpEl.querySelector(".full");
 				const hpEmpty = hpEl.querySelector(".empty");
 
 				hpFull.innerHTML = "";
-				hpEmpty.innerHTML = "";
+				hpEmpty.innerHTML = ""; */
 
-				//Full hearts
-				for (let i = 0; i < hp; i++) {
-					let heart = document.createElement("span");
-					heart.classList.add("heart");
-					hpFull.appendChild(heart);
-				}
+				//Elements
+				const bar = hpEl.querySelector(".bar");
+				const progressEl = bar.querySelector(".progress");
+				const currentHpEl = hpEl.querySelectorAll("span")[0];
+				const maxHpEl = hpEl.querySelectorAll("span")[1];
 
-				//Empty hearts
-				for (let i = 0; i < maxHP; i++) {
-					let heart = document.createElement("span");
-					heart.classList.add("empty-heart");
-					hpEmpty.appendChild(heart);
-				}
+				//Display hp bar
+				currentHpEl.textContent = hp;
+				maxHpEl.textContent = maxHP;
+				progressEl.style.width = hp * 100 / maxHP + "%";
 			}
 
 			resolve();
@@ -133,7 +143,7 @@ export async function generateStoreItems(emptyStore) {
 			//Generate store items
 			let storeData = [];
 			for (let i = 0; i < 3; i++) {
-				if (Math.ceil(Math.random()*10) > itemChance) {
+				if (Math.ceil(Math.random() * 10) > itemChance) {
 					//Add level item
 					const lvlItemArray = db.levels.find((x) => x.name === state.currentLevel).items;
 					storeData[i] = randomItem(lvlItemArray);
@@ -168,13 +178,13 @@ export async function generateStore(storeid) {
 			//Populate store
 			for (let i = 0; i < storePlaces.length; i++) {
 				const place = storePlaces[i];
-				
+
 				//Elements to populate
 				const titleEl = place.querySelector(".store-item-title");
 				const descEl = place.querySelector(".store-item-desc");
 				const iconEl = place.querySelector(".store-item-icon");
 				const priceEl = place.querySelector(".store-item-price");
-	
+
 				//Data
 				let item = state[storeid][i];
 				let itemData;
@@ -201,10 +211,10 @@ export async function generateStore(storeid) {
 					priceEl.textContent = itemData.price;
 
 					//Datasets
-					place.dataset.price = itemData.price; 
-					place.dataset.amount = itemData.amount; 
-					place.dataset.store = storeid; 
-					place.dataset.position = i; 
+					place.dataset.price = itemData.price;
+					place.dataset.amount = itemData.amount;
+					place.dataset.store = storeid;
+					place.dataset.position = i;
 				} else {
 					place.style.visibility = "hidden";
 				}
@@ -213,7 +223,7 @@ export async function generateStore(storeid) {
 			}
 
 			resolve();
-		}catch (error) {
+		} catch (error) {
 			console.log("An error occurred generating a store: " + error.message);
 			reject(error);
 		}
@@ -244,7 +254,7 @@ export async function buy(group, itemId) {
 			}
 
 			resolve();
-		}catch (error) {
+		} catch (error) {
 			console.log("An error occurred trying to buy an item: " + error.message);
 			reject(error);
 		}
@@ -273,7 +283,7 @@ export async function checkIfAbleToBuy() {
 			});
 
 			resolve();
-		}catch (error) {
+		} catch (error) {
 			console.log("An error occurred with the modern economy: " + error.message);
 			reject(error);
 		}
@@ -304,33 +314,56 @@ export async function generateInventory() {
 					if (amount > 0) {
 						//Get data
 						const item = db.items[itemId];
-						
+
 						let disabled = "";
 						if (state.player.itemsInUse[itemId] > 0) {
 							disabled = "disabled";
 						}
-	
+
 						//Generate
 						let itemHTML = "";
-						itemHTML += '<div class="inventory-item '+ disabled +'" data-item="'+ itemId +'">';
-						itemHTML += '<div class="inventory-item-wrapper">';
-							itemHTML += '<p class="item-inventory-icon"></p>';
-							itemHTML += '<p class="item-inventory-title">'+ item.name +'</p>';
-							itemHTML += '<button>Use</button>';
+						itemHTML += '<div class="inventory-item ' + disabled + '" data-item="' + itemId + '">';
+						itemHTML += '<p class="item-inventory-title">' + item.name + '</p>';
+						itemHTML += '<div class="item-inventory-icon">';
+						itemHTML += '<img src="./assets/img/mobs/'+item.icon+'">';
 						itemHTML += '</div>';
-						itemHTML += '<p class="item-inventory-desc">'+ item.desc + '</p>';
-						itemHTML += '';
+						itemHTML += '<p class="item-inventory-desc">' + item.desc + '</p>';
+						itemHTML += '</div>';
 						bagEL.innerHTML += itemHTML;
 					}
 
 				}
 			}
 
-			
+
 			resolve();
-		}catch (error) {
+		} catch (error) {
 			console.log("An error occurred generating the inventory: " + error.message);
 			reject(error);
 		}
 	})
 };
+
+
+/*==========================================*/
+// Get Slot Short Description
+/*==========================================*/
+export function getSlotShortDesc(itemId) {
+	let content = "";
+	const item = db.items[itemId];
+	let colorIndex = 0;
+	if (item.colors[0] === "#000") {
+		colorIndex = 1;
+	}
+	
+	const descriptions = item.short;
+	descriptions.forEach(desc => {
+		content += '<div class="slot-short-desc-item">';
+		content += '<span style="background:'+ item.colors[colorIndex] +';"></span>';
+		content += desc;
+		content += '</div>';
+		colorIndex++;
+	});
+
+	return content;
+}

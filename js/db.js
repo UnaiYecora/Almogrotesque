@@ -1,19 +1,23 @@
 export var state = {
 	player: {
 		soul: [75],
-		hp: 6,
-		maxHp: 6,
+		hp: 8,
+		maxHp: 12,
 		playerTurn: false,
 		fate: 5000,
 		xp: 0,
 		lvl: 1,
 		coins: 2300,
+		slots: 3,
 		items: {
-			test1: 99,
-			test2: 99
+			basic_attack_1: 99,
+			basic_attack_2: 99,
+			heal_1: 99,
+			double_damage: 99
 		},
-		itemsInUse: {},
+		itemsInUse: [],
 	},
+	turn: "player",
 	fatePrice: 1,
 }
 
@@ -26,7 +30,7 @@ export const db = {
 			chests: 1,
 			doors: ["Outskirts path"],
 			spawns: ["master_frog", "frog", "rat", "rat_bandit", "lagoon_dweller", "seridra", "eggman", "chest"],
-			items: ["test1", "test2"],
+			items: ["basic_attack_1", "basic_attack_2"],
 			bg: "crossroad",
 		},
 		{
@@ -108,40 +112,49 @@ export const db = {
 		},
 	},
 	items: {
-		/* borrowed_soul_15: {
-			name: "Borrowed soul (15%)",
-			desc: "Shield 15% of your soul",
-			icon: "empty-heart",
-			price: 15,
-			amount: 1
+		basic_attack_1: {
+			name: "Dagger",
+			desc: "Deal 3 damage.",
+			short: ["x3 Damage"],
+			icon: "frog.png",
+			price: 0,
+			hitrate: [50],
+			damage: 3,
+			colors: ["#000", "#872b1e"],
 		},
-		borrowed_soul_30: {
-			name: "Borrowed soul (30%)",
-			desc: "Shield 30% of your soul",
-			icon: "empty-heart",
-			price: 30,
-			amount: 1
+		basic_attack_2: {
+			name: "Handaxe",
+			desc: "Deal 6 damage.",
+			short: ["x6 Damage"],
+			icon: "master_frog.png",
+			price: 0,
+			hitrate: [25],
+			damage: 6,
+			colors: ["#000", "#81352a"],
 		},
-		borrowed_soul_55: {
-			name: "Borrowed soul (55%)",
-			desc: "Shield 55% of your soul",
-			icon: "empty-heart",
-			price: 55,
-			amount: 1
-		}, */
-		test1: {
-			name: "Second soul wheel",
-			desc: "Second soul wheel",
-			icon: "fate",
-			price: 1,
-			amount: 1
+		heal_1: {
+			name: "Heal potion",
+			desc: "Heal 3HP or 10HP.",
+			short: ["Heal 3HP", "Heal 10HP"],
+			icon: "seridra.png",
+			price: 0,
+			hitrate: [30, 5],
+			damage: 0,
+			heal: 3,
+			heal2: 10,
+			colors: ["#000", "#0c4015", "#105b19"],
 		},
-		test2: {
-			name: "Doble daño",
-			desc: "Doble daño",
-			icon: "fate",
-			price: 1,
-			amount: 1
+		double_damage: {
+			name: "Aggresive stance",
+			desc: "Damage from previous cards are doubled or lost.",
+			short: ["Double previous damage", "Lose previous damage"],
+			icon: "rat_bandit.png",
+			price: 0,
+			hitrate: [50, 50],
+			damage: 0,
+			heal: 0,
+			heal2: 10,
+			colors: ["#872b1e", "#494237"],
 		},
 	},
 	mobs: {
@@ -153,6 +166,13 @@ export const db = {
 			desc: "Small, slimy amphibians known for their croaking calls and agile leaps. They often lurk in murky waters and can be encountered in damp, gloomy environments.",
 			soul: [93],
 			lvl: 1,
+			hp: 12,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"],
+				["heal_1", "heal_1"],
+				["basic_attack_1", "heal_1"],
+			],
 		},
 		master_frog: {
 			name: "Master Frog",
@@ -162,6 +182,11 @@ export const db = {
 			desc: "Small, slimy amphibians known for their croaking calls and agile leaps. They often lurk in murky waters and can be encountered in damp, gloomy environments.",
 			soul: [37],
 			lvl: 2,
+			hp: 20,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		rat: {
 			name: "Rat",
@@ -171,6 +196,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [69],
 			lvl: 1,
+			hp: 12,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		rat_bandit: {
 			name: "Rat bandit",
@@ -180,6 +210,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [57],
 			lvl: 2,
+			hp: 18,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		lagoon_dweller: {
 			name: "Lagoon Dweller",
@@ -189,6 +224,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [57],
 			lvl: 2,
+			hp: 28,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		seridra: {
 			name: "Witch (Seridra)",
@@ -198,6 +238,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [37],
 			lvl: 3,
+			hp: 42,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		eggman: {
 			name: "Century egg",
@@ -207,6 +252,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [37],
 			lvl: 3,
+			hp: 30,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		chest: {
 			name: "Chest",
@@ -216,6 +266,11 @@ export const db = {
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			soul: [37],
 			lvl: 3,
+			hp: 8,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		bat: {
 			name: "Bat",
@@ -225,6 +280,11 @@ export const db = {
 			desc: "Denizens of the night and elegantly cloaked in obsidian wings, bats are skilled hunters of insects and small prey.",
 			soul: [84],
 			lvl: 1,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		spider: {
 			name: "Spider",
@@ -234,6 +294,11 @@ export const db = {
 			desc: "Eight-legged arachnids, masters of stealth in their silk-spun lairs. They spin intricate webs to ensnare prey and can be found in dark corners of dungeons, forests, and caves.",
 			soul: [67],
 			lvl: 1,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		goblin: {
 			name: "Goblin",
@@ -243,6 +308,11 @@ export const db = {
 			desc: "Small, malicious humanoid creatures with greenish skin and a penchant for mischief. They are often found in tribal societies, lurking in forests, caves, and ruins, and are known for their cunning traps and love of shiny loot.",
 			soul: [72],
 			lvl: 3,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		homunculus: {
 			name: "Homunculus",
@@ -252,6 +322,11 @@ export const db = {
 			desc: "A twisted, malevolent creation gone rogue. This once-servile homunculus has turned against its master, armed with dark enchantments and a sinister desire for freedom.",
 			soul: [57],
 			lvl: 2,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		kobold: {
 			name: "Kobold",
@@ -261,6 +336,11 @@ export const db = {
 			desc: "Small, reptilian humanoids known for their cunning and devious traps. They dwell in underground lairs, serving as loyal minions to more powerful creatures or plotting their own mischief and theft.",
 			soul: [45],
 			lvl: 2,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		cultist: {
 			name: "Cultist",
@@ -270,6 +350,11 @@ export const db = {
 			desc: "A fervent devotee of dark and forbidden powers, often cloaked in tattered robes. These fanatics gather in secretive covens to perform unholy rituals and summon eldritch entities, posing a threat to the world with their zealous devotion.",
 			soul: [42],
 			lvl: 3,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		acolyte: {
 			name: "Acolyte",
@@ -279,6 +364,11 @@ export const db = {
 			desc: "A devout follower of a deity or a mystical order, acolytes dedicate their lives to worship and service. They wield divine magic and knowledge, either to heal and protect or further their faith's goals.",
 			soul: [38],
 			lvl: 2,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		shrub: {
 			name: "Awakened Shrub",
@@ -288,6 +378,11 @@ export const db = {
 			desc: "A seemingly harmless shrub brought to life by arcane forces, now harboring a thirst for mischief. Though not powerful, it can surprise with unexpected tricks in forest encounters.",
 			soul: [42],
 			lvl: 2,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		bandit: {
 			name: "Bandit",
@@ -297,6 +392,11 @@ export const db = {
 			desc: "A cunning and lawless rogue of the wilds, donned in rugged attire and armed with concealed weapons. Bandits lurk on highways, ambushing travelers for ill-gotten gains and causing trouble for adventurers.",
 			soul: [40],
 			lvl: 2,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		crab: {
 			name: "Giant Crab",
@@ -306,6 +406,11 @@ export const db = {
 			desc: "A colossal, armored crustacean with pincer claws capable of crushing foes. These aggressive sea-dwellers defend their territory fiercely and can be encountered in coastal caves or deep underwater.",
 			soul: [27],
 			lvl: 4,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		skeleton: {
 			name: "Skeleton",
@@ -315,6 +420,11 @@ export const db = {
 			desc: "The reanimated, bony remains of a once-living creature. These undead minions, often raised by dark necromancers, are devoid of flesh but possess an eerie, relentless determination to obey their master's commands, wielding rusted weapons with menacing intent.",
 			soul: [22],
 			lvl: 3,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		ghoul: {
 			name: "Ghoul",
@@ -324,6 +434,11 @@ export const db = {
 			desc: "An undead horror with pallid, rotting flesh and a hunger for the living. Ghouls stalk graveyards and crypts, driven by their insatiable appetite and the ability to paralyze victims with their vile touch.",
 			soul: [18],
 			lvl: 5,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 		specter: {
 			name: "Specter",
@@ -333,6 +448,11 @@ export const db = {
 			desc: "A malevolent, incorporeal entity, born from intense negative emotions. These vengeful spirits can drain the life force of the living with a chilling touch, haunting ancient ruins and forsaken places.",
 			soul: [15],
 			lvl: 5,
+			hp: 6,
+			slots: 2,
+			patterns: [
+				["basic_attack_1", "basic_attack_2"]
+			],
 		},
 	}
 }

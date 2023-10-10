@@ -3,8 +3,8 @@
 /* ···························  I M P O R T S  ······························*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, wait, updateHP, generateStoreItems, generateStore, buy, checkIfAbleToBuy, generateInventory } from "./helpers.js";
-import { useitem } from "./items.js";
+import { goTo, shuffleArray, wait, updateHP, generateStoreItems, generateStore, buy, checkIfAbleToBuy, generateInventory, rand } from "./helpers.js";
+import { useitem, applyDiscsEffects, calculateEffects } from "./items.js";
 import { db, state } from "./db.js";
 import { generateDisc, spin } from "./soul.js";
 
@@ -239,17 +239,23 @@ async function generateEncounterCard(mobId) {
 			document.querySelector(".mob-image-wrapper").dataset.rotate = mobCardImgRotation;
 			document.querySelector(".mob-info-wrapper").dataset.rotate = mobCardTxtRotation;
 
-			//Soul bars
-			const playerDiscs = document.querySelector("#playerDiscs");
-			const mobDiscs = document.querySelector("#mobDiscs");
+			//Player Slots
+			const playerSlots = document.querySelector("#playerDiscs");
+			playerSlots.innerHTML = "";
+			for (let i = 0; i < state.player.slots; i++) {
+				let newSlot = document.createElement("div");
+				newSlot.classList.add("slot");
+				playerSlots.append(newSlot);
+			}
 			playerDiscs.style.display = "flex";
-			mobDiscs.style.display = "none";
+
 
 			//MOB
 			const mobject = db.mobs[mobId];
 			state.currentMob = JSON.parse(JSON.stringify(mobject));
 			state.currentMob.soul = mobject.soul;
-			state.currentMob.hp = mobject.lvl;
+			state.currentMob.hp = mobject.hp;
+			state.currentMob.maxHp = mobject.hp;
 			state.currentMob.mobid = mobId;
 			const encounter = document.querySelector("#encounter");
 			const imgEl = encounter.querySelector(".mob-image");
@@ -269,6 +275,16 @@ async function generateEncounterCard(mobId) {
 			skillsEl.innerHTML = skills;
 			descEl.textContent = mobject.desc;
 
+			//Mob slots
+			const mobSlots = document.querySelector("#mobDiscs");
+			mobSlots.innerHTML = "";
+			for (let i = 0; i < mobject.slots; i++) {
+				let newSlot = document.createElement("div");
+				newSlot.classList.add("slot");
+				mobSlots.append(newSlot);
+			}
+			mobDiscs.style.display = "none";
+
 			// Update HP
 			updateHP();
 
@@ -276,10 +292,6 @@ async function generateEncounterCard(mobId) {
 			document.querySelectorAll("#playerDiscs .additional-disc").forEach(el => {
 				el.remove();
 			});
-
-			//Discs
-			generateDisc([mobject.soul], "#mobSoul");
-			generateDisc([state.player.soul], "#playerSoul");
 
 			
 			resolve();
@@ -292,10 +304,10 @@ async function generateEncounterCard(mobId) {
 
 async function loadEncounter(mobId) {
     try {
-		state.player.itemsInUse = {};
+		state.player.itemsInUse = [];
         await generateEncounterCard(mobId);
         goTo("encounter");
-		toggleTurn("player");
+		toggleTurn(true);
     } catch (error) {
         console.error("An error occurred when trying to load the encounter: " + error);
     }
@@ -304,7 +316,7 @@ async function loadEncounter(mobId) {
 /*==========================================*/
 // Turn System
 /*==========================================*/
-async function toggleTurn(whosTurn) {
+async function toggleTurn(start) {
 	//Elements
 	const mainAction = document.querySelector("#playerBoard .main-action");
 	const secondaryAction = document.querySelector("#playerBoard .secondary-action");
@@ -312,7 +324,22 @@ async function toggleTurn(whosTurn) {
 	const playerDiscs = document.querySelector("#playerDiscs");
 	const mobDiscs = document.querySelector("#mobDiscs");
 
-	if (whosTurn === "player") {
+	//Toggle
+	if (!start) {
+		state.turn = state.turn === "player" ? "mob" : "player";
+	}
+
+	//Remove un/successful states
+	document.querySelectorAll(".slot.successful, .slot.unsuccessful").forEach(slot => {
+		slot.classList.remove("successful", "unsuccessful");
+	});
+
+	//Reset turn data
+	state.turnDamage = 0;
+	state.turnHeal = 0;
+
+	//Reset UI
+	if (state.turn === "player" || start) {
 		mainAction.style.display = "flex";
 		secondaryAction.style.display = "none";
 		noAction.style.display = "none";
@@ -322,12 +349,16 @@ async function toggleTurn(whosTurn) {
 		mobDiscs.style.display = "none";
 	}
 
-	if (whosTurn === "mob") {
+	else if (state.turn === "mob") {
 		mainAction.style.display = "none";
 		secondaryAction.style.display = "none";
 		noAction.style.display = "flex";
 		playerDiscs.style.display = "none";
 		mobDiscs.style.display = "flex";
+		document.querySelectorAll("#mobDiscs .slot").forEach(slot => {
+			slot.innerHTML = "";
+			slot.classList.remove("charged");
+		});
 		await wait(200);
 		await enemyAttack();
 	}
@@ -347,7 +378,7 @@ async function attack() {
 	return new Promise(async(resolve, reject) => {
 		try {
 			document.querySelector("#playerBoard .main-action").style.display = "none";
-			await spinPlayerDiscs();
+			await spinDiscs();
 			secondaryAction();
 			resolve();
 		} catch (error) {
@@ -358,31 +389,25 @@ async function attack() {
 }
 
 /*==========================================*/
-// Spin player discs
+// Spin discs
 /*==========================================*/
-async function spinPlayerDiscs() {
+async function spinDiscs() {
 	return new Promise(async(resolve, reject) => {
 		try {
 
-			const playerDiscs = document.querySelectorAll("#playerDiscs > div");
-			playerDiscs.forEach(async disc => {
-				await spin(disc.id);
-			});
-			resolve();
-		} catch (error) {
-			console.log("An error occurred during attack: " + error.message);
-			reject(error);
-		}
-	});
-}
+			let discs;
 
-/*==========================================*/
-// Apply player discs' effects
-/*==========================================*/
-async function applyPlayerDiscsEffects() {
-	return new Promise(async(resolve, reject) => {
-		try {
-			console.log("effects");
+			if (state.turn === "player") {
+				discs = document.querySelectorAll("#playerDiscs .slot.charged");
+			} else if (state.turn === "mob") {
+				discs = document.querySelectorAll("#mobDiscs .slot.charged");
+			}
+			for (let i = 0; i < discs.length; i++) {
+				const disc = discs[i].querySelector(".disc");
+				let result = await spin(disc.id);
+				await calculateEffects(disc.id, result);
+			}
+
 			resolve();
 		} catch (error) {
 			console.log("An error occurred during attack: " + error.message);
@@ -398,6 +423,19 @@ async function applyPlayerDiscsEffects() {
 async function changeFate() {
 	const fateBtn = document.querySelector(".change-fate");
 	const endBtn = document.querySelector(".end-turn");
+
+	//Remove un/successful states
+	document.querySelectorAll(".slot.successful, .slot.unsuccessful").forEach(slot => {
+		slot.classList.remove("successful", "unsuccessful");
+	});
+	
+	//Remove calculated effects
+	state.turnDamage = 0;
+	state.turnHeal = 0;
+	document.querySelector("#encounter .enemy-hp .progress .damage-bar").style.width = "0%";
+	document.querySelectorAll(".heal-bar").forEach(el => { el.style.width = "0%"; });
+	
+	await wait (450);
 
 	//Temporarily disable button
 	fateBtn.disabled = true;
@@ -416,7 +454,7 @@ async function changeFate() {
 	document.querySelector(".fate-price").textContent = state.fatePrice;
 
 	//Spin
-	await spinPlayerDiscs();
+	await spinDiscs();
 
 	//Enable buttons back
 	if (state.player.fate >= state.fatePrice) {
@@ -432,7 +470,7 @@ async function changeFate() {
 async function damageToEnemy() {
 	state.currentMob.hp--;
 	state.currentMob.soul[0] = state.currentMob.soul[0] + (state.currentMob.lvl * 2.3);
-	generateDisc([state.currentMob.soul], "#mobSoul");
+	generateDisc([state.currentMob.soul], "mobSoul");
 	const hearts = document.querySelectorAll('.enemy-hp > .full > .heart');
 	const lastHeart = hearts[hearts.length - 1];
 	
@@ -454,7 +492,7 @@ async function damageToEnemy() {
 	}
 
 	if (state.currentMob.hp > 0) {
-		toggleTurn("mob");
+		toggleTurn();
 	} else {
 		victory();
 	}
@@ -577,7 +615,7 @@ async function damageToPlayer() {
 	}
 	
 	if (state.player.hp > 0) {
-		toggleTurn("player");
+		toggleTurn();
 	} else {
 		location.reload();
 	}
@@ -589,26 +627,26 @@ async function damageToPlayer() {
 async function enemyAttack() {
 	return new Promise(async(resolve, reject) => {
 		try {
-			const attackResult = await spin("playerSoul");
 
-			//Miss
-			if (attackResult === 1) {
-				toggleTurn("player");
-			}
+			const pattern = state.currentMob.patterns[Math.floor(Math.random() * state.currentMob.patterns.length)];
+			const slots = document.querySelectorAll("#mobDiscs .slot");
 
-			//Soul
-			else if (attackResult === 2){
-				damageToPlayer();
+			for (let i = 0; i < slots.length; i++) {
+				const slot = slots[i];
+				slot.classList.add("target-slot");
+				
+				await wait(await rand(200, 1200));
+
+				await useitem(pattern[i]);
 			}
 			
-			//Borrowed soul
-			else if(attackResult === 3) {
-				generateDisc([state.player.soul], "#playerSoul");
-				state.player.itemsInUse.borrowed_soul_15 = 0;
-				state.player.itemsInUse.borrowed_soul_30 = 0;
-				state.player.itemsInUse.borrowed_soul_55 = 0;
-				toggleTurn("player");
-			}
+			await spinDiscs();
+			
+			await wait(800);
+			await applyDiscsEffects();
+
+			toggleTurn();
+
 
 			resolve();
 		} catch (error) {
@@ -760,8 +798,12 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 // End turn
 /*==========================================*/
 document.querySelector(".end-turn").addEventListener("click", async function () {
-	await applyPlayerDiscsEffects();
-	toggleTurn("mob");
+	await applyDiscsEffects();
+	if (state.currentMob.hp <= 0) {
+		victory();
+	} else {
+		toggleTurn();
+	}
 });
 
 /*==========================================*/
@@ -780,6 +822,7 @@ document.querySelectorAll("[data-skip-path]").forEach(el => {
 /*==========================================*/
 document.querySelector("#xpscreen button").addEventListener("click", async function () {
 	const path = document.querySelector('#crossroad [data-mobid="'+ state.currentMob.mobid +'"]');
+	await updateHP();
 	document.querySelector("#xpscreen").style.display = "none";
 	await goTo("crossroad");
 	await burnPath(path);
@@ -829,13 +872,17 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 /*==========================================*/
 // Open/Close inventory
 /*==========================================*/
-document.querySelector("#openInventory").addEventListener("click", async function() {
-	await generateInventory();
-	document.querySelector(".inventory").style.display = "flex";
-})
-
 document.querySelector(".close-inventory").addEventListener("click", function() {
 	document.querySelector(".inventory").style.display = "none";
+	document.querySelector(".target-slot").classList.remove("target-slot");
+});
+
+document.querySelector("#soulbar").addEventListener("click", async function(e) {
+	if (e.target.matches(".slot") && !e.target.matches(".locked-slot")) {
+		e.target.classList.add("target-slot")
+		await generateInventory();
+		document.querySelector(".inventory").style.display = "flex";
+	}
 })
 
 /*==========================================*/
@@ -843,10 +890,9 @@ document.querySelector(".close-inventory").addEventListener("click", function() 
 /*==========================================*/
 document.querySelector(".inventory").addEventListener("click", async function(e) {
 
-	if (e.target.matches(".inventory-item button")) {
+	if (e.target.closest(".inventory-item")) {
 		const itemId = e.target.closest(".inventory-item").dataset.item;
 		await useitem(itemId);
 		document.querySelector(".inventory").style.display = "none";
-		await generateInventory();
 	}
 })
