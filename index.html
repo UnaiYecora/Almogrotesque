@@ -11,7 +11,7 @@
 <body>
 	<main>
 		<section id="start">
-			<h1>Almogrotesque</h1>
+			<h1>The Book of Almogrotesque</h1>
 			<div>
 				<button disabled>Continue</button>
 				<button id="newGame">New Game</button>
@@ -88,6 +88,14 @@
 						<div class="heal-bar"></div>
 						<p><span></span>/<span></span></p>
 					</div>
+					<div class="shield-wrapper">
+						<span class="shield-amount">0</span>
+						<span class="shield icon"></span>
+					</div>
+					<div class="poison-wrapper">
+						<span class="poison-amount">0</span>
+						<span class="poison icon"></span>
+					</div>
 				</div>
 				<button data-goto="crossroad">Exit</button>
 			</div>
@@ -132,6 +140,14 @@
 						<div class="heal-bar"></div>
 						<p><span></span>/<span></span></p>
 					</div>
+					<div class="shield-wrapper">
+						<span class="shield-amount">0</span>
+						<span class="shield icon"></span>
+					</div>
+					<div class="poison-wrapper">
+						<span class="poison-amount">0</span>
+						<span class="poison icon"></span>
+					</div>
 				</div>
 				<div class="fate-left-wrapper">
 					<span class="fate-left">0</span>
@@ -140,7 +156,10 @@
 			</div>
 
 			<div class="inventory">
-				<button class="close-inventory">X</button>
+				<div class="inventory-controls">
+					<button class="clear-slot">Clear slot</button>
+					<button class="close-inventory">X</button>
+				</div>
 				<div class="inventory-items"></div>
 			</div>
 			

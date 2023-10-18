@@ -137,7 +137,7 @@ export async function generateStoreItems(emptyStore) {
 			//Set the chance of getting a special item
 			//Random number between 1 and 10, over that
 			//number gets special item
-			const itemChance = 0;
+			const itemChance = 7;
 
 
 			//Generate store items
@@ -207,8 +207,12 @@ export async function generateStore(storeid) {
 					//Populate the elements
 					titleEl.textContent = itemData.name;
 					descEl.textContent = itemData.desc;
-					iconEl.innerHTML = `<span class="${itemData.icon}"></span>`;
 					priceEl.textContent = itemData.price;
+					if (db.basicItems[item]) {
+						iconEl.innerHTML = `<span class="${itemData.icon}"></span>`;
+					} else {
+						iconEl.innerHTML = `<img src="./assets/img/cards/${itemData.icon}">`;
+					}
 
 					//Datasets
 					place.dataset.price = itemData.price;
@@ -247,10 +251,7 @@ export async function buy(group, itemId) {
 			if (group === "items") {
 				const item = db.items[itemId];
 				state.player.coins -= item.price;
-				if (!state.player.items[itemId]) {
-					state.player.items[itemId] = 0;
-				}
-				state.player.items[itemId] += item.amount;
+				state.player.items.push(itemId);
 			}
 
 			resolve();
@@ -294,7 +295,7 @@ export async function checkIfAbleToBuy() {
 /*==========================================*/
 // Generate inventory
 /*==========================================*/
-export async function generateInventory() {
+export async function generateInventory(previousItem) {
 	return new Promise(async (resolve, reject) => {
 		try {
 
@@ -307,32 +308,54 @@ export async function generateInventory() {
 
 			const bag = state.player.items;
 
-			for (const itemId in bag) {
-				if (Object.hasOwnProperty.call(bag, itemId)) {
-					const amount = bag[itemId];
+			for (const itemId of bag) {
 
-					if (amount > 0) {
-						//Get data
-						const item = db.items[itemId];
+				// Get data
+				const item = db.items[itemId];
 
-						let disabled = "";
-						if (state.player.itemsInUse[itemId] > 0) {
-							disabled = "disabled";
-						}
+				//Disable if already in use
+				const disabled = state.player.itemsInUse.find(e => e === itemId) ? "disabled " : "";
 
-						//Generate
-						let itemHTML = "";
-						itemHTML += '<div class="inventory-item ' + disabled + '" data-item="' + itemId + '">';
-						itemHTML += '<p class="item-inventory-title">' + item.name + '</p>';
-						itemHTML += '<div class="item-inventory-icon">';
-						itemHTML += '<img src="./assets/img/mobs/'+item.icon+'">';
-						itemHTML += '</div>';
-						itemHTML += '<p class="item-inventory-desc">' + item.desc + '</p>';
-						itemHTML += '</div>';
-						bagEL.innerHTML += itemHTML;
-					}
-
+				//Disable before buying with mana
+				const itemManaPrice = item.mana_price;
+				if (itemManaPrice === 0) {
+					state.player.itemsManaPaid.push(itemId);
 				}
+				const playerMana = state.player.mana;
+				let manaRequired;
+				if (state.player.itemsManaPaid.includes(itemId)) {
+					manaRequired = "";
+				} else {
+					manaRequired = "mana-required ";
+				}
+				let manaAvailable;
+				if (playerMana >= itemManaPrice) {
+					manaAvailable = "";
+				} else {
+					manaAvailable = "mana-unavailable ";
+				}
+
+				//Mark card in use
+				let mark;
+				if (previousItem === itemId) {
+					mark = "mark ";
+				} else {
+					mark = "";
+				}
+
+				//Generate
+				let itemHTML = "";
+				itemHTML += '<div class="inventory-item ' + disabled + manaRequired + manaAvailable + mark + '" data-item="' + itemId + '">';
+				itemHTML += '<p class="item-inventory-title">' + item.name + '</p>';
+				itemHTML += '<div class="item-inventory-icon">';
+				itemHTML += '<img src="./assets/img/cards/' + item.icon + '">';
+				itemHTML += '</div>';
+				itemHTML += '<div class="item-inventory-desc"><p>' + iconify(item.desc) + '</p></div>';
+				itemHTML += '<div class="mana-price">';
+				itemHTML += '<div>Claim:</div> <div>' + playerMana + ' / ' + itemManaPrice + '<span class="mana"></span></div>';
+				itemHTML += '</div>';
+				itemHTML += '</div>';
+				bagEL.innerHTML += itemHTML;
 			}
 
 
@@ -355,15 +378,27 @@ export function getSlotShortDesc(itemId) {
 	if (item.colors[0] === "#000") {
 		colorIndex = 1;
 	}
-	
+
 	const descriptions = item.short;
 	descriptions.forEach(desc => {
 		content += '<div class="slot-short-desc-item">';
-		content += '<span style="background:'+ item.colors[colorIndex] +';"></span>';
-		content += desc;
+		content += '<span class="slot-short-desc-orb" style="background:' + item.colors[colorIndex] + ';"></span>';
+		content += '<div class="slot-short-desc-text">' + iconify(desc) + '</div>';
 		content += '</div>';
 		colorIndex++;
 	});
 
 	return content;
+}
+
+
+/*==========================================*/
+// Modify string to add icons
+/*==========================================*/
+
+export function iconify(string) {
+	const regex = /{([^}]+)}/g;
+	const replacedString = string.replace(regex, '<span class="icon $1"></span>');
+	return replacedString;
+
 }

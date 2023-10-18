@@ -48,15 +48,6 @@ button:disabled{
 }
 
 /*==========================================
-// Tools 
-============================================*/
-
-/* .disabled{
-	opacity: 0.1;
-	pointer-events: none;
-} */
-
-/*==========================================
 // LAYOUT 
 ============================================*/
 body{
@@ -116,6 +107,7 @@ section#start {
 
 section#start h1{
 	font-size: 5rem;
+	text-align: center;
 }
 
 section#start div{
@@ -363,6 +355,10 @@ p.mobName {
     font-weight: 700;
 }
 
+.mobSkills {
+    display: none;
+}
+
 .mobSkills p{
 	font-weight: 700;
 }
@@ -422,6 +418,10 @@ div#playerBoard button div{
 	font-weight: 700;
 }
 
+.hp .heart {
+    margin-top: -0.8rem;
+}
+
 .hp .bar {
 	display: flex;
     width: 14rem;
@@ -430,7 +430,6 @@ div#playerBoard button div{
     border-left: 0.2rem solid #ffffffde;
     position: relative;
     margin-left: -0.5rem;
-    margin-bottom: -0.8rem;
     z-index: -1;
 }
 
@@ -476,6 +475,32 @@ div#playerBoard button div{
 	height: 100%;
 }
 
+.hp .shield-wrapper,
+.hp .poison-wrapper{
+    margin-left: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.hp .shield-wrapper.damaged{
+    filter: sepia(1) hue-rotate(290deg) saturate(999) grayscale(0.3) brightness(4) contrast(0.6);
+}
+.hp .shield-wrapper.healed{
+    filter: sepia(1) hue-rotate(50deg) saturate(999) grayscale(0.5);
+}
+
+.hp .shield-wrapper .icon,
+.hp .poison-wrapper .icon{
+    width: 1.2rem;
+    height: 1.2rem;
+    display: inline-flex;
+}
+
+.hp .poison-wrapper{
+    color: #3aad48;
+}
+
 .heart,
 .empty-heart {
 	width: 2rem;
@@ -497,8 +522,12 @@ div#playerBoard button div{
 	z-index: 3;
 }
 
-.fate,
-.coin{
+.bottombar .fate,
+.bottombar .coin,
+.lvl-bottom-right .fate,
+.lvl-bottom-right .coin,
+.reward .coin,
+.reward .fate{
 	display: inline-block;
 	width: 2rem;
 	height: 2rem;
@@ -532,6 +561,10 @@ div#soulbar > span{
 	flex-wrap: wrap;
 	width: 100%;
 	justify-content: space-evenly;
+}
+
+#mobDiscs{
+	pointer-events: none;
 }
 
 .slot{
@@ -575,19 +608,6 @@ div#soulbar > span{
 	outline: 0.2rem dashed #555;
 }
 
-.slot.locked-slot{
-	outline: 0.2rem solid #121212;
-	cursor: default;
-}
-.slot.locked-slot:after{
-	width: 100%;
-	outline: none;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 24'%3E%3Cpath fill='%23121212' d='M13 10V5A5 5 0 1 0 3 5v5a8 8 0 0 0 5 14 8 8 0 0 0 5-14ZM5 5a3 3 0 0 1 6 0v4a8 8 0 0 0-6 0V5Zm3 17a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm2-6a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z'/%3E%3C/svg%3E");
-	background-size: 40%;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
 .slot-short-desc {
 	display: flex;
 	flex-direction: column;
@@ -600,7 +620,7 @@ div#soulbar > span{
 	font-size: 0.75rem;
 }
 
-.slot-short-desc-item span{
+.slot-short-desc-item .slot-short-desc-orb{
 	width: 0.7rem;
 	min-width: 0.7rem;
     height: 0.7rem;
@@ -608,6 +628,14 @@ div#soulbar > span{
     position: relative;
     display: inline-block;
     border-radius: 100%;
+}
+
+.slot-short-desc-item .slot-short-desc-text .icon{
+    width: 0.8rem;
+    height: 0.8rem;
+    aspect-ratio: 1;
+    margin: 0rem 0 -0.1rem 0.1rem;
+    display: inline-flex;
 }
 
 .soul-disc,
@@ -645,7 +673,7 @@ div#soulbar > span{
     transform-origin: bottom;
     transition: 1.5s transform;
 	mix-blend-mode: difference;
-    filter: invert(1);
+    filter: invert(1) contrast(0.5);
 }
 
 .soul-disc:after,
@@ -715,12 +743,27 @@ div#soulbar > span{
     border-radius: 0.5rem;
 	background: url("../assets/img/textures/card.png");
     background-size: contain;
+	position: relative;
+}
+
+.inventory-item.disabled{
+	filter: brightness(0.3) blur(1px);
+	pointer-events: none;
+}
+
+.inventory-item.mark {
+    filter: drop-shadow(0 0 0.6rem orange) brightness(1) blur(0px);
+	pointer-events: unset;
+}
+
+.inventory-item.mana-required.mana-unavailable{
+	pointer-events: none;
 }
 
 .item-inventory-title{
 	font-size: 1.2rem;
 	font-weight: 700;
-	padding-top: 2rem;
+	padding-top: 3rem;
 }
 
 .item-inventory-icon {
@@ -729,15 +772,80 @@ div#soulbar > span{
 }
 
 .item-inventory-desc{
-	padding-block: 0.5rem;
-	text-align: center;
+    padding-block: 0.5rem 3rem;
+    text-align: center;
     line-height: 1;
+    font-size: 1.25rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
 }
 
-button.close-inventory {
-    font-size: 2rem;
-    margin: 2rem 2rem 0;
+.item-inventory-desc .icon{
+	width: 1.2rem;
+    height: 1.2rem;
+    margin: 0 0 0 0.1rem;
+    display: inline-flex;
+    filter: invert(1);
+    vertical-align: bottom;
 }
+
+.mana-price {
+    position: absolute;
+    inset: 0;
+    display: flex;
+	flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    backdrop-filter: invert(0) brightness(0.25);
+	padding-inline: 5rem;
+    text-align: center;
+}
+
+.mana-unavailable .mana-price{
+	backdrop-filter: invert(1) brightness(0.25);
+}
+
+.mana-unavailable .mana-price div:first-child {
+    text-decoration: line-through;
+    text-decoration-color: #ff6a00a8;
+}
+
+.inventory-item:not(.mana-required) .mana-price{
+	display: none;
+}
+
+.mana-price > div {
+    display: flex;
+    align-items: center;
+}
+
+.inventory-item .mana-price .mana{
+	width: 1.6rem;
+    height: 1.6rem;
+	margin: -0.2rem 0 0 0.1rem;
+}
+
+.inventory-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+	padding: 2rem 1rem 0;
+}
+
+button.close-inventory{
+	font-size: 2rem;
+}
+
+button.clear-slot {
+    font-size: 1.5rem;
+}
+button.clear-slot:disabled{
+	visibility: hidden;
+}
+
 
 
 /*==========================================
@@ -834,6 +942,12 @@ section#xpscreen button{
 .store-item-icon span {
     width: 4rem;
     height: 4rem;
+	display: flex;
+}
+
+.store-item-icon img{
+	border-radius: 100%;
+    width: 4rem;
 }
 
 .store-item-title {

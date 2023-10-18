@@ -1,27 +1,31 @@
 export var state = {
 	player: {
 		soul: [75],
-		hp: 8,
-		maxHp: 12,
+		hp: 24,
+		maxHp: 24,
 		playerTurn: false,
-		fate: 5000,
+		fate: 50,
 		xp: 0,
 		lvl: 1,
-		coins: 2300,
+		coins: 23,
 		slots: 3,
-		items: {
-			basic_attack_1: 99,
-			basic_attack_2: 99,
-			heal_1: 99,
-			double_damage: 99
-		},
+		items: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece",],
+		itemsManaPaid: [],
 		itemsInUse: [],
+		mana: 1,
+		startingMana: 10,
+		shield: 0,
+		poison: 0,
 	},
 	turn: "player",
 	fatePrice: 1,
 }
 
 export const db = {
+
+	/*==========================================
+	// LEVELS 
+	============================================*/
 	levels: [
 		{
 			name: "Crossroad",
@@ -29,62 +33,70 @@ export const db = {
 			stores: 3,
 			chests: 1,
 			doors: ["Outskirts path"],
-			spawns: ["master_frog", "frog", "rat", "rat_bandit", "lagoon_dweller", "seridra", "eggman", "chest"],
+			spawns: ["bats", "goblin", "goblin2", "master_frog", "frog", "raven", "rat", "rat_bandit", "lagoon_dweller", "seridra", "eggman", "chest", "ecosystem", "desert_mouth"],
 			items: ["basic_attack_1", "basic_attack_2"],
 			bg: "crossroad",
 		},
 		{
 			name: "Outskirts path",
 			desc: "A serpentine path through untamed wilderness, where ancient trees and wildflowers sway in the breeze, concealing secrets and stories of those who came before.",
-			stores: 2,
-			chests: 1,
+			stores: 0,
+			chests: 0,
 			doors: ["Village"],
-			spawns: ["bat", "frog", "rat", "rat_bandit", "rat_bandit", "spider", "homunculus", "kobold", "acolyte", "bandit"],
+			spawns: ["frog"],
 			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
 			bg: "outskirt"
 		},
 		{
 			name: "Village",
 			desc: "As the path unwinds, an eerie village emerges — its dilapidated cottages and empty streets concealing the ominous presence that looms over this forsaken place.",
-			stores: 4,
-			chests: 3,
+			stores: 0,
+			chests: 0,
 			doors: ["Old forest", "Cemetery"],
-			spawns: ["goblin", "kobold", "cultist", "acolyte", "bandit", "rat_bandit"],
+			spawns: ["frog"],
 			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
 			bg: "crossroad"
 		},
 		{
 			name: "Old forest",
 			desc: "Its gnarled trees and twisted roots create a labyrinthine realm, where the dappled sunlight hides the lurking threats that prowl beneath the canopy.",
-			stores: 2,
-			chests: 1,
+			stores: 0,
+			chests: 0,
 			doors: ["Cemetery"],
-			spawns: ["goblin", "bat", "frog", "rat", "rat_bandit", "spider", "homunculus", "kobold", "cultist", "acolyte", "shrub", "bandit", "crab"],
+			spawns: ["frog"],
 			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
 			bg: "forest"
 		},
 		{
 			name: "Cemetery",
 			desc: "Amidst the graves of the forgotten, shadows writhe beneath the cold, unfeeling stones, and the silence is broken only by the mournful wails of unseen creatures.",
-			stores: 1,
-			chests: 2,
+			stores: 0,
+			chests: 0,
 			doors: ["Church"],
-			spawns: ["goblin", "kobold", "cultist", "acolyte", "rat_bandit", "bandit", "crab", "skeleton", "ghoul"],
+			spawns: ["frog"],
 			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
 			bg: "cemetery"
 		},
 		{
 			name: "Church",
 			desc: "Beyond the village's edge,  a decrepit church stands, its ancient stones carrying the weight of a grim past, where shadows whisper the secrets of unspeakable horrors hidden within.",
-			stores: 3,
-			chests: 3,
+			stores: 0,
+			chests: 0,
 			doors: [],
-			spawns: ["goblin", "homunculus", "kobold", "cultist", "acolyte", "shrub", "bandit", "crab", "skeleton", "ghoul", "specter"],
+			spawns: ["frog"],
 			items: ["borrowed_soul_15", "borrowed_soul_30", "borrowed_soul_55"],
 			bg: "outskirt"
 		},
 	],
+
+	/*==========================================
+	// XP 
+	============================================*/
 	xpTiers: [0, 2, 6, 13, 25, 45, 70, 100, 135, 180, 225, 1224],
+
+	/*==========================================
+	// BASIC ITEMS 
+	============================================*/
 	basicItems: {
 		fate_5: {
 			name: "Fate x5",
@@ -103,32 +115,51 @@ export const db = {
 			amount: 20,
 		},
 		HP: {
-			name: "Heal x1",
-			desc: "Recover 1 HP",
+			name: "Heal x5",
+			desc: "Recover 5 HP",
 			icon: "heart",
 			price: 5,
 			gives: "hp",
-			amount: 1,
+			amount: 5,
 		},
 	},
+
+	/*==========================================
+	// CARDS 
+	============================================*/
 	items: {
+		bat_bite: {
+			name: "Bat bite",
+			desc: "Deal 1 damage.",
+			short: ["x1 Damage"],
+			icon: "bat_bite.png",
+			price: -1,
+			mana_price: 0,
+			hitrate: [35],
+			damage: 1,
+			colors: ["#000", "#63251d"],
+		},
 		basic_attack_1: {
 			name: "Dagger",
 			desc: "Deal 3 damage.",
-			short: ["x3 Damage"],
-			icon: "frog.png",
-			price: 0,
-			hitrate: [50],
-			damage: 3,
-			colors: ["#000", "#872b1e"],
+			short: ["x1 Damage", "x3 Damage", "x5 Damage"],
+			icon: "basic_attack_1.png",
+			price: 50,
+			mana_price: 0,
+			hitrate: [15, 70, 15],
+			damage: 1,
+			damage2: 3,
+			damage3: 5,
+			colors: ["#a5645b", "#872b1e", "#2f0f0b"],
 		},
 		basic_attack_2: {
 			name: "Handaxe",
-			desc: "Deal 6 damage.",
-			short: ["x6 Damage"],
-			icon: "master_frog.png",
-			price: 0,
-			hitrate: [25],
+			desc: "Deal 6 piercing damage.",
+			short: ["x6 Piercing damage"],
+			icon: "basic_attack_2.png",
+			price: 50,
+			mana_price: 1,
+			hitrate: [92],
 			damage: 6,
 			colors: ["#000", "#81352a"],
 		},
@@ -136,27 +167,98 @@ export const db = {
 			name: "Heal potion",
 			desc: "Heal 3HP or 10HP.",
 			short: ["Heal 3HP", "Heal 10HP"],
-			icon: "seridra.png",
-			price: 0,
-			hitrate: [30, 5],
+			icon: "heal_1.png",
+			price: 50,
+			mana_price: 2,
+			hitrate: [38, 8],
 			damage: 0,
 			heal: 3,
 			heal2: 10,
-			colors: ["#000", "#0c4015", "#105b19"],
+			colors: ["#000", "#105b58", "#00312f"],
 		},
 		double_damage: {
-			name: "Aggresive stance",
+			name: "Bane-imbued edge",
 			desc: "Damage from previous cards are doubled or lost.",
 			short: ["Double previous damage", "Lose previous damage"],
-			icon: "rat_bandit.png",
-			price: 0,
+			icon: "double_damage.png",
+			price: 50,
+			mana_price: 2,
 			hitrate: [50, 50],
 			damage: 0,
-			heal: 0,
-			heal2: 10,
 			colors: ["#872b1e", "#494237"],
 		},
+		attack_heal: {
+			name: "Ambivalent Elixir",
+			desc: "Deal damage or heal.",
+			short: ["Deal 3 damage", "Heal 3HP"],
+			icon: "attack_heal.png",
+			price: 50,
+			mana_price: 3,
+			hitrate: [40, 30],
+			damage: 3,
+			heal: 3,
+			colors: ["#000","#872b1e", "#105b58"],
+		},
+		eldertide_timepiece: {
+			name: "Eldertide Timepiece",
+			desc: "Gain +1{fate}.",
+			short: ["+1{fate}"],
+			icon: "eldertide_timepiece.png",
+			price: 50,
+			mana_price: 2,
+			hitrate: [27],
+			damage: 0,
+			heal: 0,
+			mana: 0,
+			colors: ["#000","#D9D9D9"],
+		},
+		mana1: {
+			name: "Soulstone",
+			desc: "Gain +1{mana}.",
+			short: ["+1{mana}"],
+			icon: "mana1.png",
+			price: 50,
+			mana_price: 0,
+			hitrate: [76],
+			damage: 0,
+			heal: 0,
+			mana: 1,
+			colors: ["#000","#460d59"],
+		},
+		shield1: {
+			name: "Shield",
+			desc: "Gain +3{shield}.",
+			short: ["+3{shield}"],
+			icon: "shield1.png",
+			price: 50,
+			mana_price: 0,
+			hitrate: [68],
+			damage: 0,
+			heal: 0,
+			mana: 0,
+			shield: 3,
+			colors: ["#000","#8d8d8d"],
+		},
+		poison1: {
+			name: "Poison",
+			desc: "Deal +3{poison}.",
+			short: ["+3{poison}"],
+			icon: "mana1.png",
+			price: 50,
+			mana_price: 0,
+			hitrate: [33],
+			damage: 0,
+			heal: 0,
+			mana: 0,
+			shield: 0,
+			poison: 3,
+			colors: ["#000","#105b19"],
+		},
 	},
+
+	/*==========================================
+	// MOBS 
+	============================================*/
 	mobs: {
 		frog: {
 			name: "Frog",
@@ -167,11 +269,11 @@ export const db = {
 			soul: [93],
 			lvl: 1,
 			hp: 12,
-			slots: 2,
+			slots: 1,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"],
-				["heal_1", "heal_1"],
-				["basic_attack_1", "heal_1"],
+				["basic_attack_1"],
+				["attack_heal"],
+				["basic_attack_2"],
 			],
 		},
 		master_frog: {
@@ -179,13 +281,29 @@ export const db = {
 			img: "master_frog.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "Small, slimy amphibians known for their croaking calls and agile leaps. They often lurk in murky waters and can be encountered in damp, gloomy environments.",
+			desc: "An elder amphibian shrouded in mystic aura. It commands water and wields an ancient, enchanted staff to conjure tidal forces and unleash aquatic fury.",
 			soul: [37],
 			lvl: 2,
 			hp: 20,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1", "basic_attack_2"],
+				["attack_heal", "attack_heal"],
+			],
+		},
+		raven: {
+			name: "Raven",
+			img: "raven.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "A nightmarish raven with twisted feathers, blood-red eyes, and a menacing aura. Its caw chills the bravest hearts, an omen of impending doom.",
+			soul: [69],
+			lvl: 1,
+			hp: 14,
+			slots: 1,
+			patterns: [
+				["basic_attack_1"],
+				["basic_attack_2"],
 			],
 		},
 		rat: {
@@ -197,9 +315,10 @@ export const db = {
 			soul: [69],
 			lvl: 1,
 			hp: 12,
-			slots: 2,
+			slots: 1,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1"],
+				["basic_attack_2"],
 			],
 		},
 		rat_bandit: {
@@ -207,13 +326,15 @@ export const db = {
 			img: "rat_bandit.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			desc: "Cunning and nimble vermin, these bandits plague the streets. Armed with tiny, razor-sharp daggers, they swarm foes to steal and scuttle away.",
 			soul: [57],
 			lvl: 2,
 			hp: 18,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1", "basic_attack_2"],
+				["attack_heal", "basic_attack_2"],
+				["basic_attack_2", "basic_attack_2"],
 			],
 		},
 		lagoon_dweller: {
@@ -221,13 +342,15 @@ export const db = {
 			img: "lagoon_dweller.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			desc: "Half-human, half-aquatic, dwelling beneath murky waters. With webbed extremities and glistening scales, it emerges to ensnare intruders with venomous harpoons.",
 			soul: [57],
 			lvl: 2,
 			hp: 28,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["attack_heal", "attack_heal"],
+				["basic_attack_1", "attack_heal"],
+				["attack_heal", "basic_attack_2"],
 			],
 		},
 		seridra: {
@@ -235,13 +358,17 @@ export const db = {
 			img: "seridra.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			desc: "A formidable sorceress draped in dark robes. She wields shadow magic, calling forth curses and summoning eerie familiars to guard her lair.",
 			soul: [37],
 			lvl: 3,
 			hp: 42,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1", "basic_attack_2"],
+				["basic_attack_1", "attack_heal"],
+				["basic_attack_1", "basic_attack_1"],
+				["attack_heal", "double_damage"],
+				["basic_attack_1", "double_damage"],
 			],
 		},
 		eggman: {
@@ -249,13 +376,30 @@ export const db = {
 			img: "eggman.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			desc: "A twisted, human-like abomination, marred by mutation. Limbs contorted, skin pallid, it wanders in agony, driven by unnatural forces.",
 			soul: [37],
 			lvl: 3,
 			hp: 30,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1", "basic_attack_1"]
+			],
+		},
+		desert_mouth: {
+			name: "Desert Mouth",
+			img: "desert_mouth.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "A colossal, sentient sandstone formation. It awakens, summoning whirlwinds and sandstorms, devours travelers who approach its sandy, insatiable jaws.",
+			soul: [37],
+			lvl: 3,
+			hp: 38,
+			slots: 3,
+			patterns: [
+				["basic_attack_1", "basic_attack_1", "basic_attack_2"],
+				["basic_attack_2", "basic_attack_2", "basic_attack_2"],
+				["basic_attack_1", "double_damage", "basic_attack_2"],
+				["basic_attack_1", "double_damage", "heal_1"],
 			],
 		},
 		chest: {
@@ -263,27 +407,74 @@ export const db = {
 			img: "chest.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
+			desc: "A deceptive treasure chest, concealed trap. Its wooden maw hides rows of sharp teeth. Those who reach inside become prey to its voracious appetite.",
 			soul: [37],
 			lvl: 3,
 			hp: 8,
-			slots: 2,
+			slots: 1,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["basic_attack_1"]
 			],
 		},
-		bat: {
-			name: "Bat",
-			img: "rat.png",
+		ecosystem: {
+			name: "Ecosystem of Endless Pain",
+			img: "ecosystem.png",
+			type: "mob",
+			skills: [],
+			desc: "A nightmarish, sentient amalgamation of writhing, agonized souls, bound in a grotesque, ever-shifting form. It hungers for more suffering to join its ceaseless chorus of torment.",
+			soul: [99],
+			lvl: 10,
+			hp: 100,
+			slots: 5,
+			patterns: [
+				["basic_attack_1", "basic_attack_1", "basic_attack_1", "basic_attack_1", "double_damage"],
+				["basic_attack_1", "basic_attack_1", "basic_attack_2", "attack_heal", "double_damage"],
+				["basic_attack_1", "double_damage", "basic_attack_2", "double_damage", "attack_heal"],
+				["basic_attack_1", "basic_attack_2", "attack_heal", "double_damage", "attack_heal"],
+			],
+		},
+		bats: {
+			name: "Bats",
+			img: "bats.png",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
-			desc: "Denizens of the night and elegantly cloaked in obsidian wings, bats are skilled hunters of insects and small prey.",
+			desc: "A swirling mass of winged nightmares cloaked in obsidian wings Their shrieks echo through darkness, unsettling even the bravest souls, as they swoop down in a chaotic, shadowy assault.",
 			soul: [84],
 			lvl: 1,
-			hp: 6,
+			hp: 8,
+			slots: 5,
+			patterns: [
+				["bat_bite", "bat_bite", "bat_bite", "bat_bite", "bat_bite"]
+			],
+		},
+		goblin: {
+			name: "Goblin",
+			img: "goblin.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
+			soul: [84],
+			lvl: 2,
+			hp: 22,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"]
+				["shield1", "shield1"],
+				["basic_attack_2", "basic_attack_2"],
+			],
+		},
+		goblin2: {
+			name: "Goblin",
+			img: "goblin2.png",
+			type: "mob",
+			skills: ["Does double damage.", "Not really"],
+			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
+			soul: [84],
+			lvl: 2,
+			hp: 16,
+			slots: 2,
+			patterns: [
+				["shield1", "shield1"],
+				["attack_heal", "shield1"],
 			],
 		},
 		spider: {
@@ -294,20 +485,6 @@ export const db = {
 			desc: "Eight-legged arachnids, masters of stealth in their silk-spun lairs. They spin intricate webs to ensnare prey and can be found in dark corners of dungeons, forests, and caves.",
 			soul: [67],
 			lvl: 1,
-			hp: 6,
-			slots: 2,
-			patterns: [
-				["basic_attack_1", "basic_attack_2"]
-			],
-		},
-		goblin: {
-			name: "Goblin",
-			img: "rat.png",
-			type: "mob",
-			skills: ["Does double damage.", "Not really"],
-			desc: "Small, malicious humanoid creatures with greenish skin and a penchant for mischief. They are often found in tribal societies, lurking in forests, caves, and ruins, and are known for their cunning traps and love of shiny loot.",
-			soul: [72],
-			lvl: 3,
 			hp: 6,
 			slots: 2,
 			patterns: [

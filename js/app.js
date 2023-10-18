@@ -4,7 +4,7 @@
 /* ··········································································*/
 /* ··········································································*/
 import { goTo, shuffleArray, wait, updateHP, generateStoreItems, generateStore, buy, checkIfAbleToBuy, generateInventory, rand } from "./helpers.js";
-import { useitem, applyDiscsEffects, calculateEffects } from "./items.js";
+import { useitem, applyDiscsEffects, calculateEffects, stopUsingItem } from "./items.js";
 import { db, state } from "./db.js";
 import { generateDisc, spin } from "./soul.js";
 
@@ -253,8 +253,9 @@ async function generateEncounterCard(mobId) {
 			//MOB
 			const mobject = db.mobs[mobId];
 			state.currentMob = JSON.parse(JSON.stringify(mobject));
-			state.currentMob.soul = mobject.soul;
 			state.currentMob.hp = mobject.hp;
+			state.currentMob.shield = 0;
+			state.currentMob.poison = 0;
 			state.currentMob.maxHp = mobject.hp;
 			state.currentMob.mobid = mobId;
 			const encounter = document.querySelector("#encounter");
@@ -305,6 +306,9 @@ async function generateEncounterCard(mobId) {
 async function loadEncounter(mobId) {
     try {
 		state.player.itemsInUse = [];
+		state.player.itemsManaPaid = [];
+		state.player.mana = state.player.startingMana;
+		state.player.shield = 0;
         await generateEncounterCard(mobId);
         goTo("encounter");
 		toggleTurn(true);
@@ -324,6 +328,9 @@ async function toggleTurn(start) {
 	const playerDiscs = document.querySelector("#playerDiscs");
 	const mobDiscs = document.querySelector("#mobDiscs");
 
+	//Reset turn data
+	await resetTemporalEffects();
+
 	//Toggle
 	if (!start) {
 		state.turn = state.turn === "player" ? "mob" : "player";
@@ -334,9 +341,33 @@ async function toggleTurn(start) {
 		slot.classList.remove("successful", "unsuccessful");
 	});
 
-	//Reset turn data
-	state.turnDamage = 0;
-	state.turnHeal = 0;
+	//Hide shield of 0
+	if (state.player.shield === 0) {
+		document.querySelector("#encounter .player-hp .shield-wrapper").style.display = "none";
+	}
+	if (state.currentMob.shield === 0) {
+		document.querySelector("#encounter .enemy-hp .shield-wrapper").style.display = "none";
+	}
+
+	//Deal poison damage
+	if (state.turn === "player") {
+		state.player.hp -= state.player.poison;
+		state.player.poison = Math.max(state.player.poison - 1, 0);
+		document.querySelector("#encounter .player-hp .poison-wrapper .poison-amount").textContent = state.player.poison;
+	} else if (state.turn === "mob") {
+		state.currentMob.hp -= state.currentMob.poison;
+		state.currentMob.poison =  Math.max(state.currentMob.poison - 1, 0);
+		document.querySelector("#encounter .enemy-hp .poison-wrapper .poison-amount").textContent = state.currentMob.poison;
+	}
+	await updateHP();
+
+	//Hide poison of 0
+	if (state.player.poison === 0) {
+		document.querySelector("#encounter .player-hp .poison-wrapper").style.display = "none";
+	}
+	if (state.currentMob.poison === 0) {
+		document.querySelector("#encounter .enemy-hp .poison-wrapper").style.display = "none";
+	}
 
 	//Reset UI
 	if (state.turn === "player" || start) {
@@ -416,6 +447,38 @@ async function spinDiscs() {
 	});
 }
 
+/*==========================================*/
+// Reset temporal damage/heal/shield
+/*==========================================*/
+async function resetTemporalEffects() {
+	return new Promise(async(resolve, reject) => {
+		try {
+			state.turnDamage = 0;
+			state.turnPiercingDamage = 0;
+			state.turnHeal = 0;
+			state.turnShield = 0;
+			state.turnPoison = 0;
+			document.querySelectorAll("#encounter .progress .damage-bar").forEach(el => { el.style.width = "0%"; });
+			document.querySelectorAll(".heal-bar").forEach(el => { el.style.width = "0%"; });
+
+			//Shields
+			document.querySelector("#encounter .player-hp .shield-amount").textContent = state.player.shield;
+			document.querySelector("#encounter .enemy-hp .shield-amount").textContent = state.currentMob.shield;
+			document.querySelectorAll("#encounter .shield-wrapper").forEach(el => {
+				el.classList.remove("healed", "damaged");
+			});
+
+			//Poison
+			document.querySelector("#encounter .player-hp .poison-amount").textContent = state.player.poison;
+			document.querySelector("#encounter .enemy-hp .poison-amount").textContent = state.currentMob.poison;
+
+			resolve();
+		} catch (error) {
+			console.log("An error occurred during attack: " + error.message);
+			reject(error);
+		}
+	});
+}
 
 /*==========================================*/
 // Change fate
@@ -430,10 +493,7 @@ async function changeFate() {
 	});
 	
 	//Remove calculated effects
-	state.turnDamage = 0;
-	state.turnHeal = 0;
-	document.querySelector("#encounter .enemy-hp .progress .damage-bar").style.width = "0%";
-	document.querySelectorAll(".heal-bar").forEach(el => { el.style.width = "0%"; });
+	await resetTemporalEffects();
 	
 	await wait (450);
 
@@ -462,40 +522,6 @@ async function changeFate() {
 	}
 
 	endBtn.disabled = false;
-}
-
-/*==========================================*/
-// Damage to mob
-/*==========================================*/
-async function damageToEnemy() {
-	state.currentMob.hp--;
-	state.currentMob.soul[0] = state.currentMob.soul[0] + (state.currentMob.lvl * 2.3);
-	generateDisc([state.currentMob.soul], "mobSoul");
-	const hearts = document.querySelectorAll('.enemy-hp > .full > .heart');
-	const lastHeart = hearts[hearts.length - 1];
-	
-	let particlesOpts = {
-		particlesAmountCoefficient: 1,
-		direction: "bottom",
-		color: "red"
-	};
-	particlesOpts.complete = () => {
-		lastHeart.style.opacity = "0";
-		lastHeart.style.transform = "unset";
-		lastHeart.parentElement.style.transform = "unset";
-		lastHeart.parentElement.style.visibility = "unset";
-		updateHP();
-	};
-	const particles = new Particles(lastHeart, particlesOpts);
-	if ( !particles.isAnimating() ) {
-		particles.disintegrate();
-	}
-
-	if (state.currentMob.hp > 0) {
-		toggleTurn();
-	} else {
-		victory();
-	}
 }
 
 /*==========================================*/
@@ -590,38 +616,6 @@ async function generateXpScreen() {
 }
 
 /*==========================================*/
-// Damage to player
-/*==========================================*/
-async function damageToPlayer() {
-	state.player.hp--;
-	const hearts = document.querySelectorAll('.player-hp > .full > .heart');
-	const lastHeart = hearts[hearts.length - 1];
-
-	let particlesOpts = {
-		particlesAmountCoefficient: 1,
-		direction: "bottom",
-		color: "red"
-	};
-	particlesOpts.complete = () => {
-		lastHeart.style.opacity = "0";
-		lastHeart.style.transform = "unset";
-		lastHeart.parentElement.style.transform = "unset";
-		lastHeart.parentElement.style.visibility = "unset";
-		updateHP();
-	};
-	const particles = new Particles(lastHeart, particlesOpts);
-	if ( !particles.isAnimating() ) {
-		particles.disintegrate();
-	}
-	
-	if (state.player.hp > 0) {
-		toggleTurn();
-	} else {
-		location.reload();
-	}
-}
-
-/*==========================================*/
 // Enemy's turn
 /*==========================================*/
 async function enemyAttack() {
@@ -639,10 +633,12 @@ async function enemyAttack() {
 
 				await useitem(pattern[i]);
 			}
+
+			await wait(1200);
 			
 			await spinDiscs();
 			
-			await wait(800);
+			await wait(1200);
 			await applyDiscsEffects();
 
 			toggleTurn();
@@ -872,15 +868,35 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 /*==========================================*/
 // Open/Close inventory
 /*==========================================*/
+//Close
 document.querySelector(".close-inventory").addEventListener("click", function() {
 	document.querySelector(".inventory").style.display = "none";
 	document.querySelector(".target-slot").classList.remove("target-slot");
 });
 
+//Open
 document.querySelector("#soulbar").addEventListener("click", async function(e) {
-	if (e.target.matches(".slot") && !e.target.matches(".locked-slot")) {
-		e.target.classList.add("target-slot")
-		await generateInventory();
+	const slot = e.target.closest(".slot");
+	if (slot) {
+		slot.classList.add("target-slot");
+
+		const removeBtn = document.querySelector("button.clear-slot");
+		let itemId;
+
+		if (slot.querySelector(".disc")) {
+			removeBtn.disabled = false;
+			itemId = slot.querySelector(".disc").dataset.itemid;
+		} else {
+			removeBtn.disabled = true;
+			itemId = false;
+		}
+
+
+
+		//Generate inventory
+		await generateInventory(itemId);
+
+		//Display inventory
 		document.querySelector(".inventory").style.display = "flex";
 	}
 })
@@ -892,7 +908,23 @@ document.querySelector(".inventory").addEventListener("click", async function(e)
 
 	if (e.target.closest(".inventory-item")) {
 		const itemId = e.target.closest(".inventory-item").dataset.item;
-		await useitem(itemId);
+		if (e.target.closest(".mana-required")) {
+			const manaPrice = db.items[itemId].mana_price;
+			state.player.mana -= manaPrice;
+			state.player.itemsManaPaid.push(itemId);
+			await useitem(itemId);
+		} else {
+			await useitem(itemId);
+		}
 		document.querySelector(".inventory").style.display = "none";
 	}
 })
+
+/*==========================================*/
+// Stop using item
+/*==========================================*/
+document.querySelector(".clear-slot").addEventListener("click", async function() {
+	await stopUsingItem();
+	document.querySelector(".inventory").style.display = "none";
+	document.querySelector(".target-slot").classList.remove("target-slot");
+});
