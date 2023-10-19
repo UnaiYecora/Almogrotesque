@@ -84,8 +84,8 @@ async function generateEncounterCard(mobId) {
 			mobDiscs.style.display = "none";
 
 			// Random mob image and text rotations
-			document.querySelector(".mob-image-wrapper").dataset.rotate = Math.floor(Math.random() * 3);
-			document.querySelector(".mob-info-wrapper").dataset.rotate = Math.floor(Math.random() * 3);
+			document.querySelector(".mob-image-wrapper").dataset.rotate = mobData.img_rotation;
+			document.querySelector(".mob-info-wrapper").dataset.rotate = mobData.desc_rotation;
 
 			// Mob image and description
 			const encounter = document.querySelector("#encounter");
