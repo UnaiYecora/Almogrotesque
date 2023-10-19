@@ -1,27 +1,37 @@
 /* ··········································································*/
 /* ··········································································*/
+/* ··········································································*/
 /* ···························  I M P O R T S  ······························*/
 /* ··········································································*/
 /* ··········································································*/
+/* ··········································································*/
 import { db } from "./db.js";
-import { wait, rand } from "./helpers.js";
+import { rand, wait } from "./helpers.js";
 
-/*==========================================*/
-// Generate soul disc
-/*==========================================*/
-export async function generateDisc(itemId, discId/* data, disc, customColors */) {
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··························  F U N C T I O N S  ···························*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+
+/*===========================================================================*/
+// Generate card disc
+/*===========================================================================*/
+export async function generateDisc(cardId, discId) {
     return new Promise((resolve, reject) => {
         try {
 
-            //Get data
-            const hitrate = db.items[itemId].hitrate;
-			const colors = db.items[itemId].colors;
+            // Get data
+            const hitrate = db.cards[cardId].hitrate;
+			const colors = db.cards[cardId].colors;
 
-            //SVG size
+            // SVG size
             const svgSize = 100;
 
-            //Final segment array (adding to 100)
-            hitrate[0] = Math.min(hitrate[0], 95); //TO-DO: Also avoid < 5%
+            // Final segment array (adding to 100)
+            hitrate[0] = Math.min(hitrate[0], 95); // TO-DO: Also avoid < 5%
 
             const dataSum = hitrate.reduce((acc, num) => acc + num, 0);
             const segmentRest = 100 - dataSum;
@@ -32,7 +42,7 @@ export async function generateDisc(itemId, discId/* data, disc, customColors */)
                 segmentSizes = [...hitrate];
             }
 
-            //Colors
+            // Colors
             let colorArray;
             if (colors) {
                 colorArray = colors;
@@ -48,7 +58,7 @@ export async function generateDisc(itemId, discId/* data, disc, customColors */)
                 container.querySelector("svg").remove();
             }
 
-            //Create svg
+            // Create svg
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.setAttribute("width", svgSize + "%");
             svg.setAttribute("height", svgSize + "%");
@@ -92,7 +102,7 @@ export async function generateDisc(itemId, discId/* data, disc, customColors */)
 
             container.appendChild(svg);
 
-            //Add arrow
+            // Add arrow
             if (!container.querySelector(".arrow")) {
                 const arrow = document.createElement("div");
                 arrow.classList.add("arrow");
@@ -100,27 +110,27 @@ export async function generateDisc(itemId, discId/* data, disc, customColors */)
                 container.appendChild(arrow);
             }
 
-            //Include data in disc dataset
+            // Include data in disc dataset
             container.dataset.discdata = "[" + segmentSizes + "]";
-            container.dataset.itemid = itemId;
+            container.dataset.cardid = cardId;
 
             resolve();
 
         } catch (error) {
-            console.log("An error occurred when generating a disc for " + disc + ": " + error.message);
+            console.log("An error occurred when generating a disc for " + discId + ": " + error.message);
             reject(error);
         }
     })
 }
 
 
-/*==========================================*/
-// Spin soul disc
-/*==========================================*/
-export async function spin(id) {
+/*===========================================================================*/
+// Spin card disc
+/*===========================================================================*/
+export async function spin(discId) {
     return new Promise(async (resolve, reject) => {
 		try {
-            const arrow = document.querySelector("#" + id + " .arrow");
+            const arrow = document.querySelector("#" + discId + " .arrow");
             let r = parseFloat(arrow.style.transform.match(/rotate\((.+)\)/)[1]);
 
             const extraSpins = await rand(1, 4);
@@ -128,13 +138,13 @@ export async function spin(id) {
             r += (await rand(0, 360)) + (360 * extraSpins);
             arrow.style.transform = "translate(-50%, -100%) rotate(" + r + "deg)";
             
-            //LOG
+            // Results
             let newRotation = arrow.style.transform.match(/rotate\((.+)\)/)[1];
             let degreesRotated = parseInt(newRotation, 10) % 360;
-            setTimeout(async () => {
-                const results = await logResults(id, degreesRotated);
-                resolve(results);
-            }, 1500);
+
+			await wait(1500);
+			const results = await logResults(discId, degreesRotated);
+			resolve(results);
         }catch (error) {
 			reject(error);
 		}
@@ -142,13 +152,13 @@ export async function spin(id) {
 }
 
 
-/*==========================================*/
+/*===========================================================================*/
 // Log disc results
-/*==========================================*/
-async function logResults(id, degreesRotated) {
+/*===========================================================================*/
+async function logResults(discId, degreesRotated) {
     return new Promise((resolve, reject) => {
         try {
-            const data = JSON.parse(document.getElementById(id).getAttribute('data-discdata'));
+            const data = JSON.parse(document.getElementById(discId).getAttribute('data-discdata'));
             let sum = data.reduce((a, b) => a + b);
             let cumulativeDegrees = 0;
             let r = 1;
@@ -162,9 +172,7 @@ async function logResults(id, degreesRotated) {
         
                 cumulativeDegrees += segmentDegrees;
             }
-        
-            /* console.log('Segment: ' + r);
-            console.log('Grados: ' + degreesRotated); */
+
             resolve(r);
         } catch (error) {
 			console.log("An error occurred trying to get attack results: " + error.message);
