@@ -773,7 +773,7 @@ div#discobar > span{
 .inventory-card .disc-indicator {
     width: 15.1rem;
     aspect-ratio: 1;
-    border-radius: 100%;
+    /* border-radius: 100%; */
     mix-blend-mode: color-burn;
     position: absolute;
     top: 0;
@@ -784,7 +784,7 @@ div#discobar > span{
 .card-inventory-title{
 	font-size: 1.2rem;
 	font-weight: 700;
-	padding-top: 3rem;
+    padding-block: 3rem 0.7rem;
 }
 
 .card-inventory-icon {
@@ -793,10 +793,11 @@ div#discobar > span{
     position: relative;
     width: 100%;
     aspect-ratio: 1;
+    outline: 0.2rem solid;
 }
 
 .card-inventory-icon img {
-    border-radius: 100%;
+    /* border-radius: 100%; */
 }
 
 .card-inventory-desc{
