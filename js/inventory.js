@@ -6,6 +6,7 @@
 /* ··········································································*/
 /* ··········································································*/
 import { iconify } from "./helpers.js";
+import { generateCardDisc } from "./discs.js";
 import { db, state } from "./db.js";
 
 
@@ -69,12 +70,16 @@ export async function generateInventory(previousCard) {
 					mark = "";
 				}
 
+				// Get card disc
+				const disc = await generateCardDisc(cardId);
+
 				// Generate card HTML
 				let cardHTML = "";
 				cardHTML += '<div class="inventory-card ' + disabled + manaRequired + manaAvailable + mark + '" data-cardid="' + cardId + '">';
 				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
 				cardHTML += '<div class="card-inventory-icon">';
 				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
+				cardHTML += disc;
 				cardHTML += '</div>';
 				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
 				cardHTML += '<div class="mana-price">';

@@ -7,7 +7,7 @@
 /* ··········································································*/
 import { goTo, updateHP, updateFate, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand } from "./helpers.js";
 import { db, state } from "./db.js";
-import { generateDisc, spin } from "./discs.js";
+import { generatePlayingDisc, spin } from "./discs.js";
 
 
 /* ··········································································*/
@@ -142,6 +142,9 @@ export async function toggleTurn(start) {
 	turnCharacter.poison = Math.max(turnCharacter.poison - 1, 0);
 	poisonAmountElement.textContent = turnCharacter.poison;
 	await updateHP();
+	if (state.mob.hp <= 0) {
+		victory();
+	}
 
 	// Hide poison if is at 0
 	if (state.player.poison === 0) {
@@ -304,6 +307,7 @@ async function resetTemporalEffects() {
 			state.turnHeal = 0;
 			state.turnShield = 0;
 			state.turnPoison = 0;
+			state.turnRemoveAllShield = false;
 
 			// Reset temporal damage and temporal heal bars
 			document.querySelectorAll("#encounter .progress .damage-bar, .heal-bar").forEach(el => {
@@ -382,7 +386,7 @@ export async function placeCardInSlot(cardId) {
 			slot.classList.remove("target-slot");
 			slot.classList.add("charged");
 
-			generateDisc(cardId, randomID);
+			generatePlayingDisc(cardId, randomID);
 
 			resolve();
 		} catch (error) {
@@ -575,8 +579,8 @@ export async function applyDiscsEffects() {
 			// Get turn targets
 			/////////////////
 			const isPlayerTurn = state.turn === "player";
-            const self = isPlayerTurn ? state.player : state.mob;
-            const target = isPlayerTurn ? state.mob : state.player;
+			const self = isPlayerTurn ? state.player : state.mob;
+			const target = isPlayerTurn ? state.mob : state.player;
 
 
 			/////////////////
@@ -584,16 +588,16 @@ export async function applyDiscsEffects() {
 			/////////////////
 
 			// Apply shield to reduce damage
-            const shield = target.shield;
-            const remainingDamage = Math.max(0, state.turnDamage - shield);
-            target.shield = Math.max(0, shield - state.turnDamage);
+			const shield = target.shield;
+			const remainingDamage = Math.max(0, state.turnDamage - shield);
+			target.shield = Math.max(0, shield - state.turnDamage);
 
 			// Calculate the total damage
-            const totalDamage = state.turnPiercingDamage + remainingDamage;
+			const totalDamage = state.turnPiercingDamage + remainingDamage;
 
 			// Deal damage to the target
-            target.hp = Math.max(target.hp - totalDamage, 0);
-			
+			target.hp = Math.max(target.hp - totalDamage, 0);
+
 
 			// Reset health bars
 			document.querySelectorAll(".damage-bar").forEach(el => {
@@ -614,6 +618,9 @@ export async function applyDiscsEffects() {
 			/////////////////
 			// Shield
 			/////////////////
+			if (state.turnRemoveAllShield) {
+				self.shield = 0;
+			}
 			self.shield = self.shield + state.turnShield;
 			state.turnShield = 0;
 
@@ -697,7 +704,7 @@ class Effects {
 		// Get damage of this card
 		let damageAmount = amount;
 		if (amount === undefined) {
-			if ( db.cards[this.cardId].damage) {
+			if (db.cards[this.cardId].damage) {
 				damageAmount = db.cards[this.cardId].damage;
 			} else {
 				damageAmount = 0;
@@ -727,7 +734,7 @@ class Effects {
 		tempBar.style.width = (state.turnPiercingDamage + remainingDamage) / target.hp * 100 + "%";
 	}
 
-	piercingDamage(amount){
+	piercingDamage(amount) {
 		let target;
 		let tempBar;
 		let shield;
@@ -744,7 +751,7 @@ class Effects {
 		// Get damage of this card
 		let damageAmount = amount;
 		if (amount === undefined) {
-			if ( db.cards[this.cardId].damage) {
+			if (db.cards[this.cardId].damage) {
 				damageAmount = db.cards[this.cardId].damage;
 			} else {
 				damageAmount = 0;
@@ -784,7 +791,7 @@ class Effects {
 
 		let healAmount = amount;
 		if (amount === undefined) {
-			if ( db.cards[this.cardId].heal) {
+			if (db.cards[this.cardId].heal) {
 				healAmount = db.cards[this.cardId].heal;
 			} else {
 				healAmount = 0;
@@ -797,21 +804,18 @@ class Effects {
 
 	shield(amount) {
 		let shieldEl;
-		let self;
 		let previousShield;
 		if (state.turn === "player") {
-			self = state.player;
 			shieldEl = document.querySelector("#encounter .player-hp .shield-wrapper");
-			previousShield = state.player.shield;
+			previousShield = state.turnRemoveAllShield ? 0 : state.player.shield;
 		} else {
-			self = state.mob;
 			shieldEl = document.querySelector("#encounter .mob-hp .shield-wrapper");
-			previousShield = state.mob.shield;
+			previousShield = state.turnRemoveAllShield ? 0 : state.mob.shield;
 		}
 
 		let shieldAmount = amount;
 		if (amount === undefined) {
-			if ( db.cards[this.cardId].shield) {
+			if (db.cards[this.cardId].shield) {
 				shieldAmount = db.cards[this.cardId].shield;
 			} else {
 				shieldAmount = 0;
@@ -825,7 +829,7 @@ class Effects {
 		shieldEl.classList.add("healed");
 	}
 
-	poison(amount){
+	poison(amount) {
 		let target;
 		let poisonEl;
 		if (state.turn === "player") {
@@ -840,7 +844,7 @@ class Effects {
 
 		let poisonAmount = amount;
 		if (amount === undefined) {
-			if ( db.cards[this.cardId].poison) {
+			if (db.cards[this.cardId].poison) {
 				poisonAmount = db.cards[this.cardId].poison;
 			} else {
 				poisonAmount = 0;
@@ -877,6 +881,7 @@ class Effects {
 		}
 	}
 	basic_attack_2() {
+		let amount;
 		switch (this.result) {
 			case 1:
 				this.unsuccessful();
@@ -884,6 +889,11 @@ class Effects {
 			case 2:
 				this.successful();
 				this.piercingDamage();
+				break;
+			case 3:
+				amount = db.cards[this.cardId].damage2;
+				this.successful();
+				this.piercingDamage(amount);
 				break;
 		}
 	}
@@ -995,6 +1005,37 @@ class Effects {
 				this.poison();
 				this.successful();
 				break;
+		}
+	}
+	shield_attack() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				let shieldEl;
+				let previousShield;
+				if (state.turn === "player") {
+					shieldEl = document.querySelector("#encounter .player-hp .shield-wrapper");
+					previousShield = state.player.shield;
+				} else {
+					shieldEl = document.querySelector("#encounter .mob-hp .shield-wrapper");
+					previousShield = state.mob.shield;
+				}
+
+				if (!state.turnRemoveAllShield) {
+					state.turnDamage += previousShield + state.turnShield;
+				} else {
+					state.turnDamage += state.turnShield;
+				}
+				state.turnRemoveAllShield = true;
+				state.turnShield = 0;
+				shieldEl.querySelector(".shield-amount").textContent = 0;
+				shieldEl.classList.add("damaged");
+
+				this.dealDame();
+				this.successful();
+				break;0
 		}
 	}
 }

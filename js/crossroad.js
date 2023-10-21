@@ -69,7 +69,7 @@ function createLvlArray(lvl) {
 			];
 
 			const levelArray = [...arrayOfMobs, ...saferoomsArray];
-			shuffleArray(levelArray);
+			//shuffleArray(levelArray);
 
 			state.currentLevelArray = levelArray;
 
@@ -136,7 +136,7 @@ export function fillPaths() {
 							}
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom;
-							path.dataset.skippable = true;
+							path.dataset.skippable = false;
 							break;
 					}
 

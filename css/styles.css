@@ -694,7 +694,7 @@ div#discobar > span{
     background: #000000e0;
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 11;
 	display: none;
 }
 
@@ -741,6 +741,21 @@ div#discobar > span{
 	position: relative;
 }
 
+.inventory-card:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background: url(../assets/img/textures/paper1.png);
+    mix-blend-mode: multiply;
+    background-size: 20.6rem 29rem;
+    background-position: -1.5rem -1.1rem;
+    mask-image: url(../assets/img/textures/card.png);
+    -webkit-mask-image: url(../assets/img/textures/card.png);
+    transform: rotate(1deg);
+}
+
 .inventory-card.disabled{
 	filter: brightness(0.3) blur(1px);
 	pointer-events: none;
@@ -755,6 +770,17 @@ div#discobar > span{
 	pointer-events: none;
 }
 
+.inventory-card .disc-indicator {
+    width: 15.1rem;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    mix-blend-mode: color-burn;
+    position: absolute;
+    top: 0;
+    opacity: 0.3;
+    filter: saturate(0.5);
+}
+
 .card-inventory-title{
 	font-size: 1.2rem;
 	font-weight: 700;
@@ -762,8 +788,15 @@ div#discobar > span{
 }
 
 .card-inventory-icon {
-    mix-blend-mode: darken;
-    filter: sepia(1);
+    /* mix-blend-mode: darken;
+    filter: sepia(1); */
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.card-inventory-icon img {
+    border-radius: 100%;
 }
 
 .card-inventory-desc{
