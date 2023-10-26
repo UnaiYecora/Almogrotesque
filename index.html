@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="css/styles.css?v=0.6">
-	<link rel="stylesheet" href="css/svgs.css?v=0.6">
-	<script src="js/app.js?v=0.6" type="module"></script>
+	<link rel="stylesheet" href="css/styles.css?v=0.7">
+	<link rel="stylesheet" href="css/svgs.css?v=0.7">
+	<script src="js/app.js?v=0.7" type="module"></script>
 </head>
+
 <body>
 	<main>
 		<section id="start">
@@ -17,7 +19,7 @@
 				<button id="newGame">New Game</button>
 				<button>How to play</button>
 			</div>
-			<p>v0.6</p>
+			<p>v0.7</p>
 		</section>
 
 		<section id="crossroad">
@@ -149,9 +151,15 @@
 						<span class="poison icon"></span>
 					</div>
 				</div>
-				<div class="fate-left-wrapper">
-					<span class="fate-left">0</span>
-					<span class="fate"></span>
+				<div class="right-side">
+					<div class="mana-left-wrapper">
+						<span class="mana-left">0</span>
+						<span class="mana"></span>
+					</div>
+					<div class="fate-left-wrapper">
+						<span class="fate-left">0</span>
+						<span class="fate"></span>
+					</div>
 				</div>
 			</div>
 
@@ -162,7 +170,6 @@
 				</div>
 				<div class="inventory-cards"></div>
 			</div>
-			
 		</section>
 
 		<section id="xpscreen" class="modal">
@@ -205,8 +212,17 @@
 				</div>
 			</div>
 		</section>
+
+		<section id="chest">
+			<div class="chest-wrapper">
+				<div class="chest-image"></div>
+				<div class="chest-puzzle"></div>
+			</div>
+			<button class="close-chest">X</button>
+		</section>
 	</main>
 	<script src="js/lib/anime.min.js"></script>
 	<script src="js/lib/particles.js"></script>
 </body>
+
 </html>

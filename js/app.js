@@ -5,11 +5,12 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP } from "./helpers.js";
+import { updateFate, updateCoins, goTo, updateHP, updateMana } from "./helpers.js";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js";
 import { generateInventory } from "./inventory.js";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js";
+import { generatePuzzle } from "./chests.js";
 import { db, state } from "./db.js";
 
 
@@ -87,6 +88,13 @@ document.querySelector("#crossroad").addEventListener("click", async function (e
 				await generateStore(storeid);
 				await checkIfAbleToBuy();
 				document.querySelector("#store").style.display = "flex";
+			}
+
+			// Chest
+			if (type === "chest") {
+				await generatePuzzle();
+				// TO-DO: Like stores, save chest so it doesn't change when exiting and entering again
+				goTo("chest");
 			}
 		}
 	}
@@ -234,6 +242,7 @@ document.querySelector(".inventory").addEventListener("click", async function(e)
 			const manaPrice = db.cards[cardId].mana_price;
 			state.player.mana -= manaPrice;
 			state.player.cardsManaPaid.push(cardId);
+			updateMana();
 			await placeCardInSlot(cardId);
 		} else {
 			await placeCardInSlot(cardId);
@@ -251,3 +260,10 @@ document.querySelector(".clear-slot").addEventListener("click", async function()
 	document.querySelector(".inventory").style.display = "none";
 	document.querySelector(".target-slot").classList.remove("target-slot");
 });
+
+/*===========================================================================*/
+// Close chest
+/*===========================================================================*/
+document.querySelector(".close-chest").addEventListener("click", function() {
+	goTo("crossroad");
+})

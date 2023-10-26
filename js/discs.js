@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { db } from "./db.js";
+import { db, state } from "./db.js";
 import { rand, wait } from "./helpers.js";
 
 /* ··········································································*/
@@ -52,9 +52,29 @@ export async function generatePlayingDisc(cardId, discId) {
                 container.appendChild(arrow);
             }
 
+            // Mana requirements
+			const manaCost = db.cards[cardId].mana_cost;
+			if (manaCost > 0 && state.turn === "player") {
+                
+                // Display mana requirement
+                let manaToDisplay = manaCost;
+                const availableMana = state.player.mana + state.turnMana - state.turnManaToConsume;
+                if (manaCost > state.player.mana) {
+                    container.classList.add("requires-mana");
+                    manaToDisplay = availableMana - manaCost;
+                }
+
+                // Display mana requirement
+				const manaElement = document.createElement("div");
+				manaElement.classList.add("mana-requirement");
+				manaElement.innerHTML = '<span class="mana-requirement-amount">' + manaToDisplay + '</span><span class="icon mana"></span>';
+				container.appendChild(manaElement);
+			}
+
             // Include data in disc dataset
             container.dataset.discdata = JSON.stringify(segmentSizes);
             container.dataset.cardid = cardId;
+            container.dataset.manacost = db.cards[cardId].mana_cost;
 
             resolve();
         } catch (error) {
@@ -204,6 +224,44 @@ async function logResults(discId, degreesRotated) {
             resolve(r);
         } catch (error) {
             console.log("An error occurred trying to get attack results: " + error.message);
+            reject(error);
+        }
+    })
+}
+
+/*===========================================================================*/
+// Disable disc if not enough mana
+/*===========================================================================*/
+export async function checkDiscsForMana() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Get elements
+            const discs = document.querySelectorAll("#playerDiscs .slot > .disc")
+
+            discs.forEach(disc => {
+                const availableMana = state.player.mana + state.turnMana - state.turnManaToConsume;
+                const manaResAmount = disc.querySelector(".mana-requirement-amount");
+                // If not previous disc
+                if (!disc.classList.contains("spun")) {
+
+                    // If not enough mana
+                    if (disc.dataset.manacost > availableMana) {
+                        disc.classList.add("requires-mana");
+                        if (manaResAmount) {
+                            manaResAmount.textContent = availableMana - disc.dataset.manacost;
+                        }
+
+                    // If enough mana
+                    } else {
+                        disc.classList.remove("requires-mana");
+                        if (manaResAmount) {
+                            manaResAmount.textContent = disc.dataset.manacost;
+                        }
+                    }
+                }
+            });
+            resolve();
+        } catch (error) {
             reject(error);
         }
     })

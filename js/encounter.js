@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, updateHP, updateFate, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand } from "./helpers.js";
+import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js";
 import { db, state } from "./db.js";
-import { generatePlayingDisc, spin } from "./discs.js";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js";
 
 
 /* ··········································································*/
@@ -28,7 +28,9 @@ export async function loadEncounter(mobId) {
 		state.player.cardsManaPaid = [];
 		state.player.mana = state.player.startingMana;
 		state.player.shield = 0;
+		state.player.poison = 0;
 		state.fatePrice = 1;
+		state.player.cardsThisEncounter = [...state.player.cards];
 
 		// Generate the encounter card
 		await generateEncounterCard(mobId);
@@ -126,6 +128,8 @@ export async function toggleTurn(start) {
 	// Toggle turn
 	if (!start) {
 		state.turn = state.turn === "player" ? "mob" : "player";
+	} else {
+		state.turn = "player";
 	}
 
 	let turnCharacter;
@@ -136,14 +140,16 @@ export async function toggleTurn(start) {
 	}
 
 	// Deal poison damage
-	const poisonWrapper = encounter.querySelector(`.${state.turn}-hp .poison-wrapper`);
-	const poisonAmountElement = poisonWrapper.querySelector(".poison-amount");
-	turnCharacter.hp -= turnCharacter.poison;
-	turnCharacter.poison = Math.max(turnCharacter.poison - 1, 0);
-	poisonAmountElement.textContent = turnCharacter.poison;
-	await updateHP();
-	if (state.mob.hp <= 0) {
-		victory();
+	if (state.turn) {
+		const poisonWrapper = encounter.querySelector(`.${state.turn}-hp .poison-wrapper`);
+		const poisonAmountElement = poisonWrapper.querySelector(".poison-amount");
+		turnCharacter.hp = Math.max(turnCharacter.hp - turnCharacter.poison, 0);
+		turnCharacter.poison = Math.max(turnCharacter.poison - 1, 0);
+		poisonAmountElement.textContent = turnCharacter.poison;
+		await updateHP();
+		if (state.mob.hp <= 0) {
+			victory();
+		}
 	}
 
 	// Hide poison if is at 0
@@ -165,8 +171,11 @@ export async function toggleTurn(start) {
 	// Remove un/successful states
 	removeSuccessDiscStates();
 
+	// Heart pulse
+	heartPulse();
+
 	// Reset UI
-	if (state.turn === "player" || start) {
+	if (state.turn === "player") {
 		mainAction.style.display = "flex";
 		secondaryAction.style.display = "none";
 		noAction.style.display = "none";
@@ -175,7 +184,7 @@ export async function toggleTurn(start) {
 		playerDiscs.style.display = "flex";
 		mobDiscs.style.display = "none";
 	}
-
+	
 	else if (state.turn === "mob") {
 		mainAction.style.display = "none";
 		secondaryAction.style.display = "none";
@@ -196,6 +205,10 @@ export async function toggleTurn(start) {
 // Victory
 /*===========================================================================*/
 export async function victory() {
+	state.turn = false;
+	state.player.poison = 0;
+	state.player.shield = 0;
+	state.player.mana = 0;
 	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
 }
@@ -307,7 +320,12 @@ async function resetTemporalEffects() {
 			state.turnHeal = 0;
 			state.turnShield = 0;
 			state.turnPoison = 0;
+			state.turnFate = 0;
+			state.turnMana = 0;
+			state.turnManaToConsume = 0;
 			state.turnRemoveAllShield = false;
+			state.player.cardsToBanish = [];
+			state.player.discsToEmpty = [];
 
 			// Reset temporal damage and temporal heal bars
 			document.querySelectorAll("#encounter .progress .damage-bar, .heal-bar").forEach(el => {
@@ -324,6 +342,12 @@ async function resetTemporalEffects() {
 			// Reset poison
 			document.querySelector("#encounter .player-hp .poison-amount").textContent = state.player.poison;
 			document.querySelector("#encounter .mob-hp .poison-amount").textContent = state.mob.poison;
+
+			// Reset mana
+			updateMana();
+			
+			// Reset fate
+			updateFate();
 
 			resolve();
 		} catch (error) {
@@ -503,7 +527,21 @@ async function enemyAttack() {
 	return new Promise(async (resolve, reject) => {
 		try {
 
-			const pattern = state.mob.patterns[Math.floor(Math.random() * state.mob.patterns.length)];
+			let patternsArray = [];
+
+			const matchingPatterns = state.mob.patterns.filter(pattern => pattern.condition(state.mob, state.player));
+    
+			if (matchingPatterns.length > 0) {
+				matchingPatterns.forEach(pattern => {
+					patternsArray = [...patternsArray, ...pattern.attacks];
+				});
+			} else {
+				patternsArray = [...patternsArray, ...state.mob.patterns[0].attacks];
+			}
+
+			console.log(patternsArray);
+
+			const pattern = patternsArray[Math.floor(Math.random() * patternsArray.length)];
 			const slots = document.querySelectorAll("#mobDiscs .slot");
 
 			for (let i = 0; i < slots.length; i++) {
@@ -529,7 +567,6 @@ async function enemyAttack() {
 	});
 }
 
-
 /*===========================================================================*/
 // Spin discs and call the effects of each one
 /*===========================================================================*/
@@ -546,17 +583,27 @@ async function spinDiscs() {
 				const discId = disc.querySelector(".disc").id;
 				const discElement = document.getElementById(discId);
 
-				// Spin the disc
-				const result = await spin(discId);
+				// Spin if anough mana
+				if (!discElement.classList.contains("requires-mana")) {
+					
+					// Spin the disc
+					const result = await spin(discId);
+	
+					// Dynamically call the effect method based on cardId
+					const cardId = discElement.dataset.cardid;
+					const effects = new Effects(result, cardId, discElement);
+					if (effects[cardId] && typeof effects[cardId] === 'function') {
+						await effects[cardId]();
+					} else {
+						console.error(`Unknown card ID: ${cardId}`);
+					}
 
-				// Dynamically call the effect method based on cardId
-				const cardId = discElement.dataset.cardid;
-				const effects = new Effects(result, cardId, discElement);
-				if (effects[cardId] && typeof effects[cardId] === 'function') {
-					effects[cardId]();
-				} else {
-					console.error(`Unknown card ID: ${cardId}`);
 				}
+
+				discElement.classList.add("spun");
+
+				// Check for mana
+				await checkDiscsForMana(discId);
 			}
 
 			resolve();
@@ -633,22 +680,36 @@ export async function applyDiscsEffects() {
 
 
 			/////////////////
-			// Gain mana
+			// Gain/Consume mana
 			/////////////////
-			if (state.tempMana && state.tempMana > 0) {
-				state.player.mana += state.tempMana;
-				state.tempMana = 0;
+			if (state.turn === "player") {
+				const finalMana = state.player.mana + state.turnMana - state.turnManaToConsume;
+				state.player.mana = finalMana;
+				state.turnMana = 0;
+				state.turnManaToConsume = 0;
+				updateMana();
 			}
 
 
 			/////////////////
 			// Gain fate
 			/////////////////
-			if (state.tempFate && state.tempFate > 0) {
-				state.player.fate += state.tempFate;
-				state.tempFate = 0;
+			if (state.turnFate && state.turnFate > 0) {
+				state.player.fate += state.turnFate;
+				state.turnFate = 0;
 			}
 			updateFate();
+
+			/////////////////
+			// Banish
+			/////////////////
+			state.player.cardsThisEncounter = state.player.cardsThisEncounter.filter(item => !state.player.cardsToBanish.includes(item));
+			state.player.cardsToBanish = [];
+			state.player.discsToEmpty.forEach(disc => {
+				const slot = disc.parentElement;
+				slot.innerHTML = "";
+				slot.classList.remove("charged");
+			});
 
 			await updateHP();
 
@@ -661,9 +722,13 @@ export async function applyDiscsEffects() {
 }
 
 
-/*===========================================================================*/
-// Card effects
-/*===========================================================================*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+/* ······················  C A R D   E F F E C T S  ·························*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
 class Effects {
 
 	/////////////////
@@ -678,8 +743,22 @@ class Effects {
 	/////////////////
 	// Helper functions
 	/////////////////
-	successful() { this.disc.parentElement.classList.add("successful"); }
-	unsuccessful() { this.disc.parentElement.classList.add("unsuccessful"); }
+	successful(){
+		this.disc.parentElement.classList.add("successful");
+
+		// Consume mana
+		if (state.turn === "player") {
+			const manaCost = db.cards[this.cardId].mana_cost;
+			if (manaCost > 0) {
+				console.log(manaCost);
+				state.turnManaToConsume += manaCost;
+				this.mana();
+			}
+		}
+	}
+	unsuccessful(){
+		this.disc.parentElement.classList.add("unsuccessful");
+	}
 
 	/////////////////
 	// Common effects
@@ -857,6 +936,19 @@ class Effects {
 		poisonEl.querySelector(".poison-amount").textContent = previousPoison + state.turnPoison;
 	}
 
+	banish(){
+		state.player.cardsToBanish.push(this.cardId);
+		state.player.discsToEmpty.push(this.disc);
+	}
+
+	fate(){
+		document.querySelector("#encounter .fate-left").textContent = state.player.fate + state.turnFate;
+	}
+
+	mana(){
+		document.querySelector("#encounter .mana-left").textContent = state.player.mana + state.turnMana - state.turnManaToConsume;
+	}
+
 	/////////////////
 	// Effecs by card
 	/////////////////
@@ -952,10 +1044,12 @@ class Effects {
 				this.unsuccessful();
 				break;
 			case 2:
-				if (!state.tempFate) {
-					state.tempFate = 0;
+				const fate = db.cards.eldertide_timepiece.fate;
+				if (!state.turnFate) {
+					state.turnFate = 0;
 				}
-				state.tempFate++;
+				state.turnFate += fate;
+				this.fate();
 				this.successful();
 				break;
 		}
@@ -966,10 +1060,12 @@ class Effects {
 				this.unsuccessful();
 				break;
 			case 2:
-				if (!state.tempMana) {
-					state.tempMana = 0;
+				const mana = db.cards.mana1.mana;
+				if (!state.turnMana) {
+					state.turnMana = 0;
 				}
-				state.tempMana++;
+				state.turnMana += mana;
+				this.mana();
 				this.successful();
 				break;
 		}
@@ -1035,7 +1131,79 @@ class Effects {
 
 				this.dealDame();
 				this.successful();
-				break;0
+				break; 0
+		}
+	}
+	damage_to_piercing() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				state.turnPiercingDamage += state.turnDamage;
+				state.turnDamage = 0;
+				this.dealDame();
+				this.successful();
+				break;
+		}
+	}
+	hp_loss_to_damage() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				const hp = state.turn === "player" ? state.player.hp : state.mob.hp;
+				const maxhp = state.turn === "player" ? state.player.maxHp : state.mob.maxHp;
+				const hplost = maxhp - hp;
+				const damageToMultiply = db.cards.hp_loss_to_damage.damage;
+				const hpLostToMultiply = db.cards.hp_loss_to_damage.hploss;
+
+				const damage = Math.floor(hplost / hpLostToMultiply) * damageToMultiply;
+				this.dealDame(damage);
+				this.successful();
+				break;
+		}
+	}
+	affliction_advantage() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				const poison = state.turn === "player" ? state.mob.poison : state.player.poison;
+				if (poison <= 0) {
+					this.dealDame(db.cards.affliction_advantage.damage)
+				} else {
+					this.piercingDamage(db.cards.affliction_advantage.damage2);
+				}
+				this.successful();
+				break;
+		}
+	}
+	deffensive_stance() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				if (state.turnDamage || state.turnPiercingDamage) {
+					this.shield();
+				}
+				this.successful();
+				break;
+		}
+	}
+	plague(){
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				state.turn === "player" ? this.poison(state.mob.poison + state.turnPoison) :  this.poison(state.player.poison + state.turnPoison);
+				this.banish();
+				this.successful();
+				break;
 		}
 	}
 }

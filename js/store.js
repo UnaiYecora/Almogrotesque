@@ -5,7 +5,8 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { randomItem } from "./helpers.js";
+import { randomItem, iconify } from "./helpers.js";
+import { generateCard } from "./inventory.js";
 import { db, state } from "./db.js";
 
 
@@ -98,13 +99,14 @@ export async function generateStore(storeid) {
 					place.style.visibility = "visible";
 
 					// Populate the elements
-					titleEl.textContent = itemData.name;
-					descEl.textContent = itemData.desc;
+					titleEl.innerHTML = iconify(itemData.name);
+					descEl.innerHTML = iconify(itemData.desc);
 					priceEl.textContent = itemData.price;
 					if (db.items[item]) {
 						iconEl.innerHTML = `<span class="${itemData.icon}"></span>`;
 					} else {
-						iconEl.innerHTML = `<img src="./assets/img/cards/${item}.png">`;
+						//iconEl.innerHTML = `<img src="./assets/img/cards/${item}.png">`;
+						iconEl.innerHTML = await generateCard(item);
 					}
 
 					// Datasets

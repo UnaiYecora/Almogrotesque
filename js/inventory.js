@@ -32,8 +32,7 @@ export async function generateInventory(previousCard) {
 			// Clear inventory
 			inventoryElement.innerHTML = "";
 
-
-			const cards = state.player.cards;
+			const cards = state.turn ? state.player.cardsThisEncounter : state.player.cards;
 
 			for (const cardId of cards) {
 
@@ -70,21 +69,10 @@ export async function generateInventory(previousCard) {
 					mark = "";
 				}
 
-				// Get card disc
-				const disc = await generateCardDisc(cardId);
-
 				// Generate card HTML
 				let cardHTML = "";
-				cardHTML += '<div class="inventory-card ' + disabled + manaRequired + manaAvailable + mark + '" data-cardid="' + cardId + '">';
-				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
-				cardHTML += '<div class="card-inventory-icon">';
-				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
-				cardHTML += disc;
-				cardHTML += '</div>';
-				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
-				cardHTML += '<div class="mana-price">';
-				cardHTML += '<div>Claim:</div> <div>' + playerMana + ' / ' + cardManaPrice + '<span class="mana"></span></div>';
-				cardHTML += '</div>';
+				cardHTML += '<div class="inventory-item ' + disabled + manaRequired + manaAvailable + mark + '">';
+				cardHTML += await generateCard(cardId, playerMana, cardManaPrice);
 				cardHTML += '</div>';
 				inventoryElement.innerHTML += cardHTML;
 			}
@@ -93,6 +81,49 @@ export async function generateInventory(previousCard) {
 			resolve();
 		} catch (error) {
 			console.log("An error occurred generating the inventory: " + error.message);
+			reject(error);
+		}
+	})
+};
+
+/*===========================================================================*/
+// Generate card
+/*===========================================================================*/
+export async function generateCard(cardId, playerMana = false, cardManaPrice = false) {
+	return new Promise(async (resolve, reject) => {
+		try {
+				// Get card data
+				const card = db.cards[cardId];
+
+				// Get card disc
+				const disc = await generateCardDisc(cardId);
+
+				// Not enough mana
+				let tooExpensive = "";
+				if (card.mana_cost > state.player.mana) {
+					tooExpensive = "too-expensive";
+				}
+
+				// Generate card HTML
+				let cardHTML = "";
+				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '">';
+				cardHTML += '<div class="card-mana-cost '+tooExpensive+'">'+ card.mana_cost +'</div>';
+				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
+				cardHTML += '<div class="card-inventory-icon">';
+				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
+				cardHTML += disc;
+				cardHTML += '</div>';
+				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
+				if (playerMana !== false && cardManaPrice !== false) {
+					cardHTML += '<div class="mana-price">';
+					cardHTML += '<div>Claim:</div> <div>' + playerMana + ' / ' + cardManaPrice + '<span class="mana"></span></div>';
+					cardHTML += '</div>';
+				}
+				cardHTML += '</div>';
+
+			resolve(cardHTML);
+		} catch (error) {
+			console.log("An error occurred generating card: " + error.message);
 			reject(error);
 		}
 	})

@@ -1,15 +1,17 @@
 export var state = {
-	mob : {},
+	mob: {},
 	player: {
 		hp: 24,
 		maxHp: 24,
-		fate: 50,
+		fate: 100,
 		xp: 0,
 		lvl: 1,
 		coins: 23,
-		slots: 3,
-		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack"],
-		cardsThisEncounter: [], // TO-DO: Clone "cards" to "cardsThisEncounter" to be able to banish cards
+		slots: 4,
+		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague"],
+		cardsThisEncounter: [],
+		cardsToBanish: [],
+		discsToEmpty: [],
 		cardsManaPaid: [],
 		cardsInUse: [],
 		mana: 1,
@@ -17,8 +19,10 @@ export var state = {
 		shield: 0,
 		poison: 0,
 	},
-	turn: "player",
+	turn: false,
 	fatePrice: 1,
+	turnMana: 0,
+	turnManaToConsume: 0,
 }
 
 export const db = {
@@ -27,16 +31,16 @@ export const db = {
 	// LEVELS 
 	/*===========================================================================*/
 	levels: {
-		crossroad : {
+		crossroad: {
 			name: "Crossroad",
 			desc: "A rustic crossroad, where well-trodden paths converge under the open sky, inviting travelers to choose their fate — each direction hiding both promise and peril.",
-			stores: 3,
+			stores: 1,
 			chests: 1,
 			doors: ["outskirts"],
 			spawns: ["frog", "rat", "bats", "raven", "goblin", "bats", "chest", "frog", "master_frog", "rat", "goblin2", "rat_bandit", "goblin", "lagoon_dweller", "seridra", "eggman", "desert_mouth", "ecosystem"],
-			cards: ["basic_attack_1", "basic_attack_2"],
+			cards: ["basic_attack_1", "basic_attack_2", "eldertide_timepiece"],
 		},
-		outskirts : {
+		outskirts: {
 			name: "Outskirts path",
 			desc: "A serpentine path through untamed wilderness, where ancient trees and wildflowers sway in the breeze, concealing secrets and stories of those who came before.",
 			stores: 0,
@@ -45,7 +49,7 @@ export const db = {
 			spawns: [],
 			cards: [],
 		},
-		village : {
+		village: {
 			name: "Village",
 			desc: "As the path unwinds, an eerie village emerges — its dilapidated cottages and empty streets concealing the ominous presence that looms over this forsaken place.",
 			stores: 0,
@@ -54,7 +58,7 @@ export const db = {
 			spawns: [],
 			cards: [],
 		},
-		old_forest : {
+		old_forest: {
 			name: "Old forest",
 			desc: "Its gnarled trees and twisted roots create a labyrinthine realm, where the dappled sunlight hides the lurking threats that prowl beneath the canopy.",
 			stores: 0,
@@ -63,7 +67,7 @@ export const db = {
 			spawns: [],
 			cards: [],
 		},
-		cemetery : {
+		cemetery: {
 			name: "Cemetery",
 			desc: "Amidst the graves of the forgotten, shadows writhe beneath the cold, unfeeling stones, and the silence is broken only by the mournful wails of unseen creatures.",
 			stores: 0,
@@ -72,7 +76,7 @@ export const db = {
 			spawns: [],
 			cards: [],
 		},
-		church : {
+		church: {
 			name: "Church",
 			desc: "Beyond the village's edge,  a decrepit church stands, its ancient stones carrying the weight of a grim past, where shadows whisper the secrets of unspeakable horrors hidden within.",
 			stores: 0,
@@ -93,7 +97,7 @@ export const db = {
 	/*===========================================================================*/
 	items: {
 		fate_5: {
-			name: "5{fate}",
+			name: "x5{fate}",
 			desc: "Allows you to change your fate.",
 			icon: "fate",
 			price: 5,
@@ -128,16 +132,18 @@ export const db = {
 			short: ["x1 Damage"],
 			price: -1,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [35],
 			damage: 1,
 			colors: ["#000", "#63251d"],
 		},
 		basic_attack_1: {
 			name: "Dagger",
-			desc: "Deal 1/3/5 damage.",
-			short: ["x1 Damage", "x3 Damage", "x5 Damage"],
+			get desc() { return "Deal " + this.damage + "/" + this.damage2 + "/" + this.damage3 + " damage." },
+			get short() { return ["x" + this.damage + " damage", "x" + this.damage2 + " damage", "x" + this.damage3 + " damage"] },
 			price: 50,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [15, 70, 15],
 			damage: 1,
 			damage2: 3,
@@ -146,10 +152,11 @@ export const db = {
 		},
 		basic_attack_2: {
 			name: "Handaxe",
-			desc: "Deal 6/8 piercing damage.",
-			short: ["x6 Piercing damage"],
+			get desc() { return "Deal " + this.damage + "/" + this.damage2 + " piercing damage." },
+			get short() { return ["x" + this.damage + " piercing damage", "x" + this.damage2 + " piercing damage"] },
 			price: 50,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [35, 5],
 			damage: 6,
 			damage2: 8,
@@ -161,6 +168,7 @@ export const db = {
 			short: ["Heal 3HP", "Heal 10HP"],
 			price: 50,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [38, 8],
 			heal: 3,
 			heal2: 10,
@@ -168,10 +176,11 @@ export const db = {
 		},
 		double_damage: {
 			name: "Bane-imbued edge",
-			desc: "Damage from previous cards are doubled or lost.",
-			short: ["Double previous damage", "Lose previous damage"],
+			desc: "Damage from previous cards this turn are doubled or lost.",
+			short: ["Double damage", "Lose damage"],
 			price: 50,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [50, 50],
 			colors: ["#872b1e", "#494237"],
 		},
@@ -181,58 +190,128 @@ export const db = {
 			short: ["Deal 3 damage", "Heal 3HP"],
 			price: 50,
 			mana_price: 1,
+			mana_cost: 0,
 			hitrate: [40, 30],
 			damage: 3,
 			heal: 3,
-			colors: ["#000","#872b1e", "#105b58"],
+			colors: ["#000", "#872b1e", "#105b58"],
 		},
 		eldertide_timepiece: {
 			name: "Eldertide Timepiece",
 			desc: "Gain +1{fate}.",
 			short: ["+1{fate}"],
 			price: 50,
-			mana_price: 2,
-			hitrate: [32],
-			colors: ["#000","#D9D9D9"],
+			mana_price: 0,
+			mana_cost: 0,
+			fate: 1,
+			hitrate: [37],
+			colors: ["#000", "#D9D9D9"],
 		},
 		mana1: {
 			name: "Soulstone",
-			desc: "Gain +1{mana}.",
-			short: ["+1{mana}"],
+			get desc() { return "Gain +" + this.mana + "{mana}." },
+			get short() { return ["+" + this.mana + "{mana}"] },
 			price: 50,
 			mana_price: 0,
-			hitrate: [76],
+			mana_cost: 0,
+			hitrate: [78],
 			mana: 1,
-			colors: ["#000","#460d59"],
+			colors: ["#000", "#460d59"],
 		},
 		shield1: {
 			name: "Shield",
-			desc: "Gain +3{shield}.",
-			short: ["+3{shield}"],
+			get desc() { return "Gain +" + this.shield + "{shield}." },
+			get short() { return ["+" + this.shield + "{shield}"] },
 			price: 50,
 			mana_price: 0,
+			mana_cost: 0,
 			hitrate: [68],
 			shield: 3,
-			colors: ["#000","#8d8d8d"],
+			colors: ["#000", "#8d8d8d"],
 		},
 		poison1: {
 			name: "Poison",
-			desc: "Deal +3{poison}.",
-			short: ["+3{poison}"],
+			get desc() { return "Deal +" + this.poison + "{poison}." },
+			get short() { return ["+" + this.poison + "{poison}"] },
 			price: 50,
 			mana_price: 0,
-			hitrate: [33],
+			mana_cost: 0,
+			hitrate: [37],
 			poison: 3,
-			colors: ["#000","#105b19"],
+			colors: ["#000", "#105b19"],
 		},
 		shield_attack: {
 			name: "Shield attack",
 			desc: "Turn your {shield} into damage.",
 			short: ["Shield → damage"],
 			price: 50,
-			mana_price: 1,
+			mana_price: 0,
+			mana_cost: 2,
 			hitrate: [37],
-			colors: ["#000","#872b1e"],
+			colors: ["#000", "#872b1e"],
+		},
+		damage_to_piercing: {
+			name: "Sharpener",
+			desc: "Turn previous damage into piercing damage.",
+			short: ["Shield → damage"],
+			price: 50,
+			mana_price: 0,
+			mana_cost: 0,
+			hitrate: [33],
+			colors: ["#000", "#5f1e16"],
+		},
+		hp_loss_to_damage: {
+			name: "Retribution",
+			get desc() { return "Deal " + this.damage + " damage for every " + this.hploss + "HP you have lost."; },
+			short: ["Turn lost HP into damage"],
+			price: 50,
+			mana_price: 0,
+			mana_cost: 3,
+			damage: 3,
+			hploss: 4,
+			hitrate: [47],
+			colors: ["#000", "#5f1e16"],
+		},
+		affliction_advantage: {
+			name: "Affliction Advantage",
+			get desc() {
+				return "Deal " + this.damage + " damage. If the enemy has {poison}, deal " + this.damage2 + " piercing damage.";
+			},
+			get short() {
+				return ["Deal " + this.damage + " damage. If the enemy has {poison}, deal " + this.damage2 + " damage"]
+			},
+			price: 50,
+			mana_price: 0,
+			mana_cost: 1,
+			damage: 4,
+			damage2: 8,
+			hitrate: [47],
+			colors: ["#000", "#872b1e"],
+		},
+		deffensive_stance: {
+			name: "Deffensive Stance",
+			get desc() {
+				return "If this turn you're dealing damage before this card, gain " + this.shield + " {shield}.";
+			},
+			get short() {
+				return ["If dealing damage, gain " + this.shield + " {shield}"]
+			},
+			price: 50,
+			mana_price: 0,
+			mana_cost: 1,
+			shield: 5,
+			hitrate: [67],
+			colors: ["#000", "#8d8d8d"],
+		},
+		plague: {
+			name: "Plague",
+			desc: "{banish} Double enemy's {poison}",
+			short: ["Doubles enemy's current {poison}"],
+			price: 50,
+			mana_price: 0,
+			mana_cost: 2,
+			hitrate: [79],
+			colors: ["#000", "#105b19"],
 		},
 	},
 
@@ -251,9 +330,18 @@ export const db = {
 			hp: 12,
 			slots: 1,
 			patterns: [
-				["basic_attack_1"],
-				["attack_heal"],
-				["poison1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [["basic_attack_1"]]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.5,
+					attacks: [["attack_heal"]]
+				},
+				{
+					condition: (mob, player) => player.hp / player.maxHp > 0.75,
+					attacks: [["poison1"]]
+				},
 			],
 		},
 		master_frog: {
@@ -267,10 +355,27 @@ export const db = {
 			hp: 20,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"],
-				["attack_heal", "attack_heal"],
-				["attack_heal", "poison1"],
-				["basic_attack_1", "shield1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1", "basic_attack_2"],
+						["basic_attack_1", "shield1"]
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.5,
+					attacks: [
+						["attack_heal", "attack_heal"],
+						["attack_heal", "poison1"]
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.25,
+					attacks: [
+						["attack_heal", "heal_1"],
+						["shield1", "heal_1"],
+					]
+				},
 			],
 		},
 		raven: {
@@ -284,7 +389,10 @@ export const db = {
 			hp: 14,
 			slots: 1,
 			patterns: [
-				["basic_attack_1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [["basic_attack_1"]]
+				},
 			],
 		},
 		rat: {
@@ -298,9 +406,14 @@ export const db = {
 			hp: 12,
 			slots: 1,
 			patterns: [
-				["basic_attack_1"],
-				["basic_attack_1"],
-				["poison1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1"],
+						["basic_attack_1"],
+						["poison1"]
+					]
+				}
 			],
 		},
 		rat_bandit: {
@@ -314,12 +427,22 @@ export const db = {
 			hp: 18,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_2"],
-				["attack_heal", "basic_attack_2"],
-				["basic_attack_2", "basic_attack_2"],
-				["basic_attack_1", "poison1"],
-				["attack_heal", "poison1"],
-				["attack_heal", "shield1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1", "basic_attack_2"],
+						["basic_attack_2", "basic_attack_2"],
+						["basic_attack_1", "poison1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.5,
+					attacks: [
+						["attack_heal", "basic_attack_2"],
+						["poison1", "heal_1"],
+						["attack_heal", "shield1"],
+					]
+				},
 			],
 		},
 		lagoon_dweller: {
@@ -333,11 +456,21 @@ export const db = {
 			hp: 28,
 			slots: 2,
 			patterns: [
-				["attack_heal", "attack_heal"],
-				["basic_attack_1", "attack_heal"],
-				["attack_heal", "basic_attack_2"],
-				["poison1", "shield1"],
-				["shield1", "attack_heal"],
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp >= 0.5,
+					attacks: [
+						["poison1", "shield1"],
+						["basic_attack_1", "attack_heal"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.5,
+					attacks: [
+						["attack_heal", "attack_heal"],
+						["attack_heal", "basic_attack_2"],
+						["shield1", "attack_heal"],
+					]
+				},
 			],
 		},
 		seridra: {
@@ -351,12 +484,30 @@ export const db = {
 			hp: 42,
 			slots: 2,
 			patterns: [
-				["basic_attack_2", "poison1"],
-				["basic_attack_1", "attack_heal"],
-				["basic_attack_1", "basic_attack_1"],
-				["attack_heal", "double_damage"],
-				["basic_attack_1", "double_damage"],
-				["poison1", "poison1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_2", "poison1"],
+						["basic_attack_1", "basic_attack_1"],
+						["basic_attack_1", "double_damage"],
+						["poison1", "poison1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 1,
+					attacks: [
+						["basic_attack_1", "attack_heal"],
+						["attack_heal", "double_damage"],
+						["heal_1", "attack_heal"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.3,
+					attacks: [
+						["heal_1", "attack_heal"],
+						["attack_heal", "heal_1"],
+					]
+				},
 			],
 		},
 		eggman: {
@@ -370,9 +521,14 @@ export const db = {
 			hp: 30,
 			slots: 2,
 			patterns: [
-				["basic_attack_1", "basic_attack_1"],
-				["basic_attack_1", "shield1"],
-				["shield1", "shield1"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1", "basic_attack_1"],
+						["basic_attack_1", "shield1"],
+						["shield1", "shield1"],
+					]
+				},
 			],
 		},
 		desert_mouth: {
@@ -386,13 +542,23 @@ export const db = {
 			hp: 38,
 			slots: 3,
 			patterns: [
-				["basic_attack_1", "basic_attack_1", "basic_attack_2"],
-				["basic_attack_2", "basic_attack_2", "basic_attack_2"],
-				["basic_attack_1", "double_damage", "basic_attack_2"],
-				["basic_attack_1", "double_damage", "heal_1"],
-				["shield1", "shield1", "shield1"],
-				["basic_attack_1", "shield1", "shield_attack"],
-				["shield1", "shield_attack", "double_damage"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1", "basic_attack_1", "basic_attack_2"],
+						["basic_attack_2", "basic_attack_2", "basic_attack_2"],
+						["basic_attack_1", "double_damage", "basic_attack_2"],
+						["basic_attack_1", "shield1", "shield_attack"],
+						["shield1", "shield_attack", "double_damage"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.35,
+					attacks: [
+						["basic_attack_1", "double_damage", "heal_1"],
+						["shield1", "shield1", "shield1"],
+					]
+				},
 			],
 		},
 		chest: {
@@ -403,10 +569,28 @@ export const db = {
 			img_rotation: 1,
 			desc_rotation: 0,
 			lvl: 3,
-			hp: 8,
+			hp: 18,
 			slots: 1,
 			patterns: [
-				["basic_attack_1"]
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.poison > 0,
+					attacks: [
+						["poison1"],
+					]
+				},
+				{
+					condition: (mob, player) => player.shield > 0,
+					attacks: [
+						["shield1"],
+					]
+				},
+
 			],
 		},
 		ecosystem: {
@@ -420,10 +604,20 @@ export const db = {
 			hp: 100,
 			slots: 5,
 			patterns: [
-				["basic_attack_1", "basic_attack_1", "basic_attack_1", "basic_attack_1", "double_damage"],
-				["basic_attack_1", "basic_attack_1", "basic_attack_2", "attack_heal", "double_damage"],
-				["basic_attack_1", "double_damage", "basic_attack_2", "double_damage", "attack_heal"],
-				["basic_attack_1", "basic_attack_2", "attack_heal", "double_damage", "attack_heal"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_1", "basic_attack_1", "basic_attack_1", "basic_attack_1", "double_damage"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 1,
+					attacks: [
+						["basic_attack_1", "basic_attack_1", "basic_attack_2", "attack_heal", "double_damage"],
+						["basic_attack_1", "double_damage", "basic_attack_2", "double_damage", "attack_heal"],
+						["basic_attack_1", "basic_attack_2", "attack_heal", "double_damage", "attack_heal"],
+					]
+				},
 			],
 		},
 		bats: {
@@ -437,8 +631,13 @@ export const db = {
 			hp: 8,
 			slots: 5,
 			patterns: [
-				["bat_bite", "bat_bite", "bat_bite", "bat_bite", "bat_bite"],
-				["bat_bite", "bat_bite", "poison1", "bat_bite", "bat_bite"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["bat_bite", "bat_bite", "bat_bite", "bat_bite", "bat_bite"],
+						["bat_bite", "bat_bite", "poison1", "bat_bite", "bat_bite"],
+					]
+				},
 			],
 		},
 		goblin: {
@@ -452,10 +651,20 @@ export const db = {
 			hp: 22,
 			slots: 2,
 			patterns: [
-				["shield1", "shield1"],
-				["basic_attack_2", "basic_attack_2"],
-				["basic_attack_1", "shield1"],
-				["shield1", "shield_attack"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["basic_attack_2", "basic_attack_2"],
+						["basic_attack_1", "shield1"],
+						["shield1", "shield_attack"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.7,
+					attacks: [
+						["shield1", "shield1"],
+					]
+				},
 			],
 		},
 		goblin2: {
@@ -469,12 +678,22 @@ export const db = {
 			hp: 16,
 			slots: 2,
 			patterns: [
-				["shield1", "shield1"],
-				["attack_heal", "shield1"],
-				["shield1", "shield_attack"],
+				{
+					condition: (mob, player) => true,
+					attacks: [
+						["shield1", "shield1"],
+						["shield1", "shield_attack"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.7,
+					attacks: [
+						["attack_heal", "shield1"],
+					]
+				},
 			],
 		},
-		spider: {
+/* 		spider: {
 			name: "Spider",
 			type: "mob",
 			skills: ["Does double damage.", "Not really"],
@@ -627,6 +846,6 @@ export const db = {
 			patterns: [
 				["basic_attack_1", "basic_attack_2"]
 			],
-		},
+		}, */
 	}
 }

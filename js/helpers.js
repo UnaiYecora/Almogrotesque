@@ -101,6 +101,15 @@ export function updateCoins() {
 }
 
 /*===========================================================================*/
+// Display updated current mana left
+/*===========================================================================*/
+export function updateMana() {
+	document.querySelectorAll(".mana-left").forEach(el => {
+		el.textContent = state.player.mana;
+	});
+}
+
+/*===========================================================================*/
 // Display updated health bars
 /*===========================================================================*/
 export function updateHP() {
@@ -149,8 +158,11 @@ export function updateHP() {
 // Remove un/successful disc states
 /*===========================================================================*/
 export function removeSuccessDiscStates() {
-	document.querySelectorAll(".slot.successful, .slot.unsuccessful").forEach(slot => {
+	document.querySelectorAll(".slot").forEach(slot => {
 		slot.classList.remove("successful", "unsuccessful");
+		if (slot.querySelector(".spun")) {
+			slot.querySelector(".spun").classList.remove("spun");
+		}
 	});
 }
 
@@ -200,4 +212,59 @@ export function iconify(string) {
 	const replacedString = string.replace(regex, '<span class="icon $1"></span>');
 	return replacedString;
 
+}
+
+
+/*===========================================================================*/
+// Heart pulse
+/*===========================================================================*/
+export function heartPulse() {
+	// Get data
+	let selfHeartElement;
+	let adversaryHeartElement;
+	let hp;
+	let maxHP;
+	if (state.turn === "player") {
+		selfHeartElement = document.querySelector("#encounter .player-hp .heart");
+		adversaryHeartElement = document.querySelector("#encounter .mob-hp .heart");
+		hp = state.player.hp;
+		maxHP = state.player.maxHp;
+	} else {
+		selfHeartElement = document.querySelector("#encounter .mob-hp .heart");
+		adversaryHeartElement = document.querySelector("#encounter .player-hp .heart");
+		hp = state.mob.hp;
+		maxHP = state.mob.maxHp;
+	}
+
+
+	// CSS Clases
+	selfHeartElement.classList.add("pulse");
+	adversaryHeartElement.classList.remove("pulse");
+
+
+	// Heart rate
+	adversaryHeartElement.dataset.heartrate = false;
+
+	const heartRate = (hp / maxHP) * 100;
+
+	switch (true) {
+		case heartRate >= 80:
+			selfHeartElement.dataset.heartrate = false;
+			break;
+		case heartRate >= 60:
+			selfHeartElement.dataset.heartrate = 1;
+			break;
+		case heartRate >= 40:
+			selfHeartElement.dataset.heartrate = 2;
+			break;
+		case heartRate >= 20:
+			selfHeartElement.dataset.heartrate = 3;
+			break;
+		case heartRate >= 1:
+			selfHeartElement.dataset.heartrate = 4;
+			break;
+		case heartRate == 0:
+			selfHeartElement.classList.remove("pulse");
+			break;
+	}
 }
