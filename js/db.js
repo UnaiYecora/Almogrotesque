@@ -21,6 +21,7 @@ export var state = {
 	},
 	turn: false,
 	fatePrice: 1,
+	turnFate: 0,
 	turnMana: 0,
 	turnManaToConsume: 0,
 }
@@ -204,7 +205,7 @@ export const db = {
 			mana_price: 0,
 			mana_cost: 0,
 			fate: 1,
-			hitrate: [37],
+			hitrate: [57],
 			colors: ["#000", "#D9D9D9"],
 		},
 		mana1: {

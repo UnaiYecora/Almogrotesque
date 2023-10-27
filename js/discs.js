@@ -53,18 +53,18 @@ export async function generatePlayingDisc(cardId, discId) {
             }
 
             // Mana requirements
+            let target = state.turn === "player" ? state.player : state.mob;
 			const manaCost = db.cards[cardId].mana_cost;
-			if (manaCost > 0 && state.turn === "player") {
+
+			if (manaCost > 0) {
                 
-                // Display mana requirement
                 let manaToDisplay = manaCost;
-                const availableMana = state.player.mana + state.turnMana - state.turnManaToConsume;
-                if (manaCost > state.player.mana) {
+                const availableMana = target.mana + state.turnMana - state.turnManaToConsume;
+                if (manaCost > availableMana) {
                     container.classList.add("requires-mana");
                     manaToDisplay = availableMana - manaCost;
                 }
 
-                // Display mana requirement
 				const manaElement = document.createElement("div");
 				manaElement.classList.add("mana-requirement");
 				manaElement.innerHTML = '<span class="mana-requirement-amount">' + manaToDisplay + '</span><span class="icon mana"></span>';
@@ -235,27 +235,35 @@ async function logResults(discId, degreesRotated) {
 export async function checkDiscsForMana() {
     return new Promise(async (resolve, reject) => {
         try {
-            // Get elements
-            const discs = document.querySelectorAll("#playerDiscs .slot > .disc")
+            // Get data and elements
+            let target;
+            let discs;
+            if (state.turn === "player") {
+                target = state.player;
+                discs = document.querySelectorAll("#playerDiscs .slot > .disc");
+            } else {
+                target = state.mob;
+                discs = document.querySelectorAll("#mobDiscs .slot > .disc");
+            }
 
             discs.forEach(disc => {
-                const availableMana = state.player.mana + state.turnMana - state.turnManaToConsume;
-                const manaResAmount = disc.querySelector(".mana-requirement-amount");
+                const availableMana = target.mana + state.turnMana - state.turnManaToConsume;
+                const manaRequiredElement = disc.querySelector(".mana-requirement-amount");
                 // If not previous disc
                 if (!disc.classList.contains("spun")) {
 
                     // If not enough mana
                     if (disc.dataset.manacost > availableMana) {
                         disc.classList.add("requires-mana");
-                        if (manaResAmount) {
-                            manaResAmount.textContent = availableMana - disc.dataset.manacost;
+                        if (manaRequiredElement) {
+                            manaRequiredElement.textContent = availableMana - disc.dataset.manacost;
                         }
 
                     // If enough mana
                     } else {
                         disc.classList.remove("requires-mana");
-                        if (manaResAmount) {
-                            manaResAmount.textContent = disc.dataset.manacost;
+                        if (manaRequiredElement) {
+                            manaRequiredElement.textContent = disc.dataset.manacost;
                         }
                     }
                 }

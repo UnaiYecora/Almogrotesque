@@ -5,9 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="css/styles.css?v=0.7">
-	<link rel="stylesheet" href="css/svgs.css?v=0.7">
-	<script src="js/app.js?v=0.7" type="module"></script>
+	<link rel="stylesheet" href="css/styles.css?v=0.8">
+	<link rel="stylesheet" href="css/svgs.css?v=0.8">
+	<script src="js/app.js?v=0.8" type="module"></script>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
 				<button id="newGame">New Game</button>
 				<button>How to play</button>
 			</div>
-			<p>v0.7</p>
+			<p>v0.8</p>
 		</section>
 
 		<section id="crossroad">
@@ -99,7 +99,13 @@
 						<span class="poison icon"></span>
 					</div>
 				</div>
-				<button data-goto="crossroad">Exit</button>
+				<div class="right-side" data-goto="crossroad">
+					<!-- TO-DO: Remove data-goto-->
+					<div class="mana-left-wrapper">
+						<span class="mana-left">0</span>
+						<span class="mana"></span>
+					</div>
+				</div>
 			</div>
 
 			<div id="mobBoard">

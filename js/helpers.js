@@ -104,9 +104,11 @@ export function updateCoins() {
 // Display updated current mana left
 /*===========================================================================*/
 export function updateMana() {
-	document.querySelectorAll(".mana-left").forEach(el => {
-		el.textContent = state.player.mana;
-	});
+	// Player
+	document.querySelector("#encounter .bottombar .mana-left").textContent = state.player.mana;
+
+	// Mob
+	document.querySelector("#encounter .topbar .mana-left").textContent = state.mob.mana;
 }
 
 /*===========================================================================*/

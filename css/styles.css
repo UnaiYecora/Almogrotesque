@@ -301,7 +301,7 @@ section#encounter {
 	padding: 1rem;
 }
 
-section#encounter .bottombar .right-side{
+section#encounter .right-side{
     display: flex;
     gap: 2rem;
 }
@@ -535,6 +535,7 @@ div#playerBoard button div{
 .bottombar .fate,
 .bottombar .coin,
 .bottombar .mana,
+.topbar .mana,
 .lvl-bottom-right .fate,
 .lvl-bottom-right .coin,
 .reward .coin,
@@ -547,7 +548,8 @@ div#playerBoard button div{
 
 .fate-left,
 .coins-left,
-.bottombar .mana-left{
+.bottombar .mana-left,
+.topbar .mana-left{
 	font-size: 2rem;
 }
 
