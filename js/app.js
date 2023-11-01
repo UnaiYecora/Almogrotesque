@@ -173,12 +173,11 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 		const storeItemEL = e.target.closest(".store-item");
 		
 		// Data
-		const group = storeItemEL.dataset.group;
 		const item = storeItemEL.dataset.item;
 		const store = storeItemEL.dataset.store;
 		const position = storeItemEL.dataset.position;
 		
-		await buy(group, item);
+		await buy(item);
 		await checkIfAbleToBuy();
 		updateCoins();
 		updateFate();
@@ -247,6 +246,13 @@ document.querySelector(".inventory").addEventListener("click", async function(e)
 		} else {
 			await placeCardInSlot(cardId);
 		}
+
+		//Move card to the top of the inventory
+		const cards = state.turn ? state.player.cardsThisEncounter : state.player.cards;
+		cards.unshift(cards.splice(cards.indexOf(cardId), 1)[0]);
+		document.querySelector(".inventory-cards").scrollTop = 0;
+
+		//Close inventory
 		document.querySelector(".inventory").style.display = "none";
 	}
 });

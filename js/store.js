@@ -26,26 +26,14 @@ export async function generateStoreItems(emptyStore) {
 	return new Promise(async (resolve, reject) => {
 		try {
 
-			// Set the chance of getting a card
-			// Random number between 1 and 10, over that
-			// number gets a card
-			const cardChance = 7;
-
-
 			// Generate store items
 			let storeData = [];
 			for (let i = 0; i < 3; i++) {
-				if (Math.ceil(Math.random() * 10) > cardChance) {
-					// Add card
-					const lvlItemArray = db.levels[state.currentLevel].cards;
-					// TO-DO: Disable getting cards not intended for players (eg. Bat bite)
-					storeData[i] = randomItem(lvlItemArray);
+				// Add card
+				const lvlItemArray = db.levels[state.currentLevel].cards;
 
-				} else {
-					// Add general item
-					const generalItemArray = Object.keys(db.items);
-					storeData[i] = randomItem(generalItemArray);
-				}
+				// TO-DO: Disable getting cards not intended for players (eg. Bat bite)
+				storeData[i] = randomItem(lvlItemArray);
 			}
 
 			// Save store
@@ -74,8 +62,6 @@ export async function generateStore(storeid) {
 				const place = storePlaces[i];
 
 				// Elements to populate
-				const titleEl = place.querySelector(".store-item-title");
-				const descEl = place.querySelector(".store-item-desc");
 				const iconEl = place.querySelector(".store-item-icon");
 				const priceEl = place.querySelector(".store-item-price");
 
@@ -83,31 +69,17 @@ export async function generateStore(storeid) {
 				let item = state[storeid][i];
 				let itemData;
 
-				if (db.items[item]) {
-					place.dataset.group = "items";
-					place.dataset.item = item;
-					itemData = db.items[item];
-				}
-				else {
-					place.dataset.group = "cards";
-					place.dataset.item = item;
-					itemData = db.cards[item];
-				}
+				place.dataset.item = item;
+				itemData = db.cards[item];
+
 
 				if (item) {
 					// Display item
 					place.style.visibility = "visible";
 
 					// Populate the elements
-					titleEl.innerHTML = iconify(itemData.name);
-					descEl.innerHTML = iconify(itemData.desc);
 					priceEl.textContent = itemData.price;
-					if (db.items[item]) {
-						iconEl.innerHTML = `<span class="${itemData.icon}"></span>`;
-					} else {
-						//iconEl.innerHTML = `<img src="./assets/img/cards/${item}.png">`;
-						iconEl.innerHTML = await generateCard(item);
-					}
+					iconEl.innerHTML = await generateCard(item);
 
 					// Datasets
 					place.dataset.price = itemData.price;
@@ -133,21 +105,13 @@ export async function generateStore(storeid) {
 /*===========================================================================*/
 // Buy
 /*===========================================================================*/
-export async function buy(group, itemId) {
+export async function buy(itemId) {
 	return new Promise(async (resolve, reject) => {
 		try {
 
-			if (group === "items") {
-				const item = db.items[itemId];
-				state.player.coins -= item.price;
-				state.player[item.gives] += item.amount;
-			}
-
-			if (group === "cards") {
-				const card = db.cards[itemId];
-				state.player.coins -= card.price;
-				state.player.cards.push(itemId);
-			}
+			const card = db.cards[itemId];
+			state.player.coins -= card.price;
+			state.player.cards.push(itemId);
 
 			resolve();
 		} catch (error) {

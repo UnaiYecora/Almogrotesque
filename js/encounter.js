@@ -174,6 +174,9 @@ export async function toggleTurn(start) {
 	// Heart pulse
 	heartPulse();
 
+	// Check discs for mana
+	checkDiscsForMana();
+
 	// Reset UI
 	if (state.turn === "player") {
 		mainAction.style.display = "flex";
@@ -316,7 +319,10 @@ async function resetTemporalEffects() {
 
 			// Reset damage, piercing damage, heal, shield, and poison
 			state.turnDamage = 0;
+			state.turnDamage_self = 0;
 			state.turnPiercingDamage = 0;
+			state.turnPiercingDamage_self = 0;
+			state.turnFireDamage = 0;
 			state.turnHeal = 0;
 			state.turnShield = 0;
 			state.turnPoison = 0;
@@ -638,11 +644,10 @@ export async function applyDiscsEffects() {
 			target.shield = Math.max(0, shield - state.turnDamage);
 
 			// Calculate the total damage
-			const totalDamage = state.turnPiercingDamage + remainingDamage;
+			const totalDamage = state.turnPiercingDamage + state.turnFireDamage + remainingDamage;
 
 			// Deal damage to the target
 			target.hp = Math.max(target.hp - totalDamage, 0);
-
 
 			// Reset health bars
 			document.querySelectorAll(".damage-bar").forEach(el => {
@@ -650,7 +655,28 @@ export async function applyDiscsEffects() {
 			});
 
 			// Log damage
-			console.log("Initial damage: " + (state.turnDamage + state.turnPiercingDamage) + ". Dealt: " + totalDamage + ".");
+			console.log("Initial damage: " + (state.turnDamage + state.turnPiercingDamage + state.turnFireDamage) + ". Dealt: " + totalDamage + ".");
+
+
+			/////////////////
+			// Take self damage
+			/////////////////
+
+			// Apply shield to reduce damage
+			const selfShield = self.shield;
+			const remainingSelfDamage = Math.max(0, state.turnDamage_self - selfShield);
+			self.shield = Math.max(0, selfShield - state.turnDamage_self);
+
+			// Calculate the total damage
+			const totalSelfDamage = state.turnPiercingDamage_self + remainingSelfDamage;
+
+			// Deal damage to the target
+			self.hp = Math.max(self.hp - totalSelfDamage, 0);
+
+			// Reset health bars
+			document.querySelectorAll(".damage-bar").forEach(el => {
+				el.style.width = "0%";
+			});
 
 
 			/////////////////
@@ -756,7 +782,7 @@ class Effects {
 	/////////////////
 	// Common effects
 	/////////////////
-	dealDame(amount) {
+	damage(amount) {
 		let target;
 		let tempBar;
 		let shield;
@@ -764,14 +790,14 @@ class Effects {
 		if (state.turn === "player") {
 			target = state.mob;
 			tempBar = document.querySelector("#encounter .mob-hp .progress .damage-bar");
-			shield = target.shield;
 			shieldEl = document.querySelector("#encounter .mob-hp .shield-wrapper");
 		} else {
 			target = state.player;
 			tempBar = document.querySelector("#encounter .player-hp .progress .damage-bar");
-			shield = target.shield;
 			shieldEl = document.querySelector("#encounter .player-hp .shield-wrapper");
 		}
+
+		shield = target.shield;
 
 		// Get damage of this card
 		let damageAmount = (amount === undefined) ? (db.cards[this.cardId].damage || 0) : amount;
@@ -795,8 +821,53 @@ class Effects {
 			remainingDamage = state.turnDamage - shield;
 		}
 
+		const totalDamage = state.turnPiercingDamage + state.turnFireDamage + remainingDamage;
+
 		// Display damage on health bar
-		tempBar.style.width = (state.turnPiercingDamage + remainingDamage) / target.hp * 100 + "%";
+		tempBar.style.width = totalDamage / target.hp * 100 + "%";
+	}
+
+	selfDamage(amount){
+		let target;
+		let tempBar;
+		let shield;
+		let shieldEl;
+		if (state.turn === "player") {
+			target = state.mob;
+			tempBar = document.querySelector("#encounter .player-hp .progress .damage-bar");
+			shieldEl = document.querySelector("#encounter .player-hp .shield-wrapper");
+		} else {
+			target = state.player;
+			tempBar = document.querySelector("#encounter .mob-hp .progress .damage-bar");
+			shieldEl = document.querySelector("#encounter .mob-hp .shield-wrapper");
+		}
+
+		shield = target.shield;
+
+		// Get damage of this card
+		let damageAmount = (amount === undefined) ? (db.cards[this.cardId].damage || 0) : amount;
+
+		// Add damage to this turn's previous damage
+		state.turnDamage_self += damageAmount;
+
+		// Display damaged shield
+		state.turnDamage_self > 0 ? shieldEl.classList.add("damaged") : shieldEl.classList.remove("damaged");
+
+		// Subtract damage from shield
+		if (shield > 0) {
+			shieldEl.querySelector(".shield-amount").textContent = Math.max(shield - state.turnDamage_self, 0);
+		}
+
+		// Get remaining damage after shield
+		let remainingDamage;
+		if (shield >= state.turnDamage_self) {
+			remainingDamage = 0;
+		} else {
+			remainingDamage = state.turnDamage_self - shield;
+		}
+
+		// Display damage on health bar
+		tempBar.style.width = (state.turnPiercingDamage_self + remainingDamage) / target.hp * 100 + "%";
 	}
 
 	piercingDamage(amount) {
@@ -805,13 +876,13 @@ class Effects {
 		let shield;
 		if (state.turn === "player") {
 			target = state.mob;
-			shield = target.shield;
 			tempBar = document.querySelector("#encounter .mob-hp .progress .damage-bar");
 		} else {
 			target = state.player;
-			shield = target.shield;
 			tempBar = document.querySelector("#encounter .player-hp .progress .damage-bar");
 		}
+		
+		shield = target.shield;
 
 		// Get damage of this card
 		let damageAmount = (amount === undefined) ? (db.cards[this.cardId].damage || 0) : amount;
@@ -828,8 +899,78 @@ class Effects {
 			remainingDamage = state.turnDamage - shield;
 		}
 
+		const totalDamage = state.turnPiercingDamage + state.turnFireDamage + remainingDamage;
+
 		// Display damage on health bar
-		tempBar.style.width = (state.turnPiercingDamage + remainingDamage) / target.hp * 100 + "%";
+		tempBar.style.width = totalDamage / target.hp * 100 + "%";
+	}
+
+	selfPiercingDamage(amount) {
+		let target;
+		let tempBar;
+		let shield;
+		if (state.turn === "player") {
+			target = state.player;
+			tempBar = document.querySelector("#encounter .player-hp .progress .damage-bar");
+		} else {
+			target = state.mob;
+			tempBar = document.querySelector("#encounter .mob-hp .progress .damage-bar");
+		}
+		
+		shield = target.shield;
+
+		// Get damage of this card
+		let damageAmount = (amount === undefined) ? (db.cards[this.cardId].damage || 0) : amount;
+
+		// Add damage to this turn's previous damage
+		state.turnPiercingDamage_self += damageAmount;
+
+		// Get non-piercing damage to add it up
+		// Get remaining damage after shield
+		let remainingDamage;
+		if (shield >= state.turnDamage_self) {
+			remainingDamage = 0;
+		} else {
+			remainingDamage = state.turnDamage_self - shield;
+		}
+
+		// Display damage on health bar
+		tempBar.style.width = (state.turnPiercingDamage_self + remainingDamage) / target.hp * 100 + "%";
+	}
+
+	fireDamage(amount){
+		let target;
+		let tempBar;
+		let shield;
+		if (state.turn === "player") {
+			target = state.mob;
+			tempBar = document.querySelector("#encounter .mob-hp .progress .damage-bar");
+		} else {
+			target = state.player;
+			tempBar = document.querySelector("#encounter .player-hp .progress .damage-bar");
+		}
+		
+		shield = target.shield;
+
+		// Get damage of this card
+		let fireDamageAmount = (amount === undefined) ? (db.cards[this.cardId].fire_damage || 0) : amount;
+
+		// Add damage to this turn's previous damage
+		state.turnFireDamage += fireDamageAmount + Math.floor(fireDamageAmount * target.fire / 100);
+
+		// Get non-piercing damage to add it up
+		// Get remaining damage after shield
+		let remainingDamage;
+		if (shield >= state.turnDamage) {
+			remainingDamage = 0;
+		} else {
+			remainingDamage = state.turnDamage - shield;
+		}
+
+		const totalDamage = state.turnFireDamage + state.turnPiercingDamage + remainingDamage;
+
+		// Display damage on health bar
+		tempBar.style.width = totalDamage / target.hp * 100 + "%";
 	}
 
 	heal(amount) {
@@ -932,17 +1073,17 @@ class Effects {
 			case 1:
 				amount = db.cards[this.cardId].damage;
 				this.successful();
-				this.dealDame(amount);
+				this.damage(amount);
 				break;
 			case 2:
 				amount = db.cards[this.cardId].damage2;
 				this.successful();
-				this.dealDame(amount);
+				this.damage(amount);
 				break;
 			case 3:
 				amount = db.cards[this.cardId].damage3;
 				this.successful();
-				this.dealDame(amount);
+				this.damage(amount);
 				break;
 		}
 	}
@@ -986,13 +1127,13 @@ class Effects {
 			case 1:
 				state.turnDamage = state.turnDamage * 2;
 				state.turnPiercingDamage = state.turnPiercingDamage * 2;
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break;
 			case 2:
 				state.turnDamage = 0;
 				state.turnPiercingDamage = 0;
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break;
 		}
@@ -1003,7 +1144,7 @@ class Effects {
 				this.unsuccessful();
 				break;
 			case 2:
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break;
 			case 3:
@@ -1040,7 +1181,7 @@ class Effects {
 				this.unsuccessful();
 				break;
 			case 2:
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break;
 		}
@@ -1063,6 +1204,24 @@ class Effects {
 				break;
 			case 2:
 				this.poison();
+				this.successful();
+				break;
+		}
+	}
+	poison2() {
+		let amount;
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				amount = db.cards[this.cardId].poison;
+				this.poison(amount);
+				this.successful();
+				break;
+			case 3:
+				amount = db.cards[this.cardId].poison2;
+				this.poison(amount);
 				this.successful();
 				break;
 		}
@@ -1093,7 +1252,7 @@ class Effects {
 				shieldEl.querySelector(".shield-amount").textContent = 0;
 				shieldEl.classList.add("damaged");
 
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break; 0
 		}
@@ -1106,7 +1265,7 @@ class Effects {
 			case 2:
 				state.turnPiercingDamage += state.turnDamage;
 				state.turnDamage = 0;
-				this.dealDame();
+				this.damage();
 				this.successful();
 				break;
 		}
@@ -1124,7 +1283,7 @@ class Effects {
 				const hpLostToMultiply = db.cards.hp_loss_to_damage.hploss;
 
 				const damage = Math.floor(hplost / hpLostToMultiply) * damageToMultiply;
-				this.dealDame(damage);
+				this.damage(damage);
 				this.successful();
 				break;
 		}
@@ -1137,7 +1296,7 @@ class Effects {
 			case 2:
 				const poison = state.turn === "player" ? state.mob.poison : state.player.poison;
 				if (poison <= 0) {
-					this.dealDame(db.cards.affliction_advantage.damage)
+					this.damage(db.cards.affliction_advantage.damage)
 				} else {
 					this.piercingDamage(db.cards.affliction_advantage.damage2);
 				}
@@ -1151,7 +1310,7 @@ class Effects {
 				this.unsuccessful();
 				break;
 			case 2:
-				if (state.turnDamage || state.turnPiercingDamage) {
+				if (state.turnDamage || state.turnPiercingDamage || state.turnFireDamage) {
 					this.shield();
 				}
 				this.successful();
@@ -1166,6 +1325,111 @@ class Effects {
 			case 2:
 				state.turn === "player" ? this.poison(state.mob.poison + state.turnPoison) : this.poison(state.player.poison + state.turnPoison);
 				this.banish();
+				this.successful();
+				break;
+		}
+	}
+	exasperater() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				state.turn === "player" ? state.mob.mana = 0 : state.player.mana = 0;
+				const targetManaEl = state.turn === "player" ? document.querySelector("#encounter .topbar .mana-left") : document.querySelector("#encounter .bottombar .mana-left");
+				targetManaEl.textContent = 0;
+				this.successful();
+				break;
+		}
+	}
+	rotten_soul() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				let target;
+				let damageAmount;
+				target = state.turn === "player" ? state.mob : state.player;
+				damageAmount = target.mana;
+				target.mana = 0;
+				const targetManaEl = state.turn === "player" ? document.querySelector("#encounter .topbar .mana-left") : document.querySelector("#encounter .bottombar .mana-left");
+				targetManaEl.textContent = 0;
+				this.damage(damageAmount);
+				this.successful();
+				break;
+		}
+	}
+	aggressive_stance(){
+		switch (this.result) {
+			case 1:
+				this.selfPiercingDamage(db.cards.aggressive_stance.self_damage, true);
+				this.piercingDamage(db.cards.aggressive_stance.damage);
+				this.successful();
+				break;
+				case 2:
+				this.selfPiercingDamage(db.cards.aggressive_stance.self_damage, true);
+				this.piercingDamage(db.cards.aggressive_stance.damage2);
+				this.successful();
+				break;
+				case 3:
+				this.selfPiercingDamage(db.cards.aggressive_stance.self_damage, true);
+				this.piercingDamage(db.cards.aggressive_stance.damage3);
+				this.successful();
+				break;
+		}
+	}
+	pyreburst(){
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				this.fireDamage();
+				this.successful();
+				break;
+		}
+	}
+	embersteel(){
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				const previousDamage = state.turnDamage + state.turnPiercingDamage;
+				const target = state.turn === "player" ? state.mob : state.player;
+				state.turnFireDamage += previousDamage + Math.floor(previousDamage * target.fire / 100);
+				state.turnPiercingDamage = 0;
+				state.turnDamage = 0;
+				this.fireDamage();
+				this.successful();
+				break;
+		}
+	}
+	fireseal(){
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				this.shield();
+				this.successful();
+				break;
+			case 3:
+				this.shield();
+				this.fireDamage();
+				this.successful();
+				break;
+		}
+	}
+	drinkin(){
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				this.heal();
+				this.damage();
 				this.successful();
 				break;
 		}
