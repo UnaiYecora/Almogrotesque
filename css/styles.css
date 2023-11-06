@@ -925,7 +925,8 @@ div#discobar>span {
 	align-items: center;
 }
 
-.card-inventory-desc .icon:not(.banish) {
+.card-inventory-desc .icon:not(.banish),
+.store-item-desc .icon:not(.banish) {
 	width: 1.2rem;
 	height: 1.2rem;
 	display: inline-flex;
@@ -1103,15 +1104,13 @@ section#xpscreen button {
 	width: 100%;
 }
 
-.store-item-title {
-	font-size: 1.4rem;
+.store-item-icon .inventory-card {
+	justify-content: space-around;
+    padding-bottom: 2.4rem;
 }
 
-.store-item-title .icon {
-	width: 1rem;
-	aspect-ratio: 1;
-	display: inline-flex;
-	margin-inline: 0.3rem;
+.store-item-icon .card-mana-cost {
+	font-size: 1rem;
 }
 
 .store-item-desc {
@@ -1119,10 +1118,13 @@ section#xpscreen button {
 }
 
 .store-item-desc .icon {
-	width: 0.75rem;
-	aspect-ratio: 1;
-	display: inline-flex;
-	margin-inline: 0.3rem;
+	filter: brightness(999) !important;
+}
+.store-item-desc .icon.banish{
+	filter: unset !important;
+}
+.store-item-desc .icon.banish:after{
+	color: #e38f71;
 }
 
 .store-item button {
@@ -1205,6 +1207,7 @@ section#skilltree {
 	width: 6.2rem;
 	background-color: var(--white);
 	transition: 1s;
+	cursor: pointer;
 }
 
 .skilltree-wrapper .skill.skillslot {
@@ -1257,6 +1260,7 @@ section#skilltree {
 
 .skill.skillslot.skillstart {
 	background-color: #937c49;
+	cursor: default;
 	box-shadow:
 		inset 0 0 0 0.5rem #937c49,
 		inset 0 0 0 0.75rem #0000004d,
@@ -1271,7 +1275,6 @@ section#skilltree {
 	box-shadow: 0 0 0 0rem #121212, 0 0 0 0.1rem var(--skillcolor);
 	transform: scale(0.98);
 	transition: .6s;
-	cursor: pointer;
 }
 
 #skilltree .tokens-left-wrapper {

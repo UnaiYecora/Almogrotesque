@@ -89,7 +89,7 @@ export async function generateInventory(previousCard) {
 /*===========================================================================*/
 // Generate card
 /*===========================================================================*/
-export async function generateCard(cardId, playerMana = false, cardManaPrice = false) {
+export async function generateCard(cardId, playerMana, cardManaPrice, mini) {
 	return new Promise(async (resolve, reject) => {
 		try {
 				// Get card data
@@ -113,7 +113,9 @@ export async function generateCard(cardId, playerMana = false, cardManaPrice = f
 				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
 				cardHTML += disc;
 				cardHTML += '</div>';
-				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
+				if (!mini) {
+					cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
+				}
 				if (playerMana !== false && cardManaPrice !== false) {
 					cardHTML += '<div class="mana-price">';
 					cardHTML += '<div>Claim:</div> <div>' + playerMana + ' / ' + cardManaPrice + '<span class="mana"></span></div>';

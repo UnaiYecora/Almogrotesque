@@ -68,6 +68,7 @@ export async function generateStore(storeid) {
 
 				// Elements to populate
 				const iconEl = place.querySelector(".store-item-icon");
+				const descEl = place.querySelector(".store-item-desc");
 				const priceEl = place.querySelector(".store-item-price");
 
 				// Data
@@ -95,7 +96,8 @@ export async function generateStore(storeid) {
 					} else {
 						priceEl.textContent = price;
 					}
-					iconEl.innerHTML = await generateCard(item);
+					iconEl.innerHTML = await generateCard(item, false, false, true);
+					descEl.innerHTML = iconify(itemData.desc);
 
 					// Datasets
 					place.dataset.price = price;
