@@ -5,12 +5,13 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana } from "./helpers.js";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js";
 import { generateInventory } from "./inventory.js";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js";
 import { generatePuzzle } from "./chests.js";
+import { buySkill, updateSkilltree } from "./skills.js";
 import { db, state } from "./db.js";
 
 
@@ -41,6 +42,7 @@ widthBasedFontSize();
 /////////////////
 updateFate();
 updateCoins();
+updateTokens();
 
 
 /* ··········································································*/
@@ -67,10 +69,10 @@ document.querySelector("#crossroad").addEventListener("click", async function (e
 	const path = e.target.closest(".path");
 	if (path) {
 		const type = path.dataset.pathtype;
-		
+
 		// Main button
 		if (e.target.classList.contains("main-path-button")) {
-			
+
 			// Mob encounter
 			if (type === "encounter") {
 				const mob = path.dataset.mobid;
@@ -139,18 +141,18 @@ document.querySelector(".end-turn").addEventListener("click", async function () 
 // Skip path
 /*===========================================================================*/
 document.querySelectorAll("[data-skip-path]").forEach(el => {
-	
-	el.addEventListener("click", async function() {
+
+	el.addEventListener("click", async function () {
 		await burnPath(el.parentElement);
 		await fillPaths();
-    })
+	})
 });
 
 /*===========================================================================*/
 // XP Screen
 /*===========================================================================*/
 document.querySelector("#xpscreen button").addEventListener("click", async function () {
-	const path = document.querySelector('#crossroad [data-mobid="'+ state.mob.mobid +'"]');
+	const path = document.querySelector('#crossroad [data-mobid="' + state.mob.mobid + '"]');
 	await updateHP();
 	document.querySelector("#xpscreen").style.display = "none";
 	await goTo("crossroad");
@@ -171,12 +173,12 @@ document.querySelector(".close-store").addEventListener("click", async function 
 document.querySelector("#store").addEventListener("click", async function (e) {
 	if (e.target.matches(".buy-item, .buy-item > *")) {
 		const storeItemEL = e.target.closest(".store-item");
-		
+
 		// Data
 		const item = storeItemEL.dataset.item;
 		const store = storeItemEL.dataset.store;
 		const position = storeItemEL.dataset.position;
-		
+
 		await buy(item);
 		await checkIfAbleToBuy();
 		updateCoins();
@@ -200,13 +202,13 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 // Open/Close inventory in combat
 /*===========================================================================*/
 // Close
-document.querySelector(".close-inventory").addEventListener("click", function() {
+document.querySelector(".close-inventory").addEventListener("click", function () {
 	document.querySelector(".inventory").style.display = "none";
 	document.querySelector(".target-slot").classList.remove("target-slot");
 });
 
 // Open
-document.querySelector("#discobar").addEventListener("click", async function(e) {
+document.querySelector("#discobar").addEventListener("click", async function (e) {
 	const slot = e.target.closest(".slot");
 	if (slot) {
 		slot.classList.add("target-slot");
@@ -233,7 +235,7 @@ document.querySelector("#discobar").addEventListener("click", async function(e) 
 /*===========================================================================*/
 // Place selected card in slot
 /*===========================================================================*/
-document.querySelector(".inventory").addEventListener("click", async function(e) {
+document.querySelector(".inventory").addEventListener("click", async function (e) {
 
 	if (e.target.closest(".inventory-card")) {
 		const cardId = e.target.closest(".inventory-card").dataset.cardid;
@@ -261,7 +263,7 @@ document.querySelector(".inventory").addEventListener("click", async function(e)
 /*===========================================================================*/
 // Stop using card
 /*===========================================================================*/
-document.querySelector(".clear-slot").addEventListener("click", async function() {
+document.querySelector(".clear-slot").addEventListener("click", async function () {
 	await stopUsingCard();
 	document.querySelector(".inventory").style.display = "none";
 	document.querySelector(".target-slot").classList.remove("target-slot");
@@ -270,6 +272,56 @@ document.querySelector(".clear-slot").addEventListener("click", async function()
 /*===========================================================================*/
 // Close chest
 /*===========================================================================*/
-document.querySelector(".close-chest").addEventListener("click", function() {
+document.querySelector(".close-chest").addEventListener("click", function () {
 	goTo("crossroad");
+})
+
+/*===========================================================================*/
+// See skill
+/*===========================================================================*/
+document.querySelectorAll("#skilltree .skill[data-skillid]").forEach(el => {
+	el.addEventListener("click", function (e) {
+		const skillId = el.dataset.skillid;
+		const skillStatus = el.dataset.skillstate;
+		const desc = db.skills[skillId].desc;
+		const price = db.skills[skillId].price;
+		const modal = document.querySelector(".skill-modal");
+		const buyBtn = modal.querySelector(".skill-modal-buy");
+		const descEl = modal.querySelector(".skill-modal-desc");
+
+		descEl.innerHTML = iconify(desc);
+		buyBtn.innerHTML = `${price}<span class="token icon"></span>`;
+		buyBtn.dataset.skillprice = price;
+		buyBtn.dataset.skillid = skillId;
+		buyBtn.disabled = skillStatus === "1" && price <= state.player.tokens ? false : true;
+		modal.style.display = "flex";
+	})
+});
+
+/*===========================================================================*/
+// Buy skill
+/*===========================================================================*/
+document.querySelector(".skill-modal-buy").addEventListener("click", function() {
+	const btn = document.querySelector(".skill-modal-buy");
+	const skillId = btn.dataset.skillid;
+	const price = btn.dataset.skillprice;
+
+	if (price <= state.player.tokens) {
+		btn.disabled = true;
+		buySkill(skillId);
+		document.querySelector(`.skill[data-skillid="${skillId}"]`).dataset.skillstate = 2;
+		state.player.tokens -= price;
+		updateTokens();
+		document.querySelector(".skill-modal").style.display = "none";
+		updateSkilltree();
+	}
+
+})
+
+
+/*===========================================================================*/
+// Close skill modal
+/*===========================================================================*/
+document.querySelector(".skill-modal-close").addEventListener("click", function() {
+	document.querySelector(".skill-modal").style.display = "none";
 })

@@ -5,9 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="css/styles.css?v=0.9">
-	<link rel="stylesheet" href="css/svgs.css?v=0.9">
-	<script src="js/app.js?v=0.9" type="module"></script>
+	<link rel="stylesheet" href="css/styles.css?v=0.10">
+	<link rel="stylesheet" href="css/svgs.css?v=0.10">
+	<script src="js/app.js?v=0.10" type="module"></script>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
 				<button id="newGame">New Game</button>
 				<button>How to play</button>
 			</div>
-			<p>v0.9</p>
+			<p>v0.10</p>
 		</section>
 
 		<section id="crossroad">
@@ -67,6 +67,10 @@
 					</div>
 				</div>
 				<div class="lvl-bottom-right">
+					<div class="tokens-left-wrapper" data-goto="skilltree">
+						<span class="tokens-left">0</span>
+						<span class="token"></span>
+					</div>
 					<div class="coins-left-wrapper">
 						<span class="coins-left">0</span>
 						<span class="coin"></span>
@@ -212,6 +216,46 @@
 					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
 				</div>
 			</div>
+		</section>
+
+		<section id="skilltree">
+			<div class="skilltree-wrapper">
+				<div class="skill skillslot skillslot5" data-skillstate="0" data-skillid="skillslot5"></div>
+				<div class="skill skillmaxhp" data-skillstate="0" data-skillid="skillmaxhp4"></div>
+				<div class="skill skillshield" data-skillstate="0" data-skillid="skillshield3"></div>
+				<div class="skill skillheal" data-skillstate="0" data-skillid="skillheal2"></div>
+				<span></span>
+				<div class="skill skillmana" data-skillstate="0" data-skillid="skillmana4"></div>
+				<div class="skill skillslot skillslot4" data-skillstate="0" data-skillid="skillslot4"></div>
+				<div class="skill skillmaxhp" data-skillstate="0" data-skillid="skillmaxhp3"></div>
+				<div class="skill skillshield" data-skillstate="0" data-skillid="skillshield2"></div>
+				<div class="skill skillheal" data-skillstate="0" data-skillid="skillheal1"></div>
+				<div class="skill skillcoins" data-skillstate="0" data-skillid="skilleco3"></div>
+				<div class="skill skillmana" data-skillstate="0" data-skillid="skillmana3"></div>
+				<div class="skill skillslot skillslot3" data-skillstate="0" data-skillid="skillslot3"></div>
+				<div class="skill skillmaxhp" data-skillstate="0" data-skillid="skillmaxhp2"></div>
+				<div class="skill skillshield" data-skillstate="0" data-skillid="skillshield1"></div>
+				<div class="skill skillfate" data-skillstate="0" data-skillid="skillfate2"></div>
+				<div class="skill skillcoins" data-skillstate="0" data-skillid="skilleco2"></div>
+				<div class="skill skillmana" data-skillstate="0" data-skillid="skillmana2"></div>
+				<div class="skill skillslot skillslot2" data-skillstate="0" data-skillid="skillslot2"></div>
+				<div class="skill skillmaxhp" data-skillstate="1" data-skillid="skillmaxhp1"></div>
+				<span></span>
+				<div class="skill skillfate" data-skillstate="0" data-skillid="skillfate1"></div>
+				<div class="skill skillcoins" data-skillstate="0" data-skillid="skilleco1"></div>
+				<div class="skill skillmana" data-skillstate="1" data-skillid="skillmana1"></div>
+				<div class="skill skillslot skillstart"></div>
+			</div>
+			<div class="skill-modal modal">
+				<button class="skill-modal-close">X</button>
+				<p class="skill-modal-desc"></p>
+				<button class="skill-modal-buy"></button>
+			</div>
+			<div class="tokens-left-wrapper" data-goto="skilltree">
+				<span class="tokens-left">0</span>
+				<span class="token"></span>
+			</div>
+			<button class="close-skilltree" data-goto="crossroad">X</button>
 		</section>
 
 		<section id="chest">

@@ -72,6 +72,24 @@ export function shuffleArray(array) {
 }
 
 /*===========================================================================*/
+// Inject array in array
+/*===========================================================================*/
+export function injectArrInArr(firstArray, secondArray) {
+	// Generate an array of random indexes based on the length of the first array
+	const randomIndexes = Array.from({ length: secondArray.length }, () => {
+		return Math.floor(Math.random() * (firstArray.length + 1));
+	});
+
+	// Insert elements from the second array into the first array at the random positions
+	for (let i = 0; i < secondArray.length; i++) {
+		const randomIndex = randomIndexes[i];
+		firstArray.splice(randomIndex, 0, secondArray[i]);
+	}
+
+	return firstArray;
+}
+
+/*===========================================================================*/
 // Random from array
 /*===========================================================================*/
 export function randomItem(arr) {
@@ -97,6 +115,28 @@ export function updateFate() {
 export function updateCoins() {
 	document.querySelectorAll(".coins-left").forEach(el => {
 		el.textContent = state.player.coins;
+	});
+}
+
+/*===========================================================================*/
+// Display updated current tokens left
+/*===========================================================================*/
+export function updateTokens() {	
+	const tokensLeft = state.player.tokens;
+	document.querySelectorAll(".tokens-left-wrapper").forEach(tokenWrapperElement => {
+		const tokenLeftElement = tokenWrapperElement.querySelector(".tokens-left");
+		const crossroadTokens = document.querySelector("#crossroad .tokens-left-wrapper");
+		const crossroadTokensLeft = crossroadTokens.querySelector(".tokens-left");
+
+		tokenLeftElement.textContent = state.player.tokens;
+
+		if (tokensLeft > 0) {
+			crossroadTokensLeft.style.display = "flex";
+			crossroadTokens.classList.add("tokens-to-spend");
+		} else {
+			crossroadTokensLeft.style.display = "none";
+			crossroadTokens.classList.remove("tokens-to-spend");
+		}
 	});
 }
 

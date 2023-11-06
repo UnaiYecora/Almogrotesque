@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateHP, shuffleArray, goTo, wait  } from "./helpers.js";
+import { updateHP, shuffleArray, goTo, wait, injectArrInArr  } from "./helpers.js";
 import { generateStoreItems } from "./store.js";
 import { db, state } from "./db.js";
 
@@ -68,8 +68,7 @@ function createLvlArray(lvl) {
 				...lvlData.doors.map(door => ({ type: "door", level: door }))
 			];
 
-			const levelArray = [...arrayOfMobs, ...saferoomsArray];
-			shuffleArray(levelArray);
+			const levelArray = injectArrInArr(arrayOfMobs, saferoomsArray);
 
 			state.currentLevelArray = levelArray;
 
@@ -124,7 +123,7 @@ export function fillPaths() {
 							btnTxt.textContent = "Exit";
 							path.dataset.pathtype = "door";
 							path.dataset.door = lvl;
-							path.dataset.skippable = true;
+							path.dataset.skippable = false;
 							break;
 
 						default:
@@ -136,7 +135,7 @@ export function fillPaths() {
 							}
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom;
-							path.dataset.skippable = true;
+							path.dataset.skippable = false;
 							break;
 					}
 
@@ -216,8 +215,12 @@ export async function burnPath(path) {
 				skipBtn.classList.remove("hideSkip");
 
 				if (path.dataset.storeid) {
-					const storeid = "store" + path.dataset.storeid;
-					delete state[storeid];
+					const cardsForSale = [...state.cardsForSale];
+					const storeArr = [...state[path.dataset.storeid]];
+					const filteredItems = cardsForSale.filter(item => !storeArr.includes(item));
+					state.cardsForSale = filteredItems;
+
+					delete state[path.dataset.storeid];
 				}
 				path.dataset.storeid = "";
 				

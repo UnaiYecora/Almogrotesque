@@ -3,25 +3,30 @@ export var state = {
 	player: {
 		hp: 24,
 		maxHp: 24,
-		fate: 100,
+		fate: 10,
 		xp: 0,
 		lvl: 1,
 		coins: 23,
-		slots: 3,
-		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana"],
+		slots: 1,
+		/* cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana"], */
+		cards: ["basic_attack_1", "mana1"],
 		cardsThisEncounter: [],
 		cardsToBanish: [],
 		discsToEmpty: [],
 		cardsManaPaid: [],
 		cardsInUse: [],
 		mana: 1,
-		startingMana: 10,
+		startingMana: 0,
 		shield: 0,
 		poison: 0,
 		fire: 0,
+		tokens: 10,
+		skills: [],
 	},
+	cardsForSale: [],
 	turn: false,
 	fatePrice: 1,
+	startingFatePrice: 1,
 	turnFate: 0,
 	turnMana: 0,
 	turnManaToConsume: 0,
@@ -40,11 +45,10 @@ export const db = {
 		crossroad: {
 			name: "Crossroad",
 			desc: "A rustic crossroad, where well-trodden paths converge under the open sky, inviting travelers to choose their fate — each direction hiding both promise and peril.",
-			stores: 1,
+			stores: 7,
 			chests: 1,
 			doors: ["outskirts"],
 			spawns: ["frog", "rat", "bats", "raven", "goblin", "chest", "master_frog", "goblin2", "rat_bandit", "lagoon_dweller", "necrow", "seridra", "eggman", "forest_warden", "gigant_crab", "desert_mouth", "ecosystem"],
-			cards: ["basic_attack_1", "basic_attack_2", "eldertide_timepiece"],
 		},
 		outskirts: {
 			name: "Outskirts path",
@@ -53,7 +57,6 @@ export const db = {
 			chests: 0,
 			doors: ["village"],
 			spawns: [],
-			cards: [],
 		},
 		village: {
 			name: "Village",
@@ -62,7 +65,6 @@ export const db = {
 			chests: 0,
 			doors: ["old_forest", "cemetery"],
 			spawns: [],
-			cards: [],
 		},
 		old_forest: {
 			name: "Old forest",
@@ -71,7 +73,6 @@ export const db = {
 			chests: 0,
 			doors: ["cemetery"],
 			spawns: [],
-			cards: [],
 		},
 		cemetery: {
 			name: "Cemetery",
@@ -80,7 +81,6 @@ export const db = {
 			chests: 0,
 			doors: ["church"],
 			spawns: [],
-			cards: [],
 		},
 		church: {
 			name: "Church",
@@ -89,18 +89,132 @@ export const db = {
 			chests: 0,
 			doors: [],
 			spawns: [],
-			cards: [],
 		},
 	},
 
 	/* ··········································································*/
 	/* ··········································································*/
 	/* ··········································································*/
-	/* ·································  X P  ··································*/
+	/* ························  M I S C E L L A N E A  ·························*/
 	/* ··········································································*/
 	/* ··········································································*/
 	/* ··········································································*/
 	xpTiers: [0, 2, 6, 13, 25, 45, 70, 100, 135, 180, 225, 1224],
+
+	coinTiers: [0, 3, 6, 9, 10, 11, 12, 14, 16, 18, 66],
+
+	skills: {
+		skillslot2: {
+			desc: "Gain an additional slot to play cards.",
+			price: 1,
+			requires: ["skillmaxhp1", "skillmana1"],
+		},
+		skillslot3: {
+			desc: "Gain an additional slot to play cards.",
+			price: 1,
+			requires: ["skillmaxhp2", "skillmaxhp3", "skillmana2", "skillmana3"],
+		},
+		skillslot4: {
+			desc: "Gain an additional slot to play cards.",
+			price: 1,
+			requires: ["skillmaxhp3", "skillmana3", "skillmana4", "skillmaxhp4"],
+		},
+		skillslot5: {
+			desc: "Gain an additional slot to play cards.",
+			price: 1,
+			requires: ["skillmana4", "skillmaxhp4"],
+		},
+		skillmaxhp1: {
+			desc: "Increase your maximum HP by 10.",
+			price: 1,
+			requires: [],
+		},
+		skillmaxhp2: {
+			desc: "Increase your maximum HP by 10.",
+			price: 1,
+			requires: ["skillslot2", "skillshield1", "skillslot3", "skillshield2"],
+		},
+		skillmaxhp3: {
+			desc: "Increase your maximum HP by 10.",
+			price: 1,
+			requires: ["skillslot3", "skillshield2", "skillshield3", "skillslot4"],
+		},
+		skillmaxhp4: {
+			desc: "Increase your maximum HP by 10.",
+			price: 1,
+			requires: ["skillslot4", "skillslot5", "skillshield3"],
+		},
+		skillshield1: {
+			desc: "Start each combat with 8{shield}.",
+			price: 1,
+			requires: ["skillmaxhp1", "skillmaxhp2", "skillheal1"],
+		},
+		skillshield2: {
+			desc: "Gain +2{shield} at the end of your turn.",
+			price: 1,
+			requires: ["skillmaxhp2", "skillmaxhp3", "skillheal1", "skillheal2"],
+		},
+		skillshield3: {
+			desc: "Gain +3{shield} at the end of your turn.",
+			price: 1,
+			requires: ["skillmaxhp3", "skillmaxhp4", "skillheal2"],
+		},
+		skillheal1: {
+			desc: "Heal 5HP after each combat.",
+			price: 1,
+			requires: ["skillshield1", "skillshield2"],
+		},
+		skillheal2: {
+			desc: "Heal 10% of health lost after each combat.",
+			price: 1,
+			requires: ["skillshield2", "skillshield3"],
+		},
+		skillmana1: {
+			desc: "+2 Initial{mana}.",
+			price: 1,
+			requires: [],
+		},
+		skillmana2: {
+			desc: "+2 Initial{mana}.",
+			price: 1,
+			requires: ["skilleco1", "skillslot2", "skilleco2", "skillslot3"],
+		},
+		skillmana3: {
+			desc: "+2 Initial{mana}.",
+			price: 1,
+			requires: ["skilleco2", "skillslot3", "skilleco3", "skillslot4"],
+		},
+		skillmana4: {
+			desc: "+2 Initial{mana}.",
+			price: 1,
+			requires: ["skillslot4", "skilleco3"],
+		},
+		skilleco1: {
+			desc: "Gain more coins for defeating enemys.",
+			price: 1,
+			requires: ["skillmana1", "skillfate1", "skillmana2"],
+		},
+		skilleco2: {
+			desc: "Leftmost card in each store will be on sale.",
+			price: 1,
+			requires: ["skillfate1", "skillfate2", "skillmana3", "skillmana2"],
+		},
+		skilleco3: {
+			desc: "Base price for all cards is 25% cheaper.",
+			price: 1,
+			requires: ["skillfate2", "skillmana3", "skillmana4"],
+		},
+		skillfate1: {
+			desc: "+3{fate} at start of combat.",
+			price: 1,
+			requires: ["skilleco1", "skilleco2"],
+		},
+		skillfate2: {
+			desc: "The first change of fate is always free.",
+			price: 1,
+			requires: ["skilleco2", "skilleco3"],
+		}
+	},
 
 
 
@@ -127,7 +241,7 @@ export const db = {
 			name: "Dagger",
 			get desc() { return "Deal " + this.damage + "/" + this.damage2 + "/" + this.damage3 + " damage." },
 			get short() { return ["x" + this.damage + " damage", "x" + this.damage2 + " damage", "x" + this.damage3 + " damage"] },
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [15, 70, 15],
@@ -140,7 +254,7 @@ export const db = {
 			name: "Handaxe",
 			get desc() { return "Deal " + this.damage + "/" + this.damage2 + " piercing damage." },
 			get short() { return ["x" + this.damage + " piercing damage", "x" + this.damage2 + " piercing damage"] },
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [55, 15],
@@ -152,7 +266,7 @@ export const db = {
 			name: "Heal potion",
 			desc: "Heal 3/10 HP.",
 			short: ["Heal 3HP", "Heal 10HP"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [38, 8],
@@ -164,7 +278,7 @@ export const db = {
 			name: "Bane-imbued edge",
 			desc: "Damage from previous cards this turn are doubled or lost.",
 			short: ["Double damage", "Lose damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [50, 50],
@@ -174,7 +288,7 @@ export const db = {
 			name: "Ambivalent Elixir",
 			desc: "Deal damage or heal.",
 			short: ["Deal 3 damage", "Heal 3HP"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			damage: 3,
@@ -186,7 +300,7 @@ export const db = {
 			name: "Eldertide Timepiece",
 			desc: "Gain 1{fate}.",
 			short: ["1{fate}"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			fate: 1,
@@ -197,7 +311,7 @@ export const db = {
 			name: "Soulstone",
 			get desc() { return "Gain " + this.mana + "{mana}." },
 			get short() { return [this.mana + "{mana}"] },
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			mana: 1,
@@ -208,7 +322,7 @@ export const db = {
 			name: "Shield",
 			get desc() { return "Gain " + this.shield + "{shield}." },
 			get short() { return [this.shield + "{shield}"] },
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			shield: 3,
@@ -219,7 +333,7 @@ export const db = {
 			name: "Poison brew",
 			get desc() { return "Deal " + this.poison + "{poison}." },
 			get short() { return [this.poison + "{poison}"] },
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			poison: 3,
@@ -228,12 +342,14 @@ export const db = {
 		},
 		poison2: {
 			name: "Poison concoction",
-			get desc() { return "Deal " + this.poison + "/" + this.poison2 +"{poison}." },
-			get short() { return [
-				this.poison + "{poison}",
-				this.poison2 + "{poison}",
-			] },
-			price: 50,
+			get desc() { return "Deal " + this.poison + "/" + this.poison2 + "{poison}." },
+			get short() {
+				return [
+					this.poison + "{poison}",
+					this.poison2 + "{poison}",
+				]
+			},
+			price: 20,
 			mana_price: 0,
 			mana_cost: 2,
 			poison: 6,
@@ -245,7 +361,7 @@ export const db = {
 			name: "Shield attack",
 			desc: "Turn your {shield} into damage.",
 			short: ["Turn {shield} into damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 2,
 			hitrate: [77],
@@ -255,7 +371,7 @@ export const db = {
 			name: "Sharpener",
 			desc: "Turn this turn's damage into piercing damage.",
 			short: ["Damage into piercing damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [63],
@@ -265,7 +381,7 @@ export const db = {
 			name: "Retribution",
 			get desc() { return "Deal " + this.damage + " damage for every " + this.hploss + "HP you have lost."; },
 			short: ["Turn lost HP into damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 2,
 			damage: 3,
@@ -281,7 +397,7 @@ export const db = {
 			get short() {
 				return ["Deal " + this.damage + " damage. If the enemy has {poison}, deal " + this.damage2 + " damage"]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			damage: 4,
@@ -297,7 +413,7 @@ export const db = {
 			get short() {
 				return ["If dealing damage, gain " + this.shield + " {shield}"]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			shield: 5,
@@ -308,7 +424,7 @@ export const db = {
 			name: "Plague",
 			desc: "{banish} Double enemy's {poison}",
 			short: ["Doubles enemy's current {poison}"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 2,
 			hitrate: [86],
@@ -318,7 +434,7 @@ export const db = {
 			name: "Exasperater",
 			desc: "Remove all of the enemy's {mana}.",
 			short: ["Remove all enemy's {mana}"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 1,
 			hitrate: [73],
@@ -328,7 +444,7 @@ export const db = {
 			name: "Rotten soul",
 			desc: "Remove all of the enemy's {mana}. Deal 1 damage for each {mana}",
 			short: ["Remove all enemy's {mana} and deal equal damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 3,
 			hitrate: [88],
@@ -346,7 +462,7 @@ export const db = {
 					"Deal " + this.damage3 + " piercing damage"
 				]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			damage: 0,
@@ -366,7 +482,7 @@ export const db = {
 					"Deal " + this.fire_damage + " fire damage",
 				]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 1,
 			fire_damage: 5,
@@ -375,9 +491,9 @@ export const db = {
 		},
 		embersteel: {
 			name: "Embersteel",
-			desc:  "Turn this turn's damage into fire damage.",
+			desc: "Turn this turn's damage into fire damage.",
 			short: ["Damage into fire damage"],
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 3,
 			hitrate: [62],
@@ -394,7 +510,7 @@ export const db = {
 					"Also deal " + this.fire_damage + " fire damage",
 				]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 1,
 			shield: 5,
@@ -412,19 +528,19 @@ export const db = {
 					"Deal " + this.damage + " damage, restore the same amount of HP",
 				]
 			},
-			price: 50,
+			price: 20,
 			mana_price: 0,
 			mana_cost: 1,
 			hitrate: [79],
 			damage: 3,
-			get heal(){ return this.damage},
+			get heal() { return this.damage },
 			colors: ["#000", "#514138"],
 		},
 		attack_and_mana: {
 			name: "Focus",
-			get desc(){ return "Deal " + this.damage + " damage and gain "+ this.mana +"{mana}."},
-			get short(){ return ["Deal "+this.damage+" damage, gain "+this.mana+"{mana}"]},
-			price: 50,
+			get desc() { return "Deal " + this.damage + " damage and gain " + this.mana + "{mana}." },
+			get short() { return ["Deal " + this.damage + " damage, gain " + this.mana + "{mana}"] },
+			price: 20,
 			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [38],
@@ -454,15 +570,15 @@ export const db = {
 			fire: 50,
 			slots: 1,
 			patterns: [
-				{
+				/* {
 					condition: (mob, player) => mob.mana < 1,
 					attacks: [["mana1"]]
 				},
 				{
 					condition: (mob, player) => mob.mana > 0,
 					attacks: [["affliction_advantage"]]
-				}
-				/* {
+				} */
+				{
 					condition: (mob, player) => true,
 					attacks: [["basic_attack_1"]]
 				},
@@ -473,7 +589,7 @@ export const db = {
 				{
 					condition: (mob, player) => player.hp / player.maxHp > 0.75,
 					attacks: [["poison1"]]
-				}, */
+				},
 			],
 		},
 		master_frog: {
@@ -518,7 +634,7 @@ export const db = {
 			desc: "A nightmarish raven with twisted feathers, blood-red eyes, and a menacing aura. Its caw chills the bravest hearts, an omen of impending doom.",
 			img_rotation: 2,
 			desc_rotation: 0,
-			lvl: 1,
+			lvl: 2,
 			hp: 14,
 			fire: 50,
 			slots: 1,
@@ -588,7 +704,7 @@ export const db = {
 			desc: "Half-human, half-aquatic, dwelling beneath murky waters. With webbed extremities and glistening scales, it emerges to ensnare intruders with venomous harpoons.",
 			img_rotation: 2,
 			desc_rotation: 1,
-			lvl: 2,
+			lvl: 4,
 			hp: 28,
 			fire: 50,
 			slots: 2,
@@ -617,7 +733,7 @@ export const db = {
 			desc: "A formidable sorceress draped in dark robes. She wields shadow magic, calling forth curses and summoning eerie familiars to guard her lair.",
 			img_rotation: 2,
 			desc_rotation: 2,
-			lvl: 3,
+			lvl: 5,
 			hp: 42,
 			fire: 50,
 			slots: 2,
@@ -655,7 +771,7 @@ export const db = {
 			desc: "A twisted, human-like abomination, marred by mutation. Limbs contorted, skin pallid, it wanders in agony, driven by unnatural forces.",
 			img_rotation: 1,
 			desc_rotation: 1,
-			lvl: 3,
+			lvl: 5,
 			hp: 30,
 			fire: 50,
 			slots: 2,
@@ -677,7 +793,7 @@ export const db = {
 			desc: "A colossal, sentient sandstone formation. It awakens, summoning whirlwinds and sandstorms, devours travelers who approach its sandy, insatiable jaws.",
 			img_rotation: 0,
 			desc_rotation: 1,
-			lvl: 3,
+			lvl: 6,
 			hp: 38,
 			fire: 50,
 			slots: 3,
@@ -769,7 +885,7 @@ export const db = {
 			desc: "A swirling mass of winged nightmares cloaked in obsidian wings Their shrieks echo through darkness, unsettling even the bravest souls, as they swoop down in a chaotic, shadowy assault.",
 			img_rotation: 0,
 			desc_rotation: 1,
-			lvl: 1,
+			lvl: 2,
 			hp: 8,
 			fire: 50,
 			slots: 5,
@@ -790,7 +906,7 @@ export const db = {
 			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
 			img_rotation: 1,
 			desc_rotation: 2,
-			lvl: 2,
+			lvl: 4,
 			hp: 22,
 			fire: 50,
 			slots: 2,
@@ -818,7 +934,7 @@ export const db = {
 			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
 			img_rotation: 2,
 			desc_rotation: 2,
-			lvl: 2,
+			lvl: 5,
 			hp: 16,
 			fire: 50,
 			slots: 2,
@@ -871,7 +987,7 @@ export const db = {
 			desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eget risus vitae massa semper aliquam quis mattis quam. Morbi vitae tortor tempus, placerat leo et, suscipit lectus.",
 			img_rotation: 2,
 			desc_rotation: 0,
-			lvl: 6,
+			lvl: 8,
 			hp: 28,
 			fire: 50,
 			slots: 3,
@@ -897,7 +1013,7 @@ export const db = {
 			desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eget risus vitae massa semper aliquam quis mattis quam. Morbi vitae tortor tempus, placerat leo et, suscipit lectus.",
 			img_rotation: 2,
 			desc_rotation: 0,
-			lvl: 6,
+			lvl: 8,
 			hp: 28,
 			fire: 50,
 			slots: 3,

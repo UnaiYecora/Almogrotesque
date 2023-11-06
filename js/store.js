@@ -29,11 +29,16 @@ export async function generateStoreItems(emptyStore) {
 			// Generate store items
 			let storeData = [];
 			for (let i = 0; i < 3; i++) {
-				// Add card
-				const lvlItemArray = db.levels[state.currentLevel].cards;
+				// Get all cards intended for players (price > 0)
+				const itemsWithPositivePrice = Object.keys(db.cards).filter(item => db.cards[item].price > 0);
 
-				// TO-DO: Disable getting cards not intended for players (eg. Bat bite)
-				storeData[i] = randomItem(lvlItemArray);
+				// Remove cards already owned
+				let itemsToRemove = [];
+				itemsToRemove = [...storeData, ...state.player.cards, ...state.cardsForSale]
+				const filteredItems = itemsWithPositivePrice.filter(item => !itemsToRemove.includes(item));
+
+				storeData[i] = randomItem(filteredItems);
+				state.cardsForSale.push(storeData[i]);
 			}
 
 			// Save store
@@ -67,10 +72,17 @@ export async function generateStore(storeid) {
 
 				// Data
 				let item = state[storeid][i];
-				let itemData;
-
+				let itemData = db.cards[item];
+				let price =  itemData.price;
 				place.dataset.item = item;
-				itemData = db.cards[item];
+
+				if (i === 0 && state.player.skills.includes("skilleco2")) {
+					price = Math.floor(price - (price * 25 / 100));
+				}
+
+				if (state.player.skills.includes("skilleco3")) {
+					price = Math.floor(price - (price * 25 / 100));
+				}
 
 
 				if (item) {
@@ -78,11 +90,15 @@ export async function generateStore(storeid) {
 					place.style.visibility = "visible";
 
 					// Populate the elements
-					priceEl.textContent = itemData.price;
+					if (price < itemData.price) {
+						priceEl.innerHTML = `<s>${itemData.price}</s> ${price}`;
+					} else {
+						priceEl.textContent = price;
+					}
 					iconEl.innerHTML = await generateCard(item);
 
 					// Datasets
-					place.dataset.price = itemData.price;
+					place.dataset.price = price;
 					place.dataset.amount = itemData.amount;
 					place.dataset.store = storeid;
 					place.dataset.position = i;
