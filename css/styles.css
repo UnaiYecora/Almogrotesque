@@ -1215,33 +1215,21 @@ section#skilltree {
 	background-color: var(--skillcolor);
 }
 
+.skilltree-wrapper .skill.skillmaxhp,
 .skilltree-wrapper .skill.skillmana {
-	--skillcolor: hsl(270, 19%, 65%);
+	--skillcolor: hsl(40, 30%, 73%);
 	background-color: var(--skillcolor);
 }
 
+.skilltree-wrapper .skill.skillshield ,
 .skilltree-wrapper .skill.skillcoins {
-	--skillcolor: hsl(37, 32%, 73%);
+	--skillcolor: hsl(40, 30%, 83%);
 	background-color: var(--skillcolor);
 }
 
+.skilltree-wrapper .skill.skillheal,
 .skilltree-wrapper .skill.skillfate {
-	--skillcolor: hsl(0, 0%, 76%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillmaxhp {
-	--skillcolor: hsl(0, 56%, 80%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillshield {
-	--skillcolor: hsl(0, 0%, 65%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillheal {
-	--skillcolor: hsl(118, 15%, 71%);
+	--skillcolor: hsl(40, 30%, 93%);
 	background-color: var(--skillcolor);
 }
 

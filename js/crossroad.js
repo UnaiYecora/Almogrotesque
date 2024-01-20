@@ -135,7 +135,7 @@ export function fillPaths() {
 							}
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom;
-							path.dataset.skippable = false;
+							path.dataset.skippable = true;
 							break;
 					}
 

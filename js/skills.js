@@ -41,7 +41,6 @@ export function buySkill(skill) {
 		case "skillmana1":
 		case "skillmana2":
 		case "skillmana3":
-		case "skillmana4":
 			state.player.startingMana += 2;
 			break;
 		case "skillfate2":

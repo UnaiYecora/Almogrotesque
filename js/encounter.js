@@ -134,7 +134,7 @@ export async function toggleTurn(start) {
 	// Reset turn data
 	await resetTemporalEffects();
 
-	// End of turn passives
+	// End-of-turn passives
 	if (!start && state.turn === "mob") {
 		await passives(state.mob.mobid, "end");
 	}
@@ -158,6 +158,10 @@ export async function toggleTurn(start) {
 			const lostHP = state.player.maxHp - state.player.hp;
 			state.player.hp = Math.min(Math.ceil(state.player.hp + (lostHP * 10 / 100)), state.player.maxHp);
 			updateHP();
+		}
+		if (state.player.skills.includes("skillmana4") && state.player.mana == 0) {
+			state.player.mana = 1;
+			updateMana();
 		}
 	}
 
@@ -236,7 +240,7 @@ export async function toggleTurn(start) {
 		});
 	}
 
-	// Start of turn passives
+	// Start-of-turn passives
 	if (state.turn === "mob") {
 		await passives(state.mob.mobid, "start");
 	}
@@ -1578,6 +1582,29 @@ class Effects {
 			case 2:
 				this.effect("damage");
 				this.effect("mana");
+				this.successful();
+				break;
+		}
+	}
+	antidote() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				state.player.poison = 0;
+				this.successful();
+				break;
+		}
+	}
+	bloodletting() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				this.effect("selfPiercingDamage", db.cards.bloodletting.self_damage);
+				state.player.poison = 0;
 				this.successful();
 				break;
 		}
