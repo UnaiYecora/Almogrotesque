@@ -1142,6 +1142,10 @@ section#xpscreen button {
 	gap: 0.6rem;
 }
 
+.store-item button s {
+    opacity: 0.5;
+}
+
 .store-item button[disabled] {
 	opacity: 0.1;
 }

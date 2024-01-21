@@ -5,14 +5,14 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js";
-import { generateStore, buy, checkIfAbleToBuy } from "./store.js";
-import { generateInventory } from "./inventory.js";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js";
-import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11";
+import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11";
+import { generateInventory } from "./inventory.js?v=0.11";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11";
+import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11";
 import { generatePuzzle } from "./chests.js";
-import { buySkill, updateSkilltree } from "./skills.js";
-import { db, state, save, load } from "./db.js";
+import { buySkill, updateSkilltree } from "./skills.js?v=0.11";
+import { db, state, save, load } from "./db.js?v=0.11";
 
 
 /* ··········································································*/
