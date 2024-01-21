@@ -7,7 +7,7 @@
 /* ··········································································*/
 import { updateHP, shuffleArray, goTo, wait, injectArrInArr  } from "./helpers.js";
 import { generateStoreItems } from "./store.js";
-import { db, state } from "./db.js";
+import { db, state, save } from "./db.js";
 
 
 /* ··········································································*/
@@ -21,7 +21,7 @@ import { db, state } from "./db.js";
 /*===========================================================================*/
 // Set level
 /*===========================================================================*/
-export async function setLevel(lvl, fast) {
+export async function setLevel(lvl, fast, fromSavedState = false) {
 	try {
 		// Save new level
 		state.currentLevel = lvl;
@@ -39,8 +39,10 @@ export async function setLevel(lvl, fast) {
 		}
 
 		// Functions to run
-		await createLvlArray(lvl);
-		await fillPaths();
+		if (!fromSavedState) {
+			await createLvlArray(lvl);
+		}
+		await fillPaths(fromSavedState);
 		await setLevelUI(lvl);
 
 		// Remove fade on crossroad screen
@@ -82,14 +84,14 @@ function createLvlArray(lvl) {
 /////////////////
 // Fill the paths as they apear
 /////////////////
-export function fillPaths() {
+export function fillPaths(fromSavedState = false) {
 	return new Promise((resolve, reject) => {
 		try {
-			const levelArray = state.currentLevelArray;
+			const levelArray = fromSavedState ? [state.paths.path1, state.paths.path2, state.paths.path3] : state.currentLevelArray;
 			const emptyPaths = document.querySelectorAll("#crossroad div[data-filled='false']");
 
 			emptyPaths.forEach(async (path) => {
-				if (levelArray.length > 0) {
+				if (levelArray[0]) {
 					const mobOrRoom = levelArray[0];
 					const roomName = path.querySelector(".pathTitle");
 					const btnTxt = path.querySelector(".main-path-button");
@@ -101,12 +103,17 @@ export function fillPaths() {
 							btnTxt.textContent = "Enter";
 							path.dataset.pathtype = "store";
 							path.dataset.skippable = true;
-							let emptyStore = 1;
-							while (state[`store${emptyStore}`]) {
-								emptyStore++;
+							if (!fromSavedState) {
+								let emptyStore = 1;
+								while (state[`store${emptyStore}`]) {
+									emptyStore++;
+								}
+								path.dataset.storeid = `store${emptyStore}`;
+								mobOrRoom.storeId = `store${emptyStore}`;
+								generateStoreItems(emptyStore);
+							} else {
+								path.dataset.storeid = mobOrRoom.storeId;
 							}
-							path.dataset.storeid = `store${emptyStore}`;
-							generateStoreItems(emptyStore);
 							break;
 
 						case "chest":
@@ -146,12 +153,15 @@ export function fillPaths() {
 					}, 100);
 					path.dataset.filled = true;
 					path.style.visibility = "visible";
+					state.paths[path.id] = mobOrRoom;
 					levelArray.shift();
 				} else {
 					path.style.visibility = "hidden";
 					path.dataset.filled = false;
 				}
 			});
+
+			save();
 
 			resolve();
 		} catch (error) {
@@ -201,7 +211,9 @@ export async function burnPath(path) {
 				path.style.transition = "0s";
 				pathContent.style.transform = "unset";
 				path.appendChild(pathContent);
-				path.querySelector(".particles").remove();
+				path.querySelectorAll(".particles").forEach(el => {
+					el.remove();
+				});
 
 				pathContent.querySelector(".pathTitle").textContent = "";
 				pathContent.querySelector(".pathMobLvl").textContent = "";
@@ -211,6 +223,7 @@ export async function burnPath(path) {
 				path.dataset.pathtype = "";
 				path.dataset.mobid = "";
 				path.dataset.skippable = true;
+				state.paths[path.id] = false;
 
 				skipBtn.classList.remove("hideSkip");
 
@@ -223,7 +236,7 @@ export async function burnPath(path) {
 					delete state[path.dataset.storeid];
 				}
 				path.dataset.storeid = "";
-				
+
 				resolve();
 			};
 

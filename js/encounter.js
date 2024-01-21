@@ -6,9 +6,8 @@
 /* ··········································································*/
 /* ··········································································*/
 import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js";
-import { db, state } from "./db.js";
+import { db, state, save } from "./db.js";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js";
-
 
 /* ··········································································*/
 /* ··········································································*/
@@ -263,6 +262,7 @@ export async function victory() {
 	state.player.mana = 0;
 	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
+	save();
 }
 
 /*===========================================================================*/

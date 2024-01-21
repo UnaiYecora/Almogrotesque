@@ -12,7 +12,7 @@ import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTu
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js";
 import { generatePuzzle } from "./chests.js";
 import { buySkill, updateSkilltree } from "./skills.js";
-import { db, state } from "./db.js";
+import { db, state, save, load } from "./db.js";
 
 
 /* ··········································································*/
@@ -37,12 +37,13 @@ function widthBasedFontSize() {
 }
 widthBasedFontSize();
 
+
 /////////////////
-// Display fate and coins
+// Check for saved game
 /////////////////
-updateFate();
-updateCoins();
-updateTokens();
+if (!(localStorage.getItem("almogrotesque") === null)) {
+	document.querySelector("#start #continue").disabled = false;
+}
 
 
 /* ··········································································*/
@@ -59,7 +60,34 @@ updateTokens();
 document.querySelector("#start #newGame").addEventListener("click", function () {
 	// TO-DO: Turn fullscreen on
 	// document.documentElement.requestFullscreen();
-	setLevel("crossroad", true);
+	setLevel("crossroad", true, false);
+
+	/////////////////
+	// Display fate, coins, tokens, skills...
+	/////////////////
+	updateFate();
+	updateCoins();
+	updateTokens();
+	updateSkilltree();
+});
+
+
+/*===========================================================================*/
+// Continue
+/*===========================================================================*/
+document.querySelector("#start #continue").addEventListener("click", async function () {
+	// TO-DO: Turn fullscreen on
+	// document.documentElement.requestFullscreen();
+	await load();
+	setLevel(state.currentLevel, true, true);
+
+	/////////////////
+	// Display fate, coins, tokens, skills...
+	/////////////////
+	updateFate();
+	updateCoins();
+	updateTokens();
+	updateSkilltree();
 });
 
 /*===========================================================================*/
@@ -186,6 +214,8 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 		updateHP();
 		state[store][position] = "";
 
+		save();
+
 		storeItemEL.style.visibility = "hidden";
 
 		// If it's the last item, burn path
@@ -301,7 +331,7 @@ document.querySelectorAll("#skilltree .skill[data-skillid]").forEach(el => {
 /*===========================================================================*/
 // Buy skill
 /*===========================================================================*/
-document.querySelector(".skill-modal-buy").addEventListener("click", function() {
+document.querySelector(".skill-modal-buy").addEventListener("click", function () {
 	const btn = document.querySelector(".skill-modal-buy");
 	const skillId = btn.dataset.skillid;
 	const price = btn.dataset.skillprice;
@@ -314,6 +344,7 @@ document.querySelector(".skill-modal-buy").addEventListener("click", function() 
 		updateTokens();
 		document.querySelector(".skill-modal").style.display = "none";
 		updateSkilltree();
+		save();
 	}
 
 })
@@ -322,6 +353,6 @@ document.querySelector(".skill-modal-buy").addEventListener("click", function() 
 /*===========================================================================*/
 // Close skill modal
 /*===========================================================================*/
-document.querySelector(".skill-modal-close").addEventListener("click", function() {
+document.querySelector(".skill-modal-close").addEventListener("click", function () {
 	document.querySelector(".skill-modal").style.display = "none";
 })

@@ -7,7 +7,7 @@
 /* ··········································································*/
 import { randomItem, iconify } from "./helpers.js";
 import { generateCard } from "./inventory.js";
-import { db, state } from "./db.js";
+import { db, state, save } from "./db.js";
 
 
 
@@ -74,21 +74,23 @@ export async function generateStore(storeid) {
 				// Data
 				let item = state[storeid][i];
 				let itemData = db.cards[item];
-				let price =  itemData.price;
 				place.dataset.item = item;
-
-				if (i === 0 && state.player.skills.includes("skilleco2")) {
-					price = Math.floor(price - (price * 25 / 100));
-				}
-
-				if (state.player.skills.includes("skilleco3")) {
-					price = Math.floor(price - (price * 25 / 100));
-				}
 
 
 				if (item) {
 					// Display item
 					place.style.visibility = "visible";
+
+					// Get price
+					let price = itemData.price;
+
+					// Discounts
+					if (i === 0 && state.player.skills.includes("skilleco2")) {
+						price = Math.floor(price - (price * 25 / 100));
+					}
+					if ( state.player.skills.includes("skilleco3")) {
+						price = Math.floor(price - (price * 25 / 100));
+					}
 
 					// Populate the elements
 					if (price < itemData.price) {
@@ -126,7 +128,6 @@ export async function generateStore(storeid) {
 export async function buy(itemId) {
 	return new Promise(async (resolve, reject) => {
 		try {
-
 			const card = db.cards[itemId];
 			state.player.coins -= card.price;
 			state.player.cards.push(itemId);

@@ -121,7 +121,7 @@ export function updateCoins() {
 /*===========================================================================*/
 // Display updated current tokens left
 /*===========================================================================*/
-export function updateTokens() {	
+export function updateTokens() {
 	const tokensLeft = state.player.tokens;
 	document.querySelectorAll(".tokens-left-wrapper").forEach(tokenWrapperElement => {
 		const tokenLeftElement = tokenWrapperElement.querySelector(".tokens-left");

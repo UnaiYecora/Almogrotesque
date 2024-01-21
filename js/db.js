@@ -1,3 +1,10 @@
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+/* ······························  S T A T E  ·······························*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
 export var state = {
 	mob: {},
 	player: {
@@ -8,8 +15,8 @@ export var state = {
 		lvl: 1,
 		coins: 23,
 		slots: 1,
-		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"],
-		/* cards: ["basic_attack_1", "mana1"], */
+		/* cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"], */
+		cards: ["basic_attack_1", "mana1"],
 		cardsThisEncounter: [],
 		cardsToBanish: [],
 		discsToEmpty: [],
@@ -30,16 +37,63 @@ export var state = {
 	turnFate: 0,
 	turnMana: 0,
 	turnManaToConsume: 0,
+	paths: {
+		path1: false,
+		path2: false,
+		path3: false,
+	}
 }
+
+
+/*===========================================================================*/
+// Save
+/*===========================================================================*/
+export function save() {
+	const stateData = JSON.stringify(state);
+	localStorage.setItem('almogrotesque', stateData);
+}
+
+/*===========================================================================*/
+// Load
+/*===========================================================================*/
+export function load() {
+	try {
+		const savedStateData = localStorage.getItem('almogrotesque');
+
+		if (savedStateData) {
+			const savedState = JSON.parse(savedStateData);
+			console.log(state);
+			state = savedState;
+			console.log(state);
+		} else {
+			console.log('No saved data found');
+		}
+
+		return Promise.resolve();
+	} catch (error) {
+		console.error("An error occurred loading data: " + error.message);
+		throw error;
+	}
+}
+
+
+
+
+
+
+
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+/* ·························  D A T A   B A S E  ····························*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
 
 export const db = {
 
 	/* ··········································································*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ····························  L E V E L S  ·······························*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ··········································································*/
 	levels: {
 		crossroad: {
@@ -93,11 +147,7 @@ export const db = {
 	},
 
 	/* ··········································································*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ························  M I S C E L L A N E A  ·························*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ··········································································*/
 	xpTiers: [0, 2, 6, 13, 25, 45, 70, 100, 135, 180, 225, 1224],
 
@@ -219,11 +269,7 @@ export const db = {
 
 
 	/* ··········································································*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ······························  C A R D S  ·······························*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ··········································································*/
 	cards: {
 		bat_bite: {
@@ -550,7 +596,7 @@ export const db = {
 		},
 		antidote: {
 			name: "Antidote",
-			get desc() { return "Cleanse you from all {poison}." },
+			get desc() { return "Cleanse all {poison} effects from you." },
 			get short() { return ["Remove {poison}"] },
 			price: 20,
 			mana_price: 0,
@@ -572,11 +618,7 @@ export const db = {
 	},
 
 	/* ··········································································*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ·······························  M O B S  ································*/
-	/* ··········································································*/
-	/* ··········································································*/
 	/* ··········································································*/
 	mobs: {
 		frog: {
@@ -591,14 +633,6 @@ export const db = {
 			fire: 50,
 			slots: 1,
 			patterns: [
-				/* {
-					condition: (mob, player) => mob.mana < 1,
-					attacks: [["mana1"]]
-				},
-				{
-					condition: (mob, player) => mob.mana > 0,
-					attacks: [["affliction_advantage"]]
-				} */
 				{
 					condition: (mob, player) => true,
 					attacks: [["basic_attack_1"]]
@@ -825,6 +859,12 @@ export const db = {
 						["basic_attack_1", "basic_attack_1", "basic_attack_2"],
 						["basic_attack_2", "basic_attack_2", "basic_attack_2"],
 						["basic_attack_1", "double_damage", "basic_attack_2"],
+						["mana1", "mana1", "mana1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.mana >= db.cards.shield_attack.mana_cost,
+					attacks: [
 						["basic_attack_1", "shield1", "shield_attack"],
 						["shield1", "shield_attack", "double_damage"],
 					]
@@ -937,6 +977,12 @@ export const db = {
 					attacks: [
 						["basic_attack_2", "basic_attack_2"],
 						["basic_attack_1", "shield1"],
+						["mana1", "mana1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.mana >= db.cards.shield_attack.mana_cost,
+					attacks: [
 						["shield1", "shield_attack"],
 					]
 				},
@@ -964,11 +1010,17 @@ export const db = {
 					condition: (mob, player) => true,
 					attacks: [
 						["shield1", "shield1"],
+						["shield1", "mana1"],
+					]
+				},
+				{
+					condition: (mob, player) => mob.mana >= db.cards.shield_attack.mana_cost,
+					attacks: [
 						["shield1", "shield_attack"],
 					]
 				},
 				{
-					condition: (mob, player) => mob.hp / mob.maxHp < 0.7,
+					condition: (mob, player) => mob.hp / mob.maxHp < 0.55,
 					attacks: [
 						["attack_heal", "shield1"],
 					]
