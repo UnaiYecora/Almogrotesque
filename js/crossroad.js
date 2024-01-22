@@ -92,7 +92,7 @@ export function fillPaths(fromSavedState = false) {
 
 			emptyPaths.forEach(async (path) => {
 				if (levelArray[0]) {
-					const mobOrRoom = levelArray[0];
+					const mobOrRoom = { ...levelArray[0] };
 					const roomName = path.querySelector(".pathTitle");
 					const btnTxt = path.querySelector(".main-path-button");
 					const lvlTxt = path.querySelector(".pathMobLvl");
