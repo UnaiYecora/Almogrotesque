@@ -5,14 +5,14 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11.2";
-import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11.2";
-import { generateInventory } from "./inventory.js?v=0.11.2";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11.2";
-import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11.2";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11.3";
+import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11.3";
+import { generateInventory } from "./inventory.js?v=0.11.3";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11.3";
+import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11.3";
 import { generatePuzzle } from "./chests.js";
-import { buySkill, updateSkilltree } from "./skills.js?v=0.11.2";
-import { db, state, save, load } from "./db.js?v=0.11.2";
+import { buySkill, updateSkilltree } from "./skills.js?v=0.11.3";
+import { db, state, save, load } from "./db.js?v=0.11.3";
 
 
 /* ··········································································*/
@@ -167,7 +167,9 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 document.querySelector(".end-turn").addEventListener("click", async function () {
 	document.querySelector("#playerBoard").classList.remove("midturn");
 	await applyDiscsEffects();
-	if (state.mob.hp <= 0) {
+	if (state.player.hp <= 0) {
+		death();
+	} else if (state.mob.hp <= 0) {
 		victory();
 	} else {
 		toggleTurn();

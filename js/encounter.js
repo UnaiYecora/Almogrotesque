@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.11.2";
-import { db, state, save } from "./db.js?v=0.11.2";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.11.2";
+import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.11.3";
+import { db, state, save } from "./db.js?v=0.11.3";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.11.3";
 
 /* ··········································································*/
 /* ··········································································*/
@@ -186,7 +186,9 @@ export async function toggleTurn(start) {
 		turnCharacter.poison = Math.max(turnCharacter.poison - 1, 0);
 		poisonAmountElement.textContent = turnCharacter.poison;
 		await updateHP();
-		if (state.mob.hp <= 0) {
+		if (state.player.hp <= 0) {
+			death();
+		} else if (state.mob.hp <= 0) {
 			victory();
 		}
 	}
@@ -209,6 +211,11 @@ export async function toggleTurn(start) {
 
 	// Remove un/successful states
 	removeSuccessDiscStates();
+
+	// Check if player is alive
+	if (state.player.hp <= 0) {
+		death();
+	}
 
 	// Heart pulse
 	heartPulse();
@@ -263,6 +270,14 @@ export async function victory() {
 	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
 	save();
+}
+
+
+/*===========================================================================*/
+// Death
+/*===========================================================================*/
+export function death() {
+	location.reload();
 }
 
 /*===========================================================================*/

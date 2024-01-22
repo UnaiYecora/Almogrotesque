@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { randomItem, iconify } from "./helpers.js?v=0.11.2";
-import { generateCard } from "./inventory.js?v=0.11.2";
-import { db, state, save } from "./db.js?v=0.11.2";
+import { randomItem, iconify } from "./helpers.js?v=0.11.3";
+import { generateCard } from "./inventory.js?v=0.11.3";
+import { db, state, save } from "./db.js?v=0.11.3";
 
 
 
