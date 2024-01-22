@@ -62,9 +62,7 @@ export function load() {
 
 		if (savedStateData) {
 			const savedState = JSON.parse(savedStateData);
-			console.log(state);
 			state = savedState;
-			console.log(state);
 		} else {
 			console.log('No saved data found');
 		}

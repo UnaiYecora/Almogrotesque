@@ -5,14 +5,14 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11";
-import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11";
-import { generateInventory } from "./inventory.js?v=0.11";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11";
-import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11.2";
+import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11.2";
+import { generateInventory } from "./inventory.js?v=0.11.2";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11.2";
+import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11.2";
 import { generatePuzzle } from "./chests.js";
-import { buySkill, updateSkilltree } from "./skills.js?v=0.11";
-import { db, state, save, load } from "./db.js?v=0.11";
+import { buySkill, updateSkilltree } from "./skills.js?v=0.11.2";
+import { db, state, save, load } from "./db.js?v=0.11.2";
 
 
 /* ··········································································*/
@@ -143,13 +143,21 @@ document.querySelectorAll("[data-goto]").forEach(el => {
 // Attack button
 /*===========================================================================*/
 document.querySelector("#attackBtn").addEventListener("click", function () {
-	attack();
+	if (document.querySelector("#playerDiscs .slot.charged")) {
+		document.querySelector("#playerBoard").classList.add("midturn");
+		attack();
+	}
 });
 
 /*===========================================================================*/
 // Change fate button
 /*===========================================================================*/
 document.querySelector(".change-fate").addEventListener("click", function () {
+	const fateBtn = document.querySelector(".change-fate");
+	const endBtn = document.querySelector(".end-turn");
+	// Temporarily disable buttons
+	fateBtn.disabled = true;
+	endBtn.disabled = true;
 	changeFate();
 });
 
@@ -157,6 +165,7 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 // End turn
 /*===========================================================================*/
 document.querySelector(".end-turn").addEventListener("click", async function () {
+	document.querySelector("#playerBoard").classList.remove("midturn");
 	await applyDiscsEffects();
 	if (state.mob.hp <= 0) {
 		victory();
@@ -239,26 +248,28 @@ document.querySelector(".close-inventory").addEventListener("click", function ()
 
 // Open
 document.querySelector("#discobar").addEventListener("click", async function (e) {
-	const slot = e.target.closest(".slot");
-	if (slot) {
-		slot.classList.add("target-slot");
-
-		const removeBtn = document.querySelector("button.clear-slot");
-		let cardId;
-
-		if (slot.querySelector(".disc")) {
-			removeBtn.disabled = false;
-			cardId = slot.querySelector(".disc").dataset.cardid;
-		} else {
-			removeBtn.disabled = true;
-			cardId = false;
+	if (!document.querySelector("#playerBoard").classList.contains("midturn")) {
+		const slot = e.target.closest(".slot");
+		if (slot) {
+			slot.classList.add("target-slot");
+	
+			const removeBtn = document.querySelector("button.clear-slot");
+			let cardId;
+	
+			if (slot.querySelector(".disc")) {
+				removeBtn.disabled = false;
+				cardId = slot.querySelector(".disc").dataset.cardid;
+			} else {
+				removeBtn.disabled = true;
+				cardId = false;
+			}
+	
+			// Generate inventory
+			await generateInventory(cardId);
+	
+			// Display inventory
+			document.querySelector(".inventory").style.display = "flex";
 		}
-
-		// Generate inventory
-		await generateInventory(cardId);
-
-		// Display inventory
-		document.querySelector(".inventory").style.display = "flex";
 	}
 });
 
