@@ -62,7 +62,8 @@ function createLvlArray(lvl) {
 	return new Promise((resolve, reject) => {
 		try {
 			const lvlData = db.levels[lvl];
-			const arrayOfMobs = lvlData.spawns;
+
+			const arrayOfMobs = [...lvlData.spawns.map(mob => ({ type: "mob", mobId: mob }))];
 
 			const saferoomsArray = [
 				...Array(lvlData.stores).fill({ type: "store" }),
@@ -132,16 +133,15 @@ export function fillPaths(fromSavedState = false) {
 							path.dataset.door = lvl;
 							path.dataset.skippable = false;
 							break;
-
-						default:
-							const mob = db.mobs[mobOrRoom];
+						case "mob":
+							const mob = db.mobs[mobOrRoom.mobId];
 							roomName.textContent = mob.name;
 							btnTxt.textContent = "Fight";
 							if (mob.name !== "Chest") {
 								lvlTxt.innerHTML = `<span>·<·</span> Lvl ${mob.lvl} <span>·>·</span>`;
 							}
 							path.dataset.pathtype = "encounter";
-							path.dataset.mobid = mobOrRoom;
+							path.dataset.mobid = mobOrRoom.mobId;
 							path.dataset.skippable = true;
 							break;
 					}
