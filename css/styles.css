@@ -632,19 +632,16 @@ div#discobar>span {
 }
 
 .slot {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-	aspect-ratio: 1 / 1;
-	border-radius: 100%;
-	background: var(--black);
-	box-shadow: 0 0 0 0.125rem black;
-	width: 7.5rem;
-	min-width: 0;
-	cursor: pointer;
-	transition: .3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 7.5rem;
+    min-width: 0;
+    cursor: pointer;
+    transition: .3s;
 }
 
 .slot.successful>.disc>.disc {
@@ -652,8 +649,7 @@ div#discobar>span {
 }
 
 .slot.unsuccessful>.disc {
-	opacity: 0.7;
-	filter: blur(2px);
+	filter: blur(2px) brightness(0.7);
 }
 
 .disc.requires-mana .disc {
@@ -1331,6 +1327,40 @@ p.skill-modal-desc {
 	height: 2rem;
 	margin: -0.1rem 0 0 0.4rem;
 }
+
+/*===========================================================================
+// DEATH
+=============================================================================*/
+section#death {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+	justify-content: space-evenly;
+    text-align: center;
+    height: 100%;
+    overflow: hidden;
+	position: absolute;
+    inset: 0;
+    background-color: #000;
+	z-index: 10;
+}
+
+section#death p:first-child {
+	font-size: 3rem;
+}
+
+section#death p:nth-child(2) {
+	font-size: 1.2rem;
+}
+
+section#death button{
+	font-size: 2rem;
+	background-color: #ffffff0d;
+	padding-block: 1rem;
+	padding: 1rem 3rem;
+    margin-inline: auto;
+}
+
 
 /*===========================================================================
 // CHESTS

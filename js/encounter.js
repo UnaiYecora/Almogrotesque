@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.11.3";
-import { db, state, save } from "./db.js?v=0.11.3";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.11.3";
+import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.12";
+import { db, state, save } from "./db.js?v=0.12";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.12";
 
 /* ··········································································*/
 /* ··········································································*/
@@ -277,7 +277,7 @@ export async function victory() {
 // Death
 /*===========================================================================*/
 export function death() {
-	location.reload();
+	document.querySelector("#death").style.display = "flex";
 }
 
 /*===========================================================================*/

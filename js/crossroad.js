@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateHP, shuffleArray, goTo, wait, injectArrInArr  } from "./helpers.js?v=0.11.3";
-import { generateStoreItems } from "./store.js?v=0.11.3";
-import { db, state, save } from "./db.js?v=0.11.3";
+import { updateHP, shuffleArray, goTo, wait, injectArrInArr } from "./helpers.js?v=0.12";
+import { generateStoreItems } from "./store.js?v=0.12";
+import { db, state, save } from "./db.js?v=0.12";
 
 
 /* ··········································································*/
@@ -26,16 +26,17 @@ export async function setLevel(lvl, fast, fromSavedState = false) {
 		// Save new level
 		state.currentLevel = lvl;
 
-		// Get every path ready
-		document.querySelectorAll(".path").forEach(path => {
-			path.dataset.filled = false;
-		});
-
 		// Fade crossroad screen
 		const crossroadEl = document.querySelector("#crossroad");
 		crossroadEl.classList.add("fadedCrossroad");
 		if (!fast) {
-			await wait(3000); // Wait for animation to finish
+			await wait(2000); // Half of the fade-out
+			// Get every path ready
+			document.querySelectorAll(".path").forEach(path => {
+				path.dataset.filled = false;
+				path.style.visibility = "hidden";
+			});
+			await wait(1000); // Wait for fade-out to finish
 		}
 
 		// Functions to run
@@ -88,11 +89,27 @@ function createLvlArray(lvl) {
 export function fillPaths(fromSavedState = false) {
 	return new Promise((resolve, reject) => {
 		try {
-			const levelArray = fromSavedState ? [state.paths.path1, state.paths.path2, state.paths.path3] : state.currentLevelArray;
+			let levelArray = [];
+
+			if (fromSavedState) {
+				levelArray.push(state.paths.path1, state.paths.path2, state.paths.path3);
+				console.log(levelArray);
+			} else {
+				if (state.endOfTheRoad === 1) {
+					levelArray = [{ type: 'door', level: db.levels[state.currentLevel].doors[0] }];
+					state.endOfTheRoad++;
+				} else if (state.endOfTheRoad === 2) {
+					levelArray = []
+				} else {
+					levelArray = state.currentLevelArray;
+				}
+			}
+
+
 			const emptyPaths = document.querySelectorAll("#crossroad div[data-filled='false']");
 
 			emptyPaths.forEach(async (path) => {
-				if (levelArray[0]) {
+				if (levelArray[0] !== undefined) {
 					const mobOrRoom = { ...levelArray[0] };
 					const roomName = path.querySelector(".pathTitle");
 					const btnTxt = path.querySelector(".main-path-button");
@@ -115,6 +132,8 @@ export function fillPaths(fromSavedState = false) {
 							} else {
 								path.dataset.storeid = mobOrRoom.storeId;
 							}
+							path.dataset.filled = true;
+							path.style.visibility = "visible";
 							break;
 
 						case "chest":
@@ -122,6 +141,8 @@ export function fillPaths(fromSavedState = false) {
 							btnTxt.textContent = "Open";
 							path.dataset.pathtype = "chest";
 							path.dataset.skippable = true;
+							path.dataset.filled = true;
+							path.style.visibility = "visible";
 							break;
 
 						case "door":
@@ -131,7 +152,9 @@ export function fillPaths(fromSavedState = false) {
 							btnTxt.textContent = "Exit";
 							path.dataset.pathtype = "door";
 							path.dataset.door = lvl;
-							path.dataset.skippable = false;
+							path.dataset.skippable = state.endOfTheRoad > 0 ? false : true;
+							path.dataset.filled = true;
+							path.style.visibility = "visible";
 							break;
 						case "mob":
 							const mob = db.mobs[mobOrRoom.mobId];
@@ -143,6 +166,13 @@ export function fillPaths(fromSavedState = false) {
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom.mobId;
 							path.dataset.skippable = true;
+							path.dataset.filled = true;
+							path.style.visibility = "visible";
+							break;
+						default:
+							console.log('case false');
+							path.style.visibility = "hidden";
+							path.dataset.filled = false;
 							break;
 					}
 
@@ -151,13 +181,17 @@ export function fillPaths(fromSavedState = false) {
 						path.style.transition = "0.6s";
 						path.style.opacity = "1";
 					}, 100);
-					path.dataset.filled = true;
-					path.style.visibility = "visible";
 					state.paths[path.id] = mobOrRoom;
 					levelArray.shift();
 				} else {
-					path.style.visibility = "hidden";
-					path.dataset.filled = false;
+					if (!state.endOfTheRoad) {
+						state.endOfTheRoad = 1;
+						fillPaths();
+					} else {
+						path.style.visibility = "hidden";
+						path.dataset.filled = false;
+					}
+
 				}
 			});
 
@@ -262,7 +296,13 @@ export async function takeDoor(path) {
 	const crossroad = document.querySelector("#crossroad");
 
 	crossroad.style.pointerEvents = "none";
+
 	await burnPath(path);
+
+	// Reset saved paths
+	state.paths = { path1: false, path2: false, path3: false }
+
 	await setLevel(door);
+
 	crossroad.style.pointerEvents = "auto";
 }

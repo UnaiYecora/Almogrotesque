@@ -5,14 +5,14 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.11.3";
-import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.11.3";
-import { generateInventory } from "./inventory.js?v=0.11.3";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.11.3";
-import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.11.3";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.12";
+import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.12";
+import { generateInventory } from "./inventory.js?v=0.12";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.12";
+import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.12";
 import { generatePuzzle } from "./chests.js";
-import { buySkill, updateSkilltree } from "./skills.js?v=0.11.3";
-import { db, state, save, load } from "./db.js?v=0.11.3";
+import { buySkill, updateSkilltree } from "./skills.js?v=0.12";
+import { db, state, save, load } from "./db.js?v=0.12";
 
 
 /* ··········································································*/
@@ -110,6 +110,7 @@ document.querySelector("#crossroad").addEventListener("click", async function (e
 			// Door
 			if (type === "door") {
 				takeDoor(path);
+				state.endOfTheRoad = 0;
 			}
 
 			// Store

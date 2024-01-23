@@ -5,9 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Almogrotesque</title>
-	<link rel="stylesheet" href="css/styles.css?v=0.11.3">
-	<link rel="stylesheet" href="css/svgs.css?v=0.11.3">
-	<script src="js/app.js?v=0.11.3" type="module" defer></script>
+	<link rel="stylesheet" href="css/styles.css?v=0.12">
+	<link rel="stylesheet" href="css/svgs.css?v=0.12">
+	<script src="js/app.js?v=0.12" type="module" defer></script>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
 				<button id="newGame">New Game</button>
 				<button disabled>How to play</button>
 			</div>
-			<p>v0.11.3</p>
+			<p>v0.12</p>
 		</section>
 
 		<section id="crossroad">
@@ -258,6 +258,12 @@
 				<span class="token"></span>
 			</div>
 			<button class="close-skilltree" data-goto="crossroad">X</button>
+		</section>
+
+		<section id="death">
+			<p>YOU DIED...</p>
+			<p>...noob</p>
+			<button onclick="location.reload();">Try again</button>
 		</section>
 
 		<section id="chest">
