@@ -57,16 +57,17 @@ button:disabled {
     position: absolute;
     inset: 0;
     width: 100%;
-    background: #000000de;
     z-index: 10;
+	backdrop-filter: blur(3px) brightness(1) saturate(0) invert(1);
+    background-color: #000000c7;
 }
 
 .modal-content{
-	position: relative;
-    background: black;
-	border: 0.1rem solid;
+    position: relative;
     padding: 6rem 3rem;
     width: 90%;
+	filter: drop-shadow(0 0 3.6rem #ffffff52);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2773 2772' preserveAspectRatio='none'%3E%3Cpath fill='%23111' d='M38 23h170L358 1l361 22 283 28 398-28h464l38 59 22-44 10 13 11-28h816v108l-22 214 22 359-22 328 22 353 12 426-12 410s-5 13-26 18c-20 6-29 15-27 18s12 2 27 17c15 16 26 18 26 18v454h-340l-256 26-425-26h-340l-496-46-185 46H38l17-454-54-236 17-491 20-180 17-301-17-244V668l72-131-55 15 25-48H38V23Z'/%3E%3C/svg%3E");
 }
 
 /*===========================================================================
