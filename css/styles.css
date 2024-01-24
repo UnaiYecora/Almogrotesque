@@ -37,18 +37,36 @@
 /*===========================================================================
 // ELEMENTS 
 =============================================================================*/
+.btn{
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 588' preserveAspectRatio='none'%3E%3Cpath fill='%23C8C7B2' d='m15 24 101-8 38 8 116-8 75-10 78 5 71 16 126-16 158-5 17 21 20-27 118 16h90l109 4 116-4h88l89 8-7 68 7 69-7 67 7 70 7 37 5 114-23-5 13 15-2 18-21 12 19 18-2 30 4 34-93 3-84-3-96 3-71 6-97-2-66-5-123-2-105 8-27 9-11-17-9 17-84-14-66 9-139-9-81-3-59 12-125-5-74-7-7-69 12-85-12-66-7-100 5-13h11l12 6-4-19-17-17 7-116V24Z'/%3E%3Cpath fill='%23333' d='m27 37 43 5 130-5 2 4 2-4 74-5 80 10 43 1 42 12 21 5 33-5 17 2 8-6 140-14h76l57 6h90l110-6 69-6 75 8 104-8 103 6h61v65l5 61-5 69 4 68 3 90-14 123 7 45-86 4-86-4-83-5-90 5-66 6-113-10-85-1-81-10-85 2-108 8-69 12-83-7-91-5-84 15-100-6-70-4 4-35-1-116 4-44-7-32-2-33 24-76-24-48 5-93-3-44Z'/%3E%3Cpath fill='%23C8C7B2' d='M43 52h91l75-4 94-6 75 9 88 20 93-5 80-9h99l141 9 91-9 64-6h87l44-9 57-2 97 13 71-6-6 55 8 42-8 99-4 79 12 61-3 40-9 59-9 57-75-3-78 11-78-8-80 6-101-6-78-10-90-2-74-3-89 7-113-1-55 9-88-9-128 15-70 13-54-19-60-2-20-2 4-33 1-77 4-65-9-44-3-18 11-23 11-30 15-26-37-56 6-53V52Z'/%3E%3C/svg%3E");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	color: #000;
+    font-weight: 600;
+}
 button:disabled {
 	opacity: 0.5;
 	cursor: default;
 }
 
 .modal {
-	z-index: 10;
-	position: absolute;
-	background: black;
-	padding: 6rem 3rem;
-	width: 90%;
-	outline: 99rem solid #000000de;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: #000000de;
+    z-index: 10;
+}
+
+.modal-content{
+	position: relative;
+    background: black;
+	border: 0.1rem solid;
+    padding: 6rem 3rem;
+    width: 90%;
 }
 
 /*===========================================================================
@@ -61,7 +79,6 @@ body {
 	place-content: center;
 	font-family: 'Syne Mono', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
 	-webkit-user-select: none;
-	/* Safari */
 	user-select: none;
 }
 
@@ -117,7 +134,7 @@ section#start h1 {
 section#start div {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 1rem;
 }
 
 section#start button {
@@ -189,13 +206,14 @@ img.screen-background {
 	transition: opacity 0.2s, scale 1s;
 	padding: 1rem;
 	width: 100%;
-	height: 100%;
+	aspect-ratio: 1 / 1.5;
 	display: flex;
 	justify-content: space-evenly;
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
 	min-height: 10rem;
+	background-color: beige;
 }
 
 .path-content>div {
@@ -224,11 +242,9 @@ img.screen-background {
 }
 
 #crossroad .path .main-path-button {
-	background-color: var(--black);
-	color: var(--white);
 	width: 100%;
 	font-size: 1rem;
-	padding: 0.6rem 1.6rem;
+	padding: 1rem;
 	font-weight: 700;
 }
 
@@ -392,10 +408,10 @@ p.mobName {
 }
 
 div#playerBoard {
-	height: 8%;
-	/* font-family: 'Rock Salt'; */
-	font-weight: 700;
-	color: var(--white);
+    height: 8%;
+    font-weight: 700;
+    color: var(--white);
+    margin-top: 2rem;
 }
 
 div#playerBoard .main-action,
@@ -405,6 +421,7 @@ div#playerBoard .main-action,
 	justify-content: space-evenly;
 	height: 100%;
 	align-items: center;
+	gap: 2rem;
 }
 
 #playerBoard .secondary-action>* {
@@ -412,13 +429,17 @@ div#playerBoard .main-action,
 }
 
 div#playerBoard button {
-	color: var(--white);
-	padding: 1rem 2rem;
+	padding: 1rem 3rem;
 	font-weight: 700;
-	font-size: 1.6rem;
+	font-size: 1.4rem;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
+}
+
+div#playerBoard .secondary-action button{
+	height: 100%;
+    justify-content: center;
 }
 
 div#playerBoard button div {
@@ -430,6 +451,7 @@ div#playerBoard button div {
 	width: 1.6rem;
 	height: 1.6rem;
 	margin-left: 0.3rem;
+	filter: invert();
 }
 
 .no-action p {
@@ -993,12 +1015,11 @@ div#discobar>span {
 
 button.close-inventory {
 	font-size: 2rem;
-	color: #ddccb2;
+	width: 9rem;
 }
 
 button.clear-slot {
 	font-size: 1.5rem;
-	color: #ddccb2;
 }
 
 button.clear-slot:disabled {
@@ -1010,7 +1031,7 @@ button.clear-slot:disabled {
 /*===========================================================================
 // XP SCREEN 
 =============================================================================*/
-section#xpscreen {
+section#xpscreen .modal-content{
 	display: flex;
 	flex-direction: column;
 	gap: 6rem;
@@ -1040,12 +1061,10 @@ section#xpscreen .bar p {
 }
 
 section#xpscreen button {
-	border: 0.1rem solid var(--white);
-	background: var(--white);
-	color: black;
-	padding: 1rem 0;
-	font-weight: 700;
-	border-radius: 0.3rem;
+    padding: 1rem 4rem;
+    font-weight: 700;
+    border-radius: 0.3rem;
+    margin-inline: auto;
 }
 
 .reward {
@@ -1132,10 +1151,7 @@ section#xpscreen button {
 }
 
 .store-item button {
-	border: 0.1rem solid var(--white);
-	background: var(--white);
-	color: black;
-	padding: 0.5rem 2rem;
+	padding: 1rem 2rem;
 	text-align: center;
 	font-size: 1.5rem;
 	width: 100%;
@@ -1161,11 +1177,13 @@ section#xpscreen button {
 }
 
 button.close-store {
-	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	font-size: 1.5rem;
-	line-height: 1rem;
+    position: absolute;
+    top: -2.5rem;
+    right: 0.5px;
+    font-size: 1.5rem;
+    line-height: 1rem;
+    width: 9rem;
+    height: 3.5rem;
 }
 
 
@@ -1188,6 +1206,7 @@ section#skilltree {
 	top: 1rem;
 	right: 1rem;
 	font-size: 2rem;
+	width: 9rem;
 }
 
 .skilltree-wrapper {
@@ -1293,9 +1312,12 @@ section#skilltree {
 
 .skill-modal {
 	display: none;
-	border: 0.3rem solid;
-	font-size: 2rem;
+}
+
+.skill-modal .modal-content{
+	display: flex;
 	flex-direction: column;
+	font-size: 2rem;
 	gap: 3rem;
 }
 
@@ -1326,6 +1348,10 @@ p.skill-modal-desc {
 	width: 2rem;
 	height: 2rem;
 	margin: -0.1rem 0 0 0.4rem;
+}
+
+.skill-modal .btn .icon{
+	filter: invert();
 }
 
 /*===========================================================================

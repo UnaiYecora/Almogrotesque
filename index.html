@@ -13,11 +13,11 @@
 <body>
 	<main>
 		<section id="start">
-			<h1>The Book of Almogrotesque</h1>
+			<h1>Almogrotesque</h1>
 			<div>
-				<button id="continue" disabled>Continue</button>
-				<button id="newGame">New Game</button>
-				<button disabled>How to play</button>
+				<button class="btn" id="continue" disabled>Continue</button>
+				<button class="btn" id="newGame">New Game</button>
+				<button class="btn" disabled>How to play</button>
 			</div>
 			<p>v0.12</p>
 		</section>
@@ -35,7 +35,7 @@
 						<p class="pathTitle"></p>
 						<p class="pathMobLvl"></p>
 					</div>
-					<button class="main-path-button"></button>
+					<button class="btn main-path-button"></button>
 				</div>
 			</div>
 			<div id="path2" class="path" data-position="2" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
@@ -45,7 +45,7 @@
 						<p class="pathTitle"></p>
 						<p class="pathMobLvl"></p>
 					</div>
-					<button class="main-path-button"></button>
+					<button class="btn main-path-button"></button>
 				</div>
 			</div>
 			<div id="path3" class="path" data-position="3" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
@@ -55,7 +55,7 @@
 						<p class="pathTitle"></p>
 						<p class="pathMobLvl"></p>
 					</div>
-					<button class="main-path-button"></button>
+					<button class="btn main-path-button"></button>
 				</div>
 			</div>
 			<div id="lvl-bottom">
@@ -130,12 +130,12 @@
 
 			<div id="playerBoard">
 				<div class="main-action">
-					<button id="attackBtn">Attack</button>
+					<button class="btn" id="attackBtn">Attack</button>
 				</div>
 				<div class="secondary-action">
-					<button class="change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
+					<button class="btn change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
 					or
-					<button class="end-turn">Accept <br> fate</button>
+					<button class="btn end-turn">Accept fate</button>
 				</div>
 				<div class="no-action">
 					<p>The enemy is attacking you.</p>
@@ -175,47 +175,49 @@
 
 			<div class="inventory">
 				<div class="inventory-controls">
-					<button class="clear-slot">Clear slot</button>
-					<button class="close-inventory">X</button>
+					<button class="btn clear-slot">Clear slot</button>
+					<button class="btn close-inventory">X</button>
 				</div>
 				<div class="inventory-cards"></div>
 			</div>
 		</section>
 
 		<section id="xpscreen" class="modal">
-			<div class="xpbar">
-				<p class="lvl">Lvl. <span></span></p>
-				<div class="bar">
-					<div class="progress"></div>
-					<p><span></span>/<span></span></p>
+			<div class="modal-content">
+				<div class="xpbar">
+					<p class="lvl">Lvl. <span></span></p>
+					<div class="bar">
+						<div class="progress"></div>
+						<p><span></span>/<span></span></p>
+					</div>
 				</div>
+				<div class="reward">
+					<p><span>0</span> <span class="coin"></span></p>
+					<p class="lvl-up-reward">+10 <span class="fate"></span></p>
+					<p class="lvl-up-reward">+5 <span class="empty-heart"></span></p>
+					<p class="lvl-up-reward">All <span class="heart"></span> restored.</p>
+				</div>
+				<button class="btn">Continue</button>
 			</div>
-			<div class="reward">
-				<p><span>0</span> <span class="coin"></span></p>
-				<p class="lvl-up-reward">+10 <span class="fate"></span></p>
-				<p class="lvl-up-reward">+5 <span class="empty-heart"></span></p>
-				<p class="lvl-up-reward">All <span class="heart"></span> restored.</p>
-			</div>
-			<button>Continue</button>
 		</section>
 
 		<section id="store">
 			<div class="store-wrapper">
-				<button class="close-store">X</button>
+				<button class="btn close-store">X</button>
 				<div class="store-item" id="store1">
 					<div class="store-item-icon"></div>
 					<p class="store-item-desc"></p>
-					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
 				</div>
 				<div class="store-item" id="store2">
 					<div class="store-item-icon"></div>
 					<p class="store-item-desc"></p>
-					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
 				</div>
 				<div class="store-item" id="store3">
 					<div class="store-item-icon"></div>
 					<p class="store-item-desc"></p>
-					<button class="buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
 				</div>
 			</div>
 		</section>
@@ -249,21 +251,23 @@
 				<div class="skill skillslot skillstart"></div>
 			</div>
 			<div class="skill-modal modal">
-				<button class="skill-modal-close">X</button>
-				<p class="skill-modal-desc"></p>
-				<button class="skill-modal-buy"></button>
+				<div class="modal-content">
+					<button class="skill-modal-close">X</button>
+					<p class="skill-modal-desc"></p>
+					<button class="btn skill-modal-buy"></button>
+				</div>
 			</div>
 			<div class="tokens-left-wrapper" data-goto="skilltree">
 				<span class="tokens-left">0</span>
 				<span class="token"></span>
 			</div>
-			<button class="close-skilltree" data-goto="crossroad">X</button>
+			<button class="btn close-skilltree" data-goto="crossroad">X</button>
 		</section>
 
 		<section id="death">
 			<p>YOU DIED...</p>
 			<p>...noob</p>
-			<button onclick="location.reload();">Try again</button>
+			<button class="btn" onclick="location.reload();">Try again</button>
 		</section>
 
 		<section id="chest">
