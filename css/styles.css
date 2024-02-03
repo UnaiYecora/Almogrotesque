@@ -674,7 +674,7 @@ div#discobar>span {
 	pointer-events: none;
 }
 
-.slot {
+#discobar .slot {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -687,11 +687,11 @@ div#discobar>span {
     transition: .3s;
 }
 
-.slot.successful>.disc>.disc {
+#discobar .slot.successful>.disc>.disc {
 	outline: 0.2rem solid #adadad;
 }
 
-.slot.unsuccessful>.disc {
+#discobar .slot.unsuccessful>.disc {
 	filter: blur(2px) brightness(0.7);
 }
 
@@ -704,7 +704,7 @@ div#discobar>span {
 	color: #351919;
 }
 
-.slot::after {
+#discobar .slot::after {
 	content: "";
 	position: absolute;
 	border-radius: 100%;
@@ -716,7 +716,7 @@ div#discobar>span {
 }
 
 
-.slot .mana-requirement {
+#discobar .slot .mana-requirement {
 	font-size: 1rem;
 	line-height: 0;
 	position: absolute;
@@ -726,27 +726,27 @@ div#discobar>span {
 	z-index: 1;
 }
 
-.slot .mana-requirement .icon {
+#discobar .slot .mana-requirement .icon {
 	width: 0.8rem;
 	aspect-ratio: 1;
 	margin: 0rem 0 -0.1rem 0;
 	display: inline-flex;
 }
 
-.slot-short-desc {
+#discobar .slot-short-desc {
 	display: flex;
 	flex-direction: column;
 	padding-top: 0.6rem;
 }
 
-.slot-short-desc-item {
+#discobar .slot-short-desc-item {
 	display: flex;
 	align-items: flex-start;
 	gap: 0.5rem;
 	font-size: 0.75rem;
 }
 
-.slot-short-desc-item .slot-short-desc-orb {
+#discobar .slot-short-desc-item .slot-short-desc-orb {
 	width: 0.7rem;
 	min-width: 0.7rem;
 	height: 0.7rem;
@@ -756,7 +756,7 @@ div#discobar>span {
 	border-radius: 100%;
 }
 
-.slot-short-desc-item .slot-short-desc-text .icon {
+#discobar .slot-short-desc-item .slot-short-desc-text .icon {
 	width: 0.8rem;
 	height: 0.8rem;
 	aspect-ratio: 1;
