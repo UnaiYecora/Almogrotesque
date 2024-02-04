@@ -108,10 +108,10 @@ export async function generateCard(cardId, playerMana, cardManaPrice, mini) {
 				let cardHTML = "";
 				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '">';
 				cardHTML += '<div class="card-mana-cost '+tooExpensive+'">'+ card.mana_cost +'</div>';
+				cardHTML += disc;
 				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
 				cardHTML += '<div class="card-inventory-icon">';
 				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
-				cardHTML += disc;
 				cardHTML += '</div>';
 				if (!mini) {
 					cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';

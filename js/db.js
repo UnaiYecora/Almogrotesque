@@ -15,8 +15,8 @@ export var state = {
 		lvl: 1,
 		coins: 23,
 		slots: 1,
-		/* cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"], */
 		cards: ["basic_attack_1", "mana1"],
+		//cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"],
 		cardsThisEncounter: [],
 		cardsToBanish: [],
 		discsToEmpty: [],
@@ -332,6 +332,7 @@ export const db = {
 		attack_heal: {
 			name: "Ambivalent Elixir",
 			desc: "Deal damage or heal.",
+			get desc() { return "Deal " + this.damage + " damage or heal " + this.heal + "HP." },
 			short: ["Deal 3 damage", "Heal 3HP"],
 			price: 20,
 			mana_price: 0,
