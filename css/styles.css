@@ -953,6 +953,7 @@ div#discobar>span {
 	aspect-ratio: 1;
     border-radius: 0.8rem;
     overflow: hidden;
+	pointer-events: none;
 }
 
 .card-inventory-icon img {
@@ -969,13 +970,12 @@ div#discobar>span {
     align-items: center;
 }
 
-.card-inventory-desc .icon:not(.banish),
-.store-item-desc .icon:not(.banish) {
-	width: 1.2rem;
-	height: 1.2rem;
-	display: inline-flex;
-	vertical-align: bottom;
-	filter: brightness(0);
+.card-inventory-desc .icon:not(.banish){
+	width: 7cqw;
+    aspect-ratio: 1;
+    display: inline-flex;
+    vertical-align: bottom;
+    filter: brightness(0);
 }
 
 .card-inventory-desc .icon:not(.banish){
@@ -1110,19 +1110,19 @@ section#xpscreen button {
 // STORE 
 =============================================================================*/
 #store {
+    flex-direction: column;
+	align-items: flex-end;
+	justify-content: center;
 	width: 100%;
 	height: 100%;
 	background: #000000e0;
 	position: absolute;
 	inset: 0;
-	align-items: center;
-	justify-content: center;
 	z-index: 2;
 }
 
 .store-wrapper {
 	z-index: 10;
-	position: absolute;
 	display: flex;
 	gap: 0.5rem;
 	padding: 3rem 0.5rem;
@@ -1141,37 +1141,32 @@ section#xpscreen button {
 	flex: 1;
 }
 
-.store-item-icon span {
-	width: 4rem;
-	height: 4rem;
-	display: flex;
-}
-
-.store-item-icon img {
+.store-item-card{
 	width: 100%;
+	container-type: inline-size;
 }
 
-.store-item-icon .inventory-card {
-	justify-content: space-around;
-    padding-bottom: 2.4rem;
+.store-item-card.big-card{
+	position: absolute;
+    z-index: 4;
+    inset: 0;
+    display: flex;
+	flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 1.4rem;
+	background: black;
 }
 
-.store-item-icon .card-mana-cost {
-	font-size: 1rem;
+.store-item-card button{
+	display: none !important;
 }
-
-.store-item-desc {
-	font-size: 0.85rem;
-}
-
-.store-item-desc .icon {
-	filter: brightness(999) !important;
-}
-.store-item-desc .icon.banish{
-	filter: unset !important;
-}
-.store-item-desc .icon.banish:after{
-	color: #e38f71;
+.store-item-card.big-card button{
+    display: flex !important;
+    width: 4rem;
+    aspect-ratio: 1;
+    margin: 0 0.5rem 2rem auto;
+	padding: 0;
 }
 
 .store-item button {
@@ -1201,13 +1196,9 @@ section#xpscreen button {
 }
 
 button.close-store {
-    position: absolute;
-    top: -2.5rem;
-    right: 0.5rem;
-    font-size: 1.5rem;
-    line-height: 1rem;
     width: 4rem;
     height: 3.7rem;
+    margin-right: 0.5rem;
 }
 
 

@@ -370,3 +370,13 @@ document.querySelector(".skill-modal-buy").addEventListener("click", function ()
 document.querySelector(".skill-modal-close").addEventListener("click", function () {
 	document.querySelector(".skill-modal").style.display = "none";
 })
+
+
+/*===========================================================================*/
+// Zoom card on store
+/*===========================================================================*/
+document.querySelectorAll(".store-item-card").forEach(el => {
+	el.addEventListener("click", function() {
+		el.classList.toggle("big-card");
+	})
+});
