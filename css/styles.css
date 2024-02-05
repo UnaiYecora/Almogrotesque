@@ -907,7 +907,6 @@ div#discobar>span {
     aspect-ratio: 1;
     border-radius: 100%;
     position: absolute;
-    filter: saturate(0.5);
     z-index: 1;
     top: 1.1%;
     right: 1.7%;
@@ -963,11 +962,12 @@ div#discobar>span {
 .card-inventory-desc {
     margin-block: 4% 7%;
     text-align: center;
-    line-height: 1;
+    line-height: 1.4;
     font-size: 6.3cqw;
     flex: 1;
     display: flex;
     align-items: center;
+	text-wrap: balance;
 }
 
 .card-inventory-desc .icon:not(.banish){
