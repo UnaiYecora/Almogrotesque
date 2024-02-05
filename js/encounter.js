@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.14";
-import { db, state, save } from "./db.js?v=0.14";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.14";
+import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.15";
+import { db, state, save } from "./db.js?v=0.15";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.15";
 
 /* ··········································································*/
 /* ··········································································*/
