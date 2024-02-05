@@ -1,5 +1,14 @@
 *,a img{margin:0;padding:0}*,::after,::before{box-sizing:border-box}*{font:inherit}ol[role=list],ul[role=list]{list-style:none}html:focus-within{scroll-behavior:smooth}body,html{height:100%}body{text-rendering:optimizeSpeed;line-height:1.5;-webkit-text-size-adjust:100%}a:not([class]){text-decoration-skip-ink:auto}img,picture,svg{max-width:100%;display:block;border-style:none}a img{border:0;outline:0;vertical-align:middle}::placeholder{color:unset}[aria-controls],a,button{cursor:pointer}button,input,select,textarea{background-color:transparent;border-style:none;color:inherit;padding:0;font:inherit}@media (prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto}*,::after,::before{animation-duration:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;scroll-behavior:auto!important}}[aria-busy=true]{cursor:progress}[aria-disabled=true]{cursor:default}
 
+*{
+	-webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 
 /*===========================================================================
 // FONTS 
