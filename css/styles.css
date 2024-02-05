@@ -871,7 +871,7 @@ div#discobar>span {
 	aspect-ratio: 2 / 3;
 	cursor: pointer;
 	color: var(--white);
-	border-radius: 0.5rem;
+	border-radius: 3cqw;
 	background-size: contain;
 	position: relative;
 	background-repeat: no-repeat;
@@ -886,7 +886,7 @@ div#discobar>span {
 	pointer-events: none;
 	background: url("../assets/img/textures/paper1.jpg");
 	mix-blend-mode: multiply;
-	border-radius: 0.6rem;
+	border-radius: 4cqw;
 }
 
 .inventory-item.disabled {
@@ -945,18 +945,12 @@ div#discobar>span {
 }
 
 .card-inventory-icon {
-	/* mix-blend-mode: darken;
-    filter: sepia(1); */
 	position: relative;
 	width: 100%;
 	aspect-ratio: 1;
-    border-radius: 0.8rem;
+    border-radius: 0.9rem;
     overflow: hidden;
 	pointer-events: none;
-}
-
-.card-inventory-icon img {
-	/* border-radius: 100%; */
 }
 
 .card-inventory-desc {
@@ -1135,7 +1129,7 @@ section#xpscreen button {
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
-	gap: 0.8rem;
+	gap: 2rem;
 	text-align: center;
 	padding: 3rem 1rem;
 	flex: 1;
@@ -1144,6 +1138,7 @@ section#xpscreen button {
 .store-item-card{
 	width: 100%;
 	container-type: inline-size;
+	box-shadow: 0 0 2rem #ffffff59;
 }
 
 .store-item-card.big-card{
