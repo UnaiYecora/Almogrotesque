@@ -5,10 +5,10 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse } from "./helpers.js?v=0.15.1";
-import { db, state, save } from "./db.js?v=0.15.1";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.15.1";
-import { generateCard } from "./inventory.js?v=0.15.1";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse } from "./helpers.js?v=0.16";
+import { db, state, save } from "./db.js?v=0.16";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.16";
+import { generateCard } from "./inventory.js?v=0.16";
 import { Draggable } from "./lib/drag.js";
 
 /* ··········································································*/
