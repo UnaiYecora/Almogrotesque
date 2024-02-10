@@ -8,7 +8,7 @@
 import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.15.1";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.15.1";
 import { generateInventory } from "./inventory.js?v=0.15.1";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, stopUsingCard, placeCardInSlot } from "./encounter.js?v=0.15.1";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, placeCardInSlot } from "./encounter.js?v=0.15.1";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.15.1";
 import { generatePuzzle } from "./chests.js";
 import { buySkill, updateSkilltree } from "./skills.js?v=0.15.1";
@@ -44,7 +44,6 @@ widthBasedFontSize();
 if (!(localStorage.getItem("almogrotesque") === null)) {
 	document.querySelector("#start #continue").disabled = false;
 }
-
 
 /* ··········································································*/
 /* ··········································································*/
@@ -195,6 +194,7 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 	const path = document.querySelector('#crossroad [data-mobid="' + state.mob.mobid + '"]');
 	await updateHP();
 	document.querySelector("#xpscreen").style.display = "none";
+	document.querySelector("#playerBoard").style.display = "flex";
 	await goTo("crossroad");
 	await burnPath(path);
 	await fillPaths();
@@ -246,71 +246,15 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 // Close
 document.querySelector(".close-inventory").addEventListener("click", function () {
 	document.querySelector(".inventory").style.display = "none";
-	document.querySelector(".target-slot").classList.remove("target-slot");
 });
 
 // Open
-document.querySelector("#discobar").addEventListener("click", async function (e) {
-	if (!document.querySelector("#playerBoard").classList.contains("midturn")) {
-		const slot = e.target.closest(".slot");
-		if (slot) {
-			slot.classList.add("target-slot");
-	
-			const removeBtn = document.querySelector("button.clear-slot");
-			let cardId;
-	
-			if (slot.querySelector(".disc")) {
-				removeBtn.disabled = false;
-				cardId = slot.querySelector(".disc").dataset.cardid;
-			} else {
-				removeBtn.disabled = true;
-				cardId = false;
-			}
-	
-			// Generate inventory
-			await generateInventory(cardId);
-	
-			// Display inventory
-			document.querySelector(".inventory").style.display = "flex";
-		}
-	}
-});
+document.querySelector(".deck-icon").addEventListener("click", async function (e) {
+	// Generate inventory
+	await generateInventory();
 
-/*===========================================================================*/
-// Place selected card in slot
-/*===========================================================================*/
-document.querySelector(".inventory").addEventListener("click", async function (e) {
-
-	if (e.target.closest(".inventory-card")) {
-		const cardId = e.target.closest(".inventory-card").dataset.cardid;
-		if (e.target.closest(".mana-required")) {
-			const manaPrice = db.cards[cardId].mana_price;
-			state.player.mana -= manaPrice;
-			state.player.cardsManaPaid.push(cardId);
-			updateMana();
-			await placeCardInSlot(cardId);
-		} else {
-			await placeCardInSlot(cardId);
-		}
-
-		//Move card to the top of the inventory
-		const cards = state.turn ? state.player.cardsThisEncounter : state.player.cards;
-		cards.unshift(cards.splice(cards.indexOf(cardId), 1)[0]);
-		document.querySelector(".inventory-cards").scrollTop = 0;
-
-		//Close inventory
-		document.querySelector(".inventory").style.display = "none";
-	}
-});
-
-
-/*===========================================================================*/
-// Stop using card
-/*===========================================================================*/
-document.querySelector(".clear-slot").addEventListener("click", async function () {
-	await stopUsingCard();
-	document.querySelector(".inventory").style.display = "none";
-	document.querySelector(".target-slot").classList.remove("target-slot");
+	// Display inventory
+	document.querySelector(".inventory").style.display = "flex";
 });
 
 /*===========================================================================*/

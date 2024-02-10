@@ -208,29 +208,6 @@ export function removeSuccessDiscStates() {
 	});
 }
 
-/*===========================================================================*/
-// Get Slot Short Description
-/*===========================================================================*/
-export function getSlotShortDesc(cardId) {
-	let content = "";
-	const card = db.cards[cardId];
-	let colorIndex = 0;
-	if (card.colors[0] === "#000") {
-		colorIndex = 1;
-	}
-
-	const descriptions = card.short;
-	descriptions.forEach(desc => {
-		content += '<div class="slot-short-desc-item">';
-		content += '<span class="slot-short-desc-orb" style="background:' + card.colors[colorIndex] + ';"></span>';
-		content += '<div class="slot-short-desc-text">' + iconify(desc) + '</div>';
-		content += '</div>';
-		colorIndex++;
-	});
-
-	return content;
-}
-
 
 /*===========================================================================*/
 // Display secondary action

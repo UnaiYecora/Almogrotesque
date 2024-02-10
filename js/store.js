@@ -98,7 +98,7 @@ export async function generateStore(storeid) {
 						priceEl.textContent = price;
 					}
 					let cardIItemContent = '<button class="btn btn-close"></button>';
-					cardIItemContent += await generateCard(item, false, false);
+					cardIItemContent += await generateCard(item);
 					cardEl.innerHTML = cardIItemContent;
 
 					// Datasets
@@ -156,9 +156,9 @@ export async function checkIfAbleToBuy() {
 				const coins = state.player.coins;
 
 				if (price > coins) {
-					item.querySelector("button").disabled = true;
+					item.querySelector("button.buy-item").disabled = true;
 				} else {
-					item.querySelector("button").disabled = false;
+					item.querySelector("button.buy-item").disabled = false;
 				}
 			});
 

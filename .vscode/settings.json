@@ -3,5 +3,6 @@
 		".gitattributes": true,
 		"README.md": true,
 		".vscode": true
-	}
+	},
+	"liveServer.settings.port": 5501
 }

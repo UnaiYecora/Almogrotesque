@@ -14,14 +14,13 @@ export var state = {
 		xp: 0,
 		lvl: 1,
 		coins: 23,
-		slots: 1,
-		cards: ["basic_attack_1", "mana1"],
+		slots: 4,
+		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2"],
 		//cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"],
-		cardsThisEncounter: [],
-		cardsToBanish: [],
-		discsToEmpty: [],
-		cardsManaPaid: [],
-		cardsInUse: [],
+		deck: [],
+		hand: [],
+		cemetery: [],
+		//drawLimit: 10,
 		mana: 1,
 		startingMana: 0,
 		shield: 0,
@@ -274,9 +273,8 @@ export const db = {
 		bat_bite: {
 			name: "Bat bite",
 			desc: "Deal 1 damage.",
-			short: ["x1 Damage"],
+			type: "damage",
 			price: -1,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [35],
 			damage: 1,
@@ -285,9 +283,8 @@ export const db = {
 		basic_attack_1: {
 			name: "Dagger",
 			get desc() { return "Deal " + this.damage + "/" + this.damage2 + "/" + this.damage3 + " damage." },
-			get short() { return ["x" + this.damage + " damage", "x" + this.damage2 + " damage", "x" + this.damage3 + " damage"] },
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [15, 70, 15],
 			damage: 1,
@@ -298,9 +295,8 @@ export const db = {
 		basic_attack_2: {
 			name: "Handaxe",
 			get desc() { return "Deal " + this.damage + "/" + this.damage2 + " piercing damage." },
-			get short() { return ["x" + this.damage + " piercing damage", "x" + this.damage2 + " piercing damage"] },
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [55, 15],
 			damage: 6,
@@ -310,9 +306,8 @@ export const db = {
 		heal_1: {
 			name: "Heal potion",
 			desc: "Heal 3/10 HP.",
-			short: ["Heal 3HP", "Heal 10HP"],
+			type: "heal",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [38, 8],
 			heal: 3,
@@ -322,9 +317,8 @@ export const db = {
 		double_damage: {
 			name: "Bane-imbued edge",
 			desc: "Damage from previous cards this turn are doubled or lost.",
-			short: ["Double damage", "Lose damage"],
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [50, 50],
 			colors: ["#872b1e", "#494237"],
@@ -333,9 +327,8 @@ export const db = {
 			name: "Ambivalent Elixir",
 			desc: "Deal damage or heal.",
 			get desc() { return "Deal " + this.damage + " damage or heal " + this.heal + "HP." },
-			short: ["Deal 3 damage", "Heal 3HP"],
+			type: "damage-heal",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			damage: 3,
 			heal: 3,
@@ -345,9 +338,8 @@ export const db = {
 		eldertide_timepiece: {
 			name: "Eldertide Timepiece",
 			desc: "Gain 1{fate}.",
-			short: ["1{fate}"],
+			type: "fate",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			fate: 1,
 			hitrate: [57],
@@ -356,9 +348,8 @@ export const db = {
 		mana1: {
 			name: "Soulstone",
 			get desc() { return "Gain " + this.mana + "{mana}." },
-			get short() { return [this.mana + "{mana}"] },
+			type: "mana",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			mana: 1,
 			hitrate: [78],
@@ -367,9 +358,8 @@ export const db = {
 		shield1: {
 			name: "Shield",
 			get desc() { return "Gain " + this.shield + "{shield}." },
-			get short() { return [this.shield + "{shield}"] },
+			type: "shield",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			shield: 3,
 			hitrate: [68],
@@ -378,9 +368,8 @@ export const db = {
 		poison1: {
 			name: "Poison brew",
 			get desc() { return "Deal " + this.poison + "{poison}." },
-			get short() { return [this.poison + "{poison}"] },
+			type: "poison",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			poison: 3,
 			hitrate: [37],
@@ -389,14 +378,8 @@ export const db = {
 		poison2: {
 			name: "Poison concoction",
 			get desc() { return "Deal " + this.poison + "/" + this.poison2 + "{poison}." },
-			get short() {
-				return [
-					this.poison + "{poison}",
-					this.poison2 + "{poison}",
-				]
-			},
+			type: "poison",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 2,
 			poison: 6,
 			poison2: 8,
@@ -406,9 +389,8 @@ export const db = {
 		shield_attack: {
 			name: "Shield attack",
 			desc: "Turn your {shield} into damage.",
-			short: ["Turn {shield} into damage"],
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 2,
 			hitrate: [77],
 			colors: ["#000", "#872b1e"],
@@ -416,9 +398,8 @@ export const db = {
 		damage_to_piercing: {
 			name: "Sharpener",
 			desc: "Turn this turn's damage into piercing damage.",
-			short: ["Damage into piercing damage"],
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [63],
 			colors: ["#000", "#5f1e16"],
@@ -426,9 +407,8 @@ export const db = {
 		hp_loss_to_damage: {
 			name: "Retribution",
 			get desc() { return "Deal " + this.damage + " damage for every " + this.hploss + "HP you have lost."; },
-			short: ["Turn lost HP into damage"],
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 2,
 			damage: 3,
 			hploss: 4,
@@ -440,11 +420,8 @@ export const db = {
 			get desc() {
 				return "Deal " + this.damage + " damage. If the enemy has {poison}, deal " + this.damage2 + " piercing damage.";
 			},
-			get short() {
-				return ["Deal " + this.damage + " damage. If the enemy has {poison}, deal " + this.damage2 + " damage"]
-			},
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			damage: 4,
 			damage2: 8,
@@ -456,11 +433,8 @@ export const db = {
 			get desc() {
 				return "If this turn you're dealing damage before this card, gain " + this.shield + " {shield}.";
 			},
-			get short() {
-				return ["If dealing damage, gain " + this.shield + " {shield}"]
-			},
+			type: "shield",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			shield: 5,
 			hitrate: [67],
@@ -469,19 +443,18 @@ export const db = {
 		plague: {
 			name: "Plague",
 			desc: "{banish} Double enemy's {poison}",
-			short: ["Doubles enemy's current {poison}"],
+			type: "poison",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 2,
+			banish: true,
 			hitrate: [86],
 			colors: ["#000", "#105b19"],
 		},
 		exasperater: {
 			name: "Exasperater",
 			desc: "Remove all of the enemy's {mana}.",
-			short: ["Remove all enemy's {mana}"],
+			type: "mana",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 1,
 			hitrate: [73],
 			colors: ["#000", "#460d59"],
@@ -489,9 +462,8 @@ export const db = {
 		rotten_soul: {
 			name: "Rotten soul",
 			desc: "Remove all of the enemy's {mana}. Deal 1 damage for each {mana}",
-			short: ["Remove all enemy's {mana} and deal equal damage"],
+			type: "damage-mana",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 3,
 			hitrate: [88],
 			colors: ["#000", "#460d59"],
@@ -501,15 +473,8 @@ export const db = {
 			get desc() {
 				return "Take " + this.self_damage + " piercing damage and deal " + this.damage + "/" + this.damage2 + "/" + this.damage3 + " piercing damage."
 			},
-			get short() {
-				return [
-					"Deal " + this.damage + " piercing damage",
-					"Deal " + this.damage2 + " piercing damage",
-					"Deal " + this.damage3 + " piercing damage"
-				]
-			},
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			damage: 0,
 			damage2: 5,
@@ -523,13 +488,8 @@ export const db = {
 			get desc() {
 				return "Deal " + this.fire_damage + " fire damage."
 			},
-			get short() {
-				return [
-					"Deal " + this.fire_damage + " fire damage",
-				]
-			},
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 1,
 			fire_damage: 5,
 			hitrate: [72],
@@ -538,9 +498,8 @@ export const db = {
 		embersteel: {
 			name: "Embersteel",
 			desc: "Turn this turn's damage into fire damage.",
-			short: ["Damage into fire damage"],
+			type: "damage",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 3,
 			hitrate: [62],
 			colors: ["#000", "#872b1e"],
@@ -550,14 +509,8 @@ export const db = {
 			get desc() {
 				return "Gain " + this.shield + " {shield} / Also deal " + this.fire_damage + " fire damage."
 			},
-			get short() {
-				return [
-					"Gain " + this.shield + " {shield}",
-					"Also deal " + this.fire_damage + " fire damage",
-				]
-			},
+			type: "damage-shield",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 1,
 			shield: 5,
 			fire_damage: 5,
@@ -569,13 +522,8 @@ export const db = {
 			get desc() {
 				return "Deal " + this.damage + " damage and restore the same amount of health."
 			},
-			get short() {
-				return [
-					"Deal " + this.damage + " damage, restore the same amount of HP",
-				]
-			},
+			type: "damage-heal",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 1,
 			hitrate: [79],
 			damage: 3,
@@ -585,9 +533,8 @@ export const db = {
 		attack_and_mana: {
 			name: "Focus",
 			get desc() { return "Deal " + this.damage + " damage and gain " + this.mana + "{mana}." },
-			get short() { return ["Deal " + this.damage + " damage, gain " + this.mana + "{mana}"] },
+			type: "damage-mana",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [38],
 			damage: 3,
@@ -597,9 +544,8 @@ export const db = {
 		antidote: {
 			name: "Antidote",
 			get desc() { return "Cleanse all {poison} effects from you." },
-			get short() { return ["Remove {poison}"] },
+			type: "heal",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 3,
 			hitrate: [88],
 			colors: ["#000", "#105b58"],
@@ -607,9 +553,8 @@ export const db = {
 		bloodletting: {
 			name: "Leech Bloodletting",
 			get desc() { return "Take " + this.self_damage + " piercing damage and remove all {poison} from you." },
-			get short() { return ["Take " + this.self_damage + " damage, remove {poison}"] },
+			type: "heal",
 			price: 20,
-			mana_price: 0,
 			mana_cost: 0,
 			hitrate: [71],
 			self_damage: 5,
@@ -624,7 +569,6 @@ export const db = {
 		frog: {
 			name: "Frog",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Small, slimy amphibians known for their croaking calls and agile leaps. They often lurk in murky waters and can be encountered in damp, gloomy environments.",
 			img_rotation: 2,
 			desc_rotation: 1,
@@ -650,7 +594,6 @@ export const db = {
 		master_frog: {
 			name: "Master Frog",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "An elder amphibian shrouded in mystic aura. It commands water and wields an ancient, enchanted staff to conjure tidal forces and unleash aquatic fury.",
 			img_rotation: 2,
 			desc_rotation: 0,
@@ -685,7 +628,6 @@ export const db = {
 		raven: {
 			name: "Raven",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A nightmarish raven with twisted feathers, blood-red eyes, and a menacing aura. Its caw chills the bravest hearts, an omen of impending doom.",
 			img_rotation: 2,
 			desc_rotation: 0,
@@ -703,7 +645,6 @@ export const db = {
 		rat: {
 			name: "Rat",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A scuttling rodent with sharp teeth, rats thrive in dimly lit places and are known for spreading disease and infesting dungeons and sewers.",
 			img_rotation: 1,
 			desc_rotation: 2,
@@ -725,7 +666,6 @@ export const db = {
 		rat_bandit: {
 			name: "Rat bandit",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Cunning and nimble vermin, these bandits plague the streets. Armed with tiny, razor-sharp daggers, they swarm foes to steal and scuttle away.",
 			img_rotation: 1,
 			desc_rotation: 1,
@@ -755,7 +695,6 @@ export const db = {
 		lagoon_dweller: {
 			name: "Lagoon Dweller",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Half-human, half-aquatic, dwelling beneath murky waters. With webbed extremities and glistening scales, it emerges to ensnare intruders with venomous harpoons.",
 			img_rotation: 2,
 			desc_rotation: 1,
@@ -784,7 +723,6 @@ export const db = {
 		seridra: {
 			name: "Witch (Seridra)",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A formidable sorceress draped in dark robes. She wields shadow magic, calling forth curses and summoning eerie familiars to guard her lair.",
 			img_rotation: 2,
 			desc_rotation: 2,
@@ -822,7 +760,6 @@ export const db = {
 		eggman: {
 			name: "Century egg",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A twisted, human-like abomination, marred by mutation. Limbs contorted, skin pallid, it wanders in agony, driven by unnatural forces.",
 			img_rotation: 1,
 			desc_rotation: 1,
@@ -844,7 +781,6 @@ export const db = {
 		desert_mouth: {
 			name: "Desert Mouth",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A colossal, sentient sandstone formation. It awakens, summoning whirlwinds and sandstorms, devours travelers who approach its sandy, insatiable jaws.",
 			img_rotation: 0,
 			desc_rotation: 1,
@@ -881,7 +817,6 @@ export const db = {
 		chest: {
 			name: "Chest",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A deceptive treasure chest, concealed trap. Its wooden maw hides rows of sharp teeth. Those who reach inside become prey to its voracious appetite.",
 			img_rotation: 1,
 			desc_rotation: 0,
@@ -942,7 +877,6 @@ export const db = {
 		bats: {
 			name: "Bats",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A swirling mass of winged nightmares cloaked in obsidian wings Their shrieks echo through darkness, unsettling even the bravest souls, as they swoop down in a chaotic, shadowy assault.",
 			img_rotation: 0,
 			desc_rotation: 1,
@@ -963,7 +897,6 @@ export const db = {
 		goblin: {
 			name: "Goblin",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
 			img_rotation: 1,
 			desc_rotation: 2,
@@ -997,7 +930,6 @@ export const db = {
 		goblin2: {
 			name: "Goblin",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Sly inhabitants of woodlands, their skin blends with bark and leaves. They navigate dense foliage with agility, ambushing intruders with poisoned darts and primitive traps.",
 			img_rotation: 2,
 			desc_rotation: 2,
@@ -1109,7 +1041,6 @@ export const db = {
 		spider: {
 			name: "Spider",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Eight-legged arachnids, masters of stealth in their silk-spun lairs. They spin intricate webs to ensnare prey and can be found in dark corners of dungeons, forests, and caves.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1124,7 +1055,6 @@ export const db = {
 		homunculus: {
 			name: "Homunculus",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A twisted, malevolent creation gone rogue. This once-servile homunculus has turned against its master, armed with dark enchantments and a sinister desire for freedom.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1139,7 +1069,6 @@ export const db = {
 		kobold: {
 			name: "Kobold",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "Small, reptilian humanoids known for their cunning and devious traps. They dwell in underground lairs, serving as loyal minions to more powerful creatures or plotting their own mischief and theft.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1154,7 +1083,6 @@ export const db = {
 		cultist: {
 			name: "Cultist",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A fervent devotee of dark and forbidden powers, often cloaked in tattered robes. These fanatics gather in secretive covens to perform unholy rituals and summon eldritch entities, posing a threat to the world with their zealous devotion.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1169,7 +1097,6 @@ export const db = {
 		acolyte: {
 			name: "Acolyte",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A devout follower of a deity or a mystical order, acolytes dedicate their lives to worship and service. They wield divine magic and knowledge, either to heal and protect or further their faith's goals.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1184,7 +1111,6 @@ export const db = {
 		shrub: {
 			name: "Awakened Shrub",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A seemingly harmless shrub brought to life by arcane forces, now harboring a thirst for mischief. Though not powerful, it can surprise with unexpected tricks in forest encounters.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1199,7 +1125,6 @@ export const db = {
 		bandit: {
 			name: "Bandit",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A cunning and lawless rogue of the wilds, donned in rugged attire and armed with concealed weapons. Bandits lurk on highways, ambushing travelers for ill-gotten gains and causing trouble for adventurers.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1214,7 +1139,6 @@ export const db = {
 		crab: {
 			name: "Giant Crab",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A colossal, armored crustacean with pincer claws capable of crushing foes. These aggressive sea-dwellers defend their territory fiercely and can be encountered in coastal caves or deep underwater.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1229,7 +1153,6 @@ export const db = {
 		skeleton: {
 			name: "Skeleton",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "The reanimated, bony remains of a once-living creature. These undead minions, often raised by dark necromancers, are devoid of flesh but possess an eerie, relentless determination to obey their master's commands, wielding rusted weapons with menacing intent.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1244,7 +1167,6 @@ export const db = {
 		ghoul: {
 			name: "Ghoul",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "An undead horror with pallid, rotting flesh and a hunger for the living. Ghouls stalk graveyards and crypts, driven by their insatiable appetite and the ability to paralyze victims with their vile touch.",
 			img_rotation: 0,
 			desc_rotation: 0,
@@ -1259,7 +1181,6 @@ export const db = {
 		specter: {
 			name: "Specter",
 			type: "mob",
-			skills: ["Does double damage.", "Not really"],
 			desc: "A malevolent, incorporeal entity, born from intense negative emotions. These vengeful spirits can drain the life force of the living with a chilling touch, haunting ancient ruins and forsaken places.",
 			img_rotation: 0,
 			desc_rotation: 0,

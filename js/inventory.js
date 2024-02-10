@@ -22,7 +22,7 @@ import { db, state } from "./db.js?v=0.15.1";
 /*===========================================================================*/
 // Generate inventory
 /*===========================================================================*/
-export async function generateInventory(previousCard) {
+export async function generateInventory() {
 	return new Promise(async (resolve, reject) => {
 		try {
 
@@ -32,47 +32,13 @@ export async function generateInventory(previousCard) {
 			// Clear inventory
 			inventoryElement.innerHTML = "";
 
-			const cards = state.turn ? state.player.cardsThisEncounter : state.player.cards;
+			const cards = state.player.cards;
 
 			for (const cardId of cards) {
-
-				// Get card data
-				const card = db.cards[cardId];
-
-				// Disable card if already in use
-				const disabled = state.player.cardsInUse.find(e => e === cardId) ? "disabled " : "";
-
-				// Disable card before buying with mana
-				const cardManaPrice = card.mana_price;
-				if (cardManaPrice === 0) {
-					state.player.cardsManaPaid.push(cardId);
-				}
-				const playerMana = state.player.mana;
-				let manaRequired;
-				if (state.player.cardsManaPaid.includes(cardId)) {
-					manaRequired = "";
-				} else {
-					manaRequired = "mana-required ";
-				}
-				let manaAvailable;
-				if (playerMana >= cardManaPrice) {
-					manaAvailable = "";
-				} else {
-					manaAvailable = "mana-unavailable ";
-				}
-
-				// Mark card in use
-				let mark;
-				if (previousCard === cardId) {
-					mark = "mark ";
-				} else {
-					mark = "";
-				}
-
 				// Generate card HTML
 				let cardHTML = "";
-				cardHTML += '<div class="inventory-item ' + disabled + manaRequired + manaAvailable + mark + '">';
-				cardHTML += await generateCard(cardId, playerMana, cardManaPrice);
+				cardHTML += '<div class="inventory-item">';
+				cardHTML += await generateCard(cardId);
 				cardHTML += '</div>';
 				inventoryElement.innerHTML += cardHTML;
 			}
@@ -89,7 +55,7 @@ export async function generateInventory(previousCard) {
 /*===========================================================================*/
 // Generate card
 /*===========================================================================*/
-export async function generateCard(cardId, playerMana, cardManaPrice) {
+export async function generateCard(cardId) {
 	return new Promise(async (resolve, reject) => {
 		try {
 				// Get card data
@@ -98,27 +64,19 @@ export async function generateCard(cardId, playerMana, cardManaPrice) {
 				// Get card disc
 				const disc = await generateCardDisc(cardId);
 
-				// Not enough mana
-				let tooExpensive = "";
-				if (card.mana_cost > state.player.mana) {
-					tooExpensive = "too-expensive";
-				}
-
 				// Generate card HTML
 				let cardHTML = "";
-				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '">';
-				cardHTML += '<div class="card-mana-cost '+tooExpensive+'">'+ card.mana_cost +'</div>';
+				cardHTML += "<div class='card'>";
+				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '" data-type="' + card.type +'">';
+				cardHTML += '<div class="card-mana-cost">'+ card.mana_cost +'</div>';
 				cardHTML += disc;
 				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
 				cardHTML += '<div class="card-inventory-icon">';
 				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
 				cardHTML += '</div>';
 				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
-				if (playerMana !== false && cardManaPrice !== false) {
-					cardHTML += '<div class="mana-price">';
-					cardHTML += '<div>Claim:</div> <div>' + playerMana + ' / ' + cardManaPrice + '<span class="mana"></span></div>';
-					cardHTML += '</div>';
-				}
+				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png" class="card-background">';
+				cardHTML += '</div>';
 				cardHTML += '</div>';
 
 			resolve(cardHTML);

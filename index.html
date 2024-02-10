@@ -88,6 +88,7 @@
 		<section id="encounter">
 			<div class="topbar">
 				<div class="hp mob-hp">
+					<p class="mobName"></p>
 					<div class="heart"></div>
 					<div class="bar">
 						<div class="progress">
@@ -115,13 +116,8 @@
 			</div>
 
 			<div id="mobBoard">
-				<div class="mob-image-wrapper" data-rotate="0">
+				<div class="mob-image-wrapper">
 					<img src="" class="mob-image">
-				</div>
-				<div class="mob-info-wrapper" data-rotate="0">
-					<p class="mobName"></p>
-					<div class="mobSkills"></div>
-					<p class="mobDesc"></p>
 				</div>
 			</div>
 
@@ -131,16 +127,19 @@
 			</div>
 
 			<div id="playerBoard">
-				<div class="main-action">
-					<button class="btn" id="attackBtn">Attack</button>
-				</div>
-				<div class="secondary-action">
-					<button class="btn change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
-					or
-					<button class="btn end-turn">Accept fate</button>
-				</div>
-				<div class="no-action">
-					<p>The enemy is attacking you.</p>
+				<div class="hand"></div>
+				<div class="actions">
+					<div class="main-action">
+						<button class="btn" id="attackBtn">Attack</button>
+					</div>
+					<div class="secondary-action">
+						<button class="btn change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
+						or
+						<button class="btn end-turn">Accept fate</button>
+					</div>
+					<div class="no-action">
+						<p>The enemy is attacking you.</p>
+					</div>
 				</div>
 			</div>
 
@@ -164,6 +163,7 @@
 					</div>
 				</div>
 				<div class="right-side">
+					<div class="deck-icon icon"></div>
 					<div class="mana-left-wrapper">
 						<span class="mana-left">0</span>
 						<span class="mana"></span>
@@ -177,7 +177,6 @@
 
 			<div class="inventory">
 				<div class="inventory-controls">
-					<button class="btn clear-slot">Clear slot</button>
 					<button class="btn close-inventory btn-close"></button>
 				</div>
 				<div class="inventory-cards"></div>

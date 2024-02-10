@@ -5,9 +5,11 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, getSlotShortDesc, rand, heartPulse } from "./helpers.js?v=0.15.1";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse } from "./helpers.js?v=0.15.1";
 import { db, state, save } from "./db.js?v=0.15.1";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.15.1";
+import { generateCard } from "./inventory.js?v=0.15.1";
+import { Draggable } from "./lib/drag.js";
 
 /* ··········································································*/
 /* ··········································································*/
@@ -23,7 +25,6 @@ import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.15.
 export async function loadEncounter(mobId) {
 	try {
 		// Reset player state
-		state.player.cardsInUse = [];
 		state.player.cardsManaPaid = [];
 		state.player.mana = state.player.startingMana;
 		if (state.player.skills.includes("skillshield1")) {
@@ -38,7 +39,9 @@ export async function loadEncounter(mobId) {
 		}
 		state.fatePrice = state.startingFatePrice;
 		state.player.poison = 0;
-		state.player.cardsThisEncounter = [...state.player.cards];
+
+		state.player.deck = [...state.player.cards];
+		shuffleArray(state.player.deck);
 
 		// Generate the encounter card
 		await generateEncounterCard(mobId);
@@ -93,17 +96,11 @@ async function generateEncounterCard(mobId) {
 			}
 			mobDiscs.style.display = "none";
 
-			// Random mob image and text rotations
-			document.querySelector(".mob-image-wrapper").dataset.rotate = mobData.img_rotation;
-			document.querySelector(".mob-info-wrapper").dataset.rotate = mobData.desc_rotation;
-
 			// Mob image and description
 			const encounter = document.querySelector("#encounter");
 			encounter.querySelector(".mob-image").src = "./assets/img/mobs/" + mobId + ".png";
+
 			encounter.querySelector(".mobName").textContent = mobData.name;
-			encounter.querySelector(".mobDesc").textContent = mobData.desc;
-			const skillsEl = encounter.querySelector(".mobSkills");
-			skillsEl.innerHTML = mobData.skills.map(skill => `<p>+ ${skill}</p>`).join('');
 
 			// Update HP
 			updateHP();
@@ -217,6 +214,34 @@ export async function toggleTurn(start) {
 		death();
 	}
 
+	if (state.turn === "mob") {
+		//Move cards to cemetery
+		document.querySelectorAll("#playerDiscs .slot.charged > .disc").forEach(usedCard => {
+			console.log(usedCard);
+			let usedCardId = usedCard.dataset.cardid;
+			state.player.cemetery.push(usedCardId);
+		});
+	}
+
+	//Draw cards
+	if (state.turn === "player") {
+		for (let i = 0; i < state.player.slots; i++) {
+			if (!state.player.deck[0] && state.player.cemetery[0]) {
+				let cardsFromCemetery = [...state.player.cemetery];
+				state.player.cemetery = [];
+				shuffleArray(cardsFromCemetery);
+				state.player.deck = [...cardsFromCemetery];
+			}
+
+			if (state.player.deck[0]) {
+				state.player.hand.push(state.player.deck[0]);
+				state.player.deck.shift();
+			}
+		}
+		drawCards();
+		state.player.hand = [];
+	}
+
 	// Heart pulse
 	heartPulse();
 
@@ -240,11 +265,13 @@ export async function toggleTurn(start) {
 		noAction.style.display = "flex";
 		playerDiscs.style.display = "none";
 		mobDiscs.style.display = "flex";
-		document.querySelectorAll("#mobDiscs .slot").forEach(slot => {
-			slot.innerHTML = "";
-			slot.classList.remove("charged");
-		});
 	}
+
+	// Clear slots
+	document.querySelectorAll("#discobar .slot").forEach(slot => {
+		slot.innerHTML = "";
+		slot.classList.remove("charged");
+	});
 
 	// Start-of-turn passives
 	if (state.turn === "mob") {
@@ -258,6 +285,269 @@ export async function toggleTurn(start) {
 	}
 }
 
+/*===========================================================================*/
+// Draw cards
+/*===========================================================================*/
+async function drawCards() {
+	const hand = [...state.player.hand];
+	const mat = document.querySelector(".hand");
+	for (const card of hand) {
+		let newCard = await generateCard(card);
+		let tempDiv = document.createElement('div');
+		tempDiv.innerHTML = newCard;
+		let newCardElement = tempDiv.firstElementChild;
+		newCardElement.style.transform = "translateX(500rem) rotate(0deg) translateY(0rem)";
+		newCardElement.addEventListener('touchstart mousedown', function (e) {
+			card.classList.add("cardOnDragStart");
+		});
+		mat.append(newCardElement);
+		cardPositions();
+	}
+}
+
+/*===========================================================================*/
+// Card positions
+/*===========================================================================*/
+var dragInstances = [];
+var currentSlot = null;
+function cardPositions() {
+	dragInstances.forEach(({ instance }) => {
+		instance.destroy();
+	});
+
+	const cards = document.querySelectorAll('.hand .card');
+	const totalCards = cards.length;
+	const maxNumberOfCards = 20;
+	const minMargin = 2;
+	const maxMargin = -10;
+	const fraction = Math.min(totalCards, maxNumberOfCards) / maxNumberOfCards;
+	const margin = minMargin + (maxMargin - minMargin) * fraction;
+	const antiMargin = margin * -0.5;
+
+	cards.forEach((card, i) => {
+		const dragInstance = new Draggable(card, {
+			onDragEnd: (data) => {
+				cardPositions();
+				card.classList.remove("cardOnDrag");
+				card.classList.remove("cardOnDragStart");
+				if (currentSlot) {
+					// If a slot is currently being hovered over, call onDrop
+					onDrop({ target: currentSlot, detail: data });
+					currentSlot = null;
+					card.remove();
+				};
+				dragInstance.destroy();
+			},
+			onDragStart: async (data) => {
+				let scale = 3;
+				card.classList.remove("cardOnDrag");
+				card.classList.add("cardOnDragStart");
+
+				let parent = document.querySelector("main");
+
+				const cardRect = card.getBoundingClientRect();
+				const parentRect = parent.getBoundingClientRect();
+
+				let scaledChildWidth = cardRect.width * scale;
+				let scaledChildLeft = cardRect.left - (scaledChildWidth - cardRect.width) / 2;
+				let scaledChildRight = scaledChildLeft + scaledChildWidth;
+
+				let overflowLeft = Math.max(0, parentRect.left - scaledChildLeft);
+				let overflowRight = Math.max(0, scaledChildRight - parentRect.right);
+
+				if (overflowLeft > 0) {
+					card.style.transform = `translateX(${overflowLeft / 3}px)`;
+				} else if (overflowRight > 0) {
+					card.style.transform = `translateX(-${overflowRight / 3}px)`;
+				} else {
+					card.style.transform = "";
+				}
+			},
+			onDrag: (data) => {
+				card.classList.add("cardOnDrag");
+				card.classList.remove("cardOnDragStart");
+
+				// Get the position of the center of the draggable element
+				let rect = data.currentNode.getBoundingClientRect();
+				let x = rect.left + rect.width / 2;
+				let y = rect.top + rect.height / 2;
+
+				// Check if the draggable element is over a slot
+				const slots = document.querySelectorAll('#playerDiscs .slot:not(.charged)');
+				slots.forEach((slot) => {
+					let slotRect = slot.getBoundingClientRect();
+					if (isPointInsideRect(x, y, slotRect)) {
+						// The draggable element is over this slot
+						if (slot !== currentSlot) {
+							// It's a different slot than before, so remove the class from the previous slot
+							if (currentSlot) {
+								currentSlot.classList.remove('hover');
+							}
+
+							// Add the class to the new slot
+							slot.classList.add('hover');
+
+							// Update the current slot
+							currentSlot = slot;
+						}
+					} else if (slot === currentSlot) {
+						// The draggable element is no longer over the current slot
+						currentSlot.classList.remove('hover');
+						currentSlot = null;
+					}
+				});
+			},
+			bounds: 'main',
+			legacyTranslate: true,
+			deadzone: {
+				width: 20,
+				height: 10,
+			},
+		});
+		dragInstances.push({
+			element: card,
+			instance: dragInstance,
+		});
+
+		const tiltFactor = (i - (totalCards - 1) / 2) * 5;
+		const tiltValue = `rotate(${tiltFactor}deg)`;
+		const verticalOffsetFactor = Math.abs(i - (totalCards - 1) / 2) * (0.05 * cards.length);
+		const verticalOffsetValue = `translateY(${verticalOffsetFactor}rem)`;
+
+		card.style.marginLeft = margin + "rem";
+		card.style.transform = "translateX(" + antiMargin + "rem) " + tiltValue + " " + verticalOffsetValue;
+	});
+}
+
+// Function to check if a point is inside a rectangle
+function isPointInsideRect(x, y, rect) {
+	return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+async function onDrop(event) {
+	// This function will be called when the dragged element is dropped on the slot element
+	// event.target will be the slot element
+	// event.detail.currentNode will be the dragged element
+	let cardId = event.detail.currentNode.querySelector(".inventory-card").dataset.cardid;
+	event.target.classList.add("target-slot");
+	await placeCardInSlot(cardId);
+	event.target.classList.remove("hover");
+	if (event.slotToEmpty) {
+		event.slotToEmpty.innerHTML = "";
+		event.slotToEmpty.classList.remove("charged");
+	}
+	makeSlotsDraggable();
+	cardPositions();
+}
+
+
+var slotDragInstances = [];
+function makeSlotsDraggable() {
+	const slots = document.querySelectorAll("#playerDiscs .slot.charged .card");
+
+	slotDragInstances.forEach(({ instance }) => {
+		instance.destroy();
+	});
+
+	slots.forEach((slot) => {
+		const slotDragInstance = new Draggable(slot, {
+			onDragEnd: (data) => {
+				slot.classList.remove("cardOnDrag");
+				slot.classList.remove("cardOnDragStart");
+				makeSlotsDraggable();
+				if (currentSlot) {
+					// If a slot is currently being hovered over, call onDrop
+					if (currentSlot === slot.parentElement) {
+						onDrop({ target: currentSlot, detail: data });
+					} else {
+						onDrop({ target: currentSlot, detail: data, slotToEmpty: slot.parentElement });
+					}
+				} else {
+					onDrop({ target: slot.parentElement, detail: data });
+				};
+				currentSlot = null;
+				slot.remove();
+				slotDragInstance.destroy();
+			},
+			onDragStart: async (data) => {
+				let scale = 3;
+				slot.classList.remove("cardOnDrag");
+				setTimeout(() => {
+					slot.classList.add("cardOnDragStart");
+				}, 100);
+
+				let parent = document.querySelector("main");
+
+				const slotRect = slot.getBoundingClientRect();
+				const parentRect = parent.getBoundingClientRect();
+
+				let scaledChildWidth = slotRect.width * scale;
+				let scaledChildLeft = slotRect.left - (scaledChildWidth - slotRect.width) / 2;
+				let scaledChildRight = scaledChildLeft + scaledChildWidth;
+
+				let overflowLeft = Math.max(0, parentRect.left - scaledChildLeft);
+				let overflowRight = Math.max(0, scaledChildRight - parentRect.right);
+
+				if (overflowLeft > 0) {
+					slot.style.transform = `translateX(${overflowLeft / 3}px)`;
+				}
+				if (overflowRight > 0) {
+					slot.style.transform = `translateX(-${overflowRight / 3}px)`;
+				}
+			},
+			onDrag: (data) => {
+				slot.classList.add("cardOnDrag");
+				slot.classList.remove("cardOnDragStart");
+
+				if (slot.nextSibling) {
+					slot.nextSibling.remove();
+					slot.parentElement.classList.remove("charged");
+				}
+
+				// Get the position of the center of the draggable element
+				let rect = data.currentNode.getBoundingClientRect();
+				let x = rect.left + rect.width / 2;
+				let y = rect.top + rect.height / 2;
+
+				// Check if the draggable element is over a slot
+				const unchargedSlots = document.querySelectorAll('#playerDiscs .slot:not(.charged)');
+				unchargedSlots.forEach((unchargedSlot) => {
+					let slotRect = unchargedSlot.getBoundingClientRect();
+					if (isPointInsideRect(x, y, slotRect)) {
+						// The draggable element is over this slot
+						if (unchargedSlot !== currentSlot) {
+							// It's a different slot than before, so remove the class from the previous slot
+							if (currentSlot) {
+								currentSlot.classList.remove('hover');
+							}
+
+							// Add the class to the new slot
+							unchargedSlot.classList.add('hover');
+
+							// Update the current slot
+							currentSlot = unchargedSlot;
+						}
+					} else if (unchargedSlot === currentSlot) {
+						// The draggable element is no longer over the current slot
+						currentSlot.classList.remove('hover');
+						currentSlot = null;
+					}
+				});
+			},
+			bounds: 'main',
+			legacyTranslate: true,
+			deadzone: {
+				width: 3,
+				height: 5,
+			},
+		});
+		slotDragInstances.push({
+			element: slot,
+			instance: slotDragInstance,
+		});
+	});
+}
+
 
 /*===========================================================================*/
 // Victory
@@ -267,6 +557,7 @@ export async function victory() {
 	state.player.poison = 0;
 	state.player.shield = 0;
 	state.player.mana = 0;
+	document.querySelector("#playerBoard").style.display = "none";
 	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
 	save();
@@ -397,8 +688,6 @@ async function resetTemporalEffects() {
 			state.turnMana = 0;
 			state.turnManaToConsume = 0;
 			state.turnRemoveAllShield = false;
-			state.player.cardsToBanish = [];
-			state.player.discsToEmpty = [];
 
 			// Reset temporal damage and temporal heal bars
 			document.querySelectorAll("#encounter .progress .damage-bar, .heal-bar").forEach(el => {
@@ -447,19 +736,6 @@ export async function placeCardInSlot(cardId) {
 
 			// Get Elements
 			const slot = document.querySelector(".target-slot");
-			const disc = slot.querySelector(".disc");
-
-			if (state.turn === "player") {
-
-				// Remove old card from cards in use
-				if (disc && disc.dataset.cardid) {
-					state.player.cardsInUse = state.player.cardsInUse.filter(x => x !== disc.dataset.cardid);
-				}
-
-				// Add card to cards in use
-				state.player.cardsInUse.push(cardId);
-			}
-
 
 			// Generate disc
 			let newDisc = document.createElement("div");
@@ -469,15 +745,14 @@ export async function placeCardInSlot(cardId) {
 			// Add class
 			newDisc.classList.add("disc");
 
-			// Insert disc in slot
+			// Clear slot
 			slot.innerHTML = "";
-			slot.append(newDisc);
 
-			// Display short description
-			const shortDesc = document.createElement("div");
-			shortDesc.classList.add("slot-short-desc");
-			shortDesc.innerHTML = getSlotShortDesc(cardId);
-			slot.appendChild(shortDesc);
+			// Append card
+			slot.innerHTML += await generateCard(cardId);
+
+			// Insert disc in slot
+			slot.append(newDisc);
 
 			// Modify classes
 			slot.classList.remove("target-slot");
@@ -488,33 +763,6 @@ export async function placeCardInSlot(cardId) {
 			resolve();
 		} catch (error) {
 			console.log("An error occurred trying to place a card in a slot: " + error.message);
-			reject(error);
-		}
-	})
-};
-
-
-/*===========================================================================*/
-// Stop using card
-/*===========================================================================*/
-export async function stopUsingCard() {
-	return new Promise(async (resolve, reject) => {
-		try {
-
-			// Get data
-			const slot = document.querySelector(".target-slot");
-			const cardId = document.querySelector(".target-slot .disc").dataset.cardid;
-
-			// Remove from used cards
-			state.player.cardsInUse = state.player.cardsInUse.filter(x => x !== cardId);
-
-			// Remove element
-			slot.classList.remove("charged");
-			slot.innerHTML = "";
-
-			resolve();
-		} catch (error) {
-			console.log("An error occurred trying to stop using a card: " + error.message);
 			reject(error);
 		}
 	})
@@ -784,17 +1032,6 @@ export async function applyDiscsEffects() {
 				state.turnFate = 0;
 			}
 			updateFate();
-
-			/////////////////
-			// Banish
-			/////////////////
-			state.player.cardsThisEncounter = state.player.cardsThisEncounter.filter(item => !state.player.cardsToBanish.includes(item));
-			state.player.cardsToBanish = [];
-			state.player.discsToEmpty.forEach(disc => {
-				const slot = disc.parentElement;
-				slot.innerHTML = "";
-				slot.classList.remove("charged");
-			});
 
 			await updateHP();
 
@@ -1210,11 +1447,6 @@ class Effects {
 		this.disc.parentElement.classList.add("unsuccessful");
 	}
 
-	banish() {
-		state.player.cardsToBanish.push(this.cardId);
-		state.player.discsToEmpty.push(this.disc);
-	}
-
 	/////////////////
 	// Effecs by card
 	/////////////////
@@ -1475,7 +1707,6 @@ class Effects {
 				break;
 			case 2:
 				state.turn === "player" ? this.effect("poison", state.mob.poison + state.turnPoison) : this.effect("poison", state.player.poison + state.turnPoison);
-				this.banish();
 				this.successful();
 				break;
 		}
