@@ -144,7 +144,7 @@ document.querySelectorAll("[data-goto]").forEach(el => {
 /*===========================================================================*/
 document.querySelector("#attackBtn").addEventListener("click", function () {
 	if (document.querySelector("#playerDiscs .slot.charged")) {
-		document.querySelector("#playerBoard").classList.add("midturn");
+		document.querySelector("#encounter").classList.add("midturn");
 		attack();
 	}
 });
@@ -165,7 +165,7 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 // End turn
 /*===========================================================================*/
 document.querySelector(".end-turn").addEventListener("click", async function () {
-	document.querySelector("#playerBoard").classList.remove("midturn");
+	document.querySelector("#encounter").classList.remove("midturn");
 	await applyDiscsEffects();
 	if (state.player.hp <= 0) {
 		death();
