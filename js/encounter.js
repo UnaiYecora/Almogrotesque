@@ -324,9 +324,12 @@ function cardPositions() {
 	const antiMargin = margin * -0.5;
 
 	cards.forEach((card, i) => {
+		let stuck = false;
+		if (document.querySelector("#encounter").classList.contains("midturn")) {
+			stuck = true;
+		}
 		const dragInstance = new Draggable(card, {
 			onDragEnd: (data) => {
-				cardPositions();
 				card.classList.remove("cardOnDrag");
 				card.classList.remove("cardOnDragStart");
 				if (currentSlot) {
@@ -336,10 +339,12 @@ function cardPositions() {
 					card.remove();
 				};
 				dragInstance.destroy();
+				cardPositions();
 			},
 			onDragStart: async (data) => {
 				let scale = 3;
 				card.classList.remove("cardOnDrag");
+				card.classList.remove("neodrag-dragging");
 				card.classList.add("cardOnDragStart");
 
 				let parent = document.querySelector("main");
@@ -398,6 +403,7 @@ function cardPositions() {
 			},
 			bounds: 'main',
 			legacyTranslate: true,
+			stuck: stuck,
 			deadzone: {
 				width: 20,
 				height: 10,
@@ -449,11 +455,9 @@ function makeSlotsDraggable() {
 	});
 
 	slots.forEach((slot) => {
-		let axis = "both";
-		let holdTimeOut = 100;
+		let stuck = false;
 		if (document.querySelector("#encounter").classList.contains("midturn")) {
-			axis = "none"
-			holdTimeOut = 0;
+			stuck = true;
 		}
 		const slotDragInstance = new Draggable(slot, {
 			onDragEnd: (data) => {
@@ -482,9 +486,7 @@ function makeSlotsDraggable() {
 			onDragStart: async (data) => {
 				let scale = 3;
 				slot.classList.remove("cardOnDrag");
-				setTimeout(() => {
-					slot.classList.add("cardOnDragStart");
-				}, holdTimeOut);
+				slot.classList.add("cardOnDragStart");
 
 				let parent = document.querySelector("main");
 
@@ -504,6 +506,7 @@ function makeSlotsDraggable() {
 				if (overflowRight > 0) {
 					slot.style.transform = `translateX(-${overflowRight / 3}px)`;
 				}
+
 			},
 			onDrag: (data) => {
 
@@ -550,7 +553,7 @@ function makeSlotsDraggable() {
 			},
 			bounds: 'main',
 			legacyTranslate: true,
-			axis: axis,
+			stuck: stuck,
 			deadzone: {
 				width: 3,
 				height: 5,
@@ -809,8 +812,9 @@ export async function attack() {
 	return new Promise(async (resolve, reject) => {
 		try {
 
-			// Reset cards in slots
+			// Reset card positions
 			makeSlotsDraggable();
+			cardPositions();
 
 
 			// Hide main action

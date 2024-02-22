@@ -987,7 +987,7 @@ img.card-background {
 
 .card.cardOnDragStart{
 	scale: 3;
-	translate: 0 -10rem;
+	translate: 0 -10rem !important;
 	z-index: 2;
 	padding: 0;
 }
