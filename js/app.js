@@ -165,7 +165,6 @@ document.querySelector(".change-fate").addEventListener("click", function () {
 // End turn
 /*===========================================================================*/
 document.querySelector(".end-turn").addEventListener("click", async function () {
-	document.querySelector("#encounter").classList.remove("midturn");
 	await applyDiscsEffects();
 	if (state.player.hp <= 0) {
 		death();

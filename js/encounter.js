@@ -168,6 +168,10 @@ export async function toggleTurn(start) {
 		state.turn = "player";
 	}
 
+	if (state.turn === "player") {
+		document.querySelector("#encounter").classList.remove("midturn");
+	}
+
 	let turnCharacter;
 	if (state.turn === "player") {
 		turnCharacter = state.player;
