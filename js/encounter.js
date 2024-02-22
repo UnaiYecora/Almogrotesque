@@ -442,10 +442,10 @@ async function onDrop(event) {
 		event.target.classList.add("target-slot");
 		await placeCardInSlot(cardId);
 		event.target.classList.remove("hover");
-		if (event.slotToEmpty) {
-			event.slotToEmpty.innerHTML = "";
-			event.slotToEmpty.classList.remove("charged");
-		}
+	}
+	if (event.slotToEmpty) {
+		event.slotToEmpty.innerHTML = "";
+		event.slotToEmpty.classList.remove("charged");
 	}
 	makeSlotsDraggable();
 	cardPositions();
@@ -481,11 +481,12 @@ function makeSlotsDraggable() {
 							onDrop({ target: currentSlot, detail: data, slotToEmpty: slot.parentElement });
 						}
 					} else {
-						onDrop({cardBackToHand: true, detail: data});
+						onDrop({cardBackToHand: true, detail: data, slotToEmpty: slot.parentElement});
 					};
 					currentSlot = null;
 					slot.remove();
 				}
+				currentSlot = null;
 				slotDragInstance.destroy();
 				makeSlotsDraggable();
 			},
@@ -493,6 +494,8 @@ function makeSlotsDraggable() {
 				let scale = 3;
 				slot.classList.remove("cardOnDrag");
 				slot.classList.add("cardOnDragStart");
+
+				currentSlot = slot.parentElement;
 
 				let parent = document.querySelector("main");
 
