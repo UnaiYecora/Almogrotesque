@@ -434,12 +434,18 @@ async function onDrop(event) {
 	// event.target will be the slot element
 	// event.detail.currentNode will be the dragged element
 	let cardId = event.detail.currentNode.querySelector(".inventory-card").dataset.cardid;
-	event.target.classList.add("target-slot");
-	await placeCardInSlot(cardId);
-	event.target.classList.remove("hover");
-	if (event.slotToEmpty) {
-		event.slotToEmpty.innerHTML = "";
-		event.slotToEmpty.classList.remove("charged");
+	if (event.cardBackToHand) {
+		state.player.hand.push(cardId);
+		drawCards();
+		state.player.hand = [];
+	} else {
+		event.target.classList.add("target-slot");
+		await placeCardInSlot(cardId);
+		event.target.classList.remove("hover");
+		if (event.slotToEmpty) {
+			event.slotToEmpty.innerHTML = "";
+			event.slotToEmpty.classList.remove("charged");
+		}
 	}
 	makeSlotsDraggable();
 	cardPositions();
@@ -475,7 +481,7 @@ function makeSlotsDraggable() {
 							onDrop({ target: currentSlot, detail: data, slotToEmpty: slot.parentElement });
 						}
 					} else {
-						onDrop({ target: slot.parentElement, detail: data });
+						onDrop({cardBackToHand: true, detail: data});
 					};
 					currentSlot = null;
 					slot.remove();
