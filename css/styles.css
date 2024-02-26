@@ -1512,10 +1512,12 @@ section#death button{
 .card-scroller .modal-content .card-list > *{
 	width: 12rem;
 	flex: 0 0 auto;
+	transition: filter .2s, scale .2s;
 }
 
 .card-scroller .modal-content .card-list .card.selectedToBeRemoved {
-    filter: brightness(0.4) blur(2px);
+	filter: grayscale(1) brightness(0.5) contrast(1.2);
+	scale: 0.8;
 }
 
 /*===========================================================================
