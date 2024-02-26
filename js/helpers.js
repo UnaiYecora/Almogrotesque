@@ -235,6 +235,42 @@ export function iconify(string) {
 
 
 /*===========================================================================*/
+// Horizontal drag to scroll
+/*===========================================================================*/
+export function handleDragScroll(event) {
+	event.preventDefault();
+	const container = event.currentTarget;
+	const startX = event.clientX;
+	let scrollLeft = container.scrollLeft;
+
+	function scrollOnMouseMove(e) {
+		const moveX = e.clientX - startX;
+		container.scrollLeft = scrollLeft - moveX;
+		// Add a class indicating that scrolling has started
+		container.classList.add('scrolling');
+	}
+
+	function scrollOnMouseUp() {
+		window.removeEventListener('mousemove', scrollOnMouseMove);
+		window.removeEventListener('mouseup', scrollOnMouseUp);
+		container.style.cursor = 'grab';
+		// Remove the class when scrolling ends
+		setTimeout(() => {
+			container.classList.remove('scrolling');
+		}, 50);
+	}
+
+	container.style.cursor = 'grabbing';
+	window.addEventListener('mousemove', scrollOnMouseMove);
+	window.addEventListener('mouseup', scrollOnMouseUp);
+
+	container.addEventListener('mouseenter', () => {
+		container.style.cursor = 'grab';
+	});
+}
+
+
+/*===========================================================================*/
 // Heart pulse
 /*===========================================================================*/
 export function heartPulse() {

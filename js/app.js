@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify } from "./helpers.js?v=0.17";
+import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify, handleDragScroll } from "./helpers.js?v=0.17";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.17";
 import { generateInventory } from "./inventory.js?v=0.17";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, placeCardInSlot } from "./encounter.js?v=0.17";
@@ -44,6 +44,14 @@ widthBasedFontSize();
 if (!(localStorage.getItem("almogrotesque") === null)) {
 	document.querySelector("#start #continue").disabled = false;
 }
+
+
+/////////////////
+// Horizontal drag to scroll
+/////////////////
+document.querySelector(".card-scroller .card-list").addEventListener('mousedown', handleDragScroll);
+
+
 
 /* ··········································································*/
 /* ··········································································*/
@@ -319,7 +327,7 @@ document.querySelector(".skill-modal-close").addEventListener("click", function 
 // Zoom card on store
 /*===========================================================================*/
 document.querySelectorAll(".store-item-card").forEach(el => {
-	el.addEventListener("click", function() {
+	el.addEventListener("click", function () {
 		el.classList.toggle("big-card");
 	})
 });

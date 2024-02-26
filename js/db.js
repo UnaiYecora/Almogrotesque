@@ -20,7 +20,6 @@ export var state = {
 		deck: [],
 		hand: [],
 		cemetery: [],
-		//drawLimit: 10,
 		mana: 1,
 		startingMana: 0,
 		shield: 0,

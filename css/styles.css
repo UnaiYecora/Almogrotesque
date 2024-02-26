@@ -1430,14 +1430,92 @@ section#death button{
 .hand .card{
 	width: 6.667rem;
 	cursor: pointer;
+	cursor: grab;
 }
 
 .hand .card.neodrag-dragging{
 	transition: scale 0s;
+	cursor: grabbing;
 }
 
 .hand .card:not(.neodrag-dragging, .card.cardOnDragStart){
 	transition: scale 0s, transform .1s;
+}
+
+/*===========================================================================
+// CARD HORIZONTAL SCROLLER
+=============================================================================*/
+.card-scroller{
+	background-color: #000000f2;
+	backdrop-filter: none;
+}
+.card-scroller .modal-content{
+	background: none;
+	display: grid;
+    text-align: center;
+    gap: 5rem;
+	width: 100%;
+    padding: 0;
+	filter: none;
+}
+
+.card-scroller .modal-content .text > p{
+    font-size: 1.4rem;
+    max-width: 70%;
+    margin-inline: auto;
+}
+
+.card-scroller .modal-content .btn{
+	font-size: 1.4rem;
+    margin-inline: auto;
+    padding: 1rem 4rem;
+}
+
+.card-list-wrapper {
+    display: grid;
+	position: relative;
+}
+
+.card-scroller .modal-content .card-list{
+	display: flex;
+	gap: 1rem;
+	overflow-x: auto;
+	padding-inline: 2rem;
+	position: relative;
+	-ms-overflow-style: none;
+    scrollbar-width: none;
+	cursor: grab;
+}
+.card-scroller .modal-content .card-list::-webkit-scrollbar{
+	display: none;
+}
+
+.card-scroller:after,
+.card-scroller:before {
+	content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2rem;
+	pointer-events: none;
+}
+.card-scroller:after{
+	right: 0;
+	background: linear-gradient(90deg, transparent, black);
+}
+.card-scroller:before{
+	left: 0;
+	z-index: 1;
+	background: linear-gradient(270deg, transparent, black);
+}
+
+.card-scroller .modal-content .card-list > *{
+	width: 12rem;
+	flex: 0 0 auto;
+}
+
+.card-scroller .modal-content .card-list .card.selectedToBeRemoved {
+    filter: brightness(0.4) blur(2px);
 }
 
 /*===========================================================================

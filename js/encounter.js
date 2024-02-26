@@ -25,7 +25,6 @@ import { Draggable } from "./lib/drag.js";
 export async function loadEncounter(mobId) {
 	try {
 		// Reset player state
-		state.player.cardsManaPaid = [];
 		state.player.mana = state.player.startingMana;
 		if (state.player.skills.includes("skillshield1")) {
 			state.player.shield = 8;
@@ -40,6 +39,8 @@ export async function loadEncounter(mobId) {
 		state.fatePrice = state.startingFatePrice;
 		state.player.poison = 0;
 
+		state.player.hand = [];
+		state.player.deck = [];
 		state.player.deck = [...state.player.cards];
 		shuffleArray(state.player.deck);
 
@@ -85,6 +86,9 @@ async function generateEncounterCard(mobId) {
 				playerSlots.append(newSlot);
 			}
 			playerSlots.style.display = "flex";
+
+			// Empty hand
+			document.querySelector("#playerBoard .hand").innerHTML = "";
 
 			// Mob slots
 			const mobSlots = document.querySelector("#mobDiscs");
@@ -159,6 +163,11 @@ export async function toggleTurn(start) {
 			state.player.mana = 1;
 			updateMana();
 		}
+	}
+
+	// Card hand limit
+	if (!start && state.turn === "player") {
+		await enforceHandLimit();
 	}
 
 	// Toggle turn
@@ -309,6 +318,96 @@ async function drawCards() {
 }
 
 /*===========================================================================*/
+// Turn System
+/*===========================================================================*/
+function enforceHandLimit() {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const modal = document.querySelector(".card-scroller");
+			const container = document.querySelector(".card-scroller .modal-content .card-list");
+			const hand = document.querySelector("#playerBoard .hand");
+			const confirmBtn = document.querySelector(".card-scroller button");
+			const amountToRemoveElement = document.querySelector(".amount-to-remove");
+			const maxHandLimitElement = document.querySelector(".max-hand-limit");
+			const amountOfCards = hand.childElementCount;
+			const cardLimit = state.player.slots;
+			const amountToRemove = amountOfCards - cardLimit;
+
+			// If hand over limit
+			if (amountOfCards > cardLimit) {
+
+				let selectedCards = [];
+
+				// Reset container
+				container.innerHTML = "";
+				const confirm = confirmBtn.cloneNode(true);
+				confirmBtn.parentNode.replaceChild(confirm, confirmBtn);
+				confirm.disabled = true;
+
+				// Clone hand into modal
+				for (const child of hand.children) {
+					const clonedChild = child.cloneNode(true);
+					clonedChild.removeAttribute('style');
+					clonedChild.classList.remove("neodrag");
+					container.appendChild(clonedChild);
+
+					// Add event listener to toggle selection
+					clonedChild.addEventListener("click", function (event) {
+						if (!event.currentTarget.closest('.card-scroller .card-list').classList.contains('scrolling')) {
+							const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
+							if (!clonedChild.classList.contains("selectedToBeRemoved") && selectedCount < amountToRemove) {
+								clonedChild.classList.add("selectedToBeRemoved");
+								selectedCards.push(clonedChild.firstElementChild.dataset.cardid);
+								updateButtonState();
+							} else if (clonedChild.classList.contains("selectedToBeRemoved")) {
+								clonedChild.classList.remove("selectedToBeRemoved");
+								selectedCards = selectedCards.filter(item => item !== clonedChild.firstElementChild.dataset.cardid);
+								updateButtonState();
+							}
+						}
+					});
+				}
+
+				function updateButtonState() {
+					const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
+					confirm.disabled = selectedCount !== amountToRemove;
+				}
+
+				// Update text
+				amountToRemoveElement.innerHTML = amountToRemove;
+				maxHandLimitElement.innerHTML = cardLimit;
+
+				// Display modal
+				modal.style.display = "flex";
+				container.scrollLeft = 0;
+
+				// Click to confirm
+				confirm.addEventListener("click", function () {
+					const cardsInHand = document.querySelectorAll("#playerBoard .hand .card");
+					for (const selectedCard of selectedCards){
+						cardsInHand.forEach(card => {
+							if (card.firstElementChild.dataset.cardid === selectedCard) {
+								card.remove();
+								state.player.cemetery.push(selectedCard);
+							}
+						});
+					}
+					cardPositions();
+					modal.style.display = "none";
+					resolve();
+				});
+			} else {
+				resolve();
+			}
+
+		} catch (error) {
+			console.log("An error occurred enforcing the hand limit: " + error.message);
+			reject(error);
+		}
+	});
+}
+
+/*===========================================================================*/
 // Card positions
 /*===========================================================================*/
 var dragInstances = [];
@@ -409,8 +508,8 @@ function cardPositions() {
 			legacyTranslate: true,
 			stuck: stuck,
 			deadzone: {
-				width: 20,
-				height: 10,
+				width: 16,
+				height: 7,
 			},
 		});
 		dragInstances.push({
@@ -485,7 +584,7 @@ function makeSlotsDraggable() {
 							onDrop({ target: currentSlot, detail: data, slotToEmpty: slot.parentElement });
 						}
 					} else {
-						onDrop({cardBackToHand: true, detail: data, slotToEmpty: slot.parentElement});
+						onDrop({ cardBackToHand: true, detail: data, slotToEmpty: slot.parentElement });
 					};
 					currentSlot = null;
 					slot.remove();
