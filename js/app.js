@@ -10,7 +10,6 @@ import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.18";
 import { generateInventory } from "./inventory.js?v=0.18";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, placeCardInSlot } from "./encounter.js?v=0.18";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.18";
-import { generatePuzzle } from "./chests.js";
 import { buySkill, updateSkilltree } from "./skills.js?v=0.18";
 import { db, state, save, load } from "./db.js?v=0.18";
 
@@ -125,14 +124,7 @@ document.querySelector("#crossroad").addEventListener("click", async function (e
 				const storeid = path.dataset.storeid;
 				await generateStore(storeid);
 				await checkIfAbleToBuy();
-				document.querySelector("#store").style.display = "flex";
-			}
-
-			// Chest
-			if (type === "chest") {
-				await generatePuzzle();
-				// TO-DO: Like stores, save chest so it doesn't change when exiting and entering again
-				goTo("chest");
+				goTo("store");
 			}
 		}
 	}
@@ -211,7 +203,7 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 // Close store
 /*===========================================================================*/
 document.querySelector(".close-store").addEventListener("click", async function () {
-	document.querySelector("#store").style.display = "none";
+	goTo("crossroad");
 });
 
 /*===========================================================================*/
@@ -239,7 +231,7 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 
 		// If it's the last item, burn path
 		if (state[store][0] == "" && state[store][1] == "" && state[store][2] == "") {
-			document.querySelector("#store").style.display = "none";
+			goTo("crossroad");
 			await burnPath(document.querySelector('.path[data-storeid="' + store + '"'));
 			fillPaths();
 		}
@@ -263,13 +255,6 @@ document.querySelector(".deck-icon").addEventListener("click", async function (e
 	// Display inventory
 	document.querySelector(".inventory").style.display = "flex";
 });
-
-/*===========================================================================*/
-// Close chest
-/*===========================================================================*/
-document.querySelector(".close-chest").addEventListener("click", function () {
-	goTo("crossroad");
-})
 
 /*===========================================================================*/
 // See skill

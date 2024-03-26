@@ -40,7 +40,7 @@ export var state = {
 		path2: false,
 		path3: false,
 	},
-	endOfTheRoad: 0, // TO-DO: Reset when taking doors
+	endOfTheRoad: 0,
 }
 
 
@@ -97,7 +97,6 @@ export const db = {
 			name: "Crossroad",
 			desc: "A rustic crossroad, where well-trodden paths converge under the open sky, inviting travelers to choose their fate — each direction hiding both promise and peril.",
 			stores: 7,
-			chests: 0,
 			doors: ["outskirts"], // Main door in first place
 			spawns: ["frog", "rat", "bats", "raven", "goblin", "chest", "master_frog", "goblin2", "rat_bandit", "lagoon_dweller", "necrow", "seridra", "eggman", "forest_warden", "gigant_crab", "desert_mouth", "ecosystem"],
 		},
@@ -105,7 +104,6 @@ export const db = {
 			name: "Outskirts path",
 			desc: "A serpentine path through untamed wilderness, where ancient trees and wildflowers sway in the breeze, concealing secrets and stories of those who came before.",
 			stores: 0,
-			chests: 0,
 			doors: ["village"], // Main door in first place
 			spawns: [],
 		},
@@ -113,7 +111,6 @@ export const db = {
 			name: "Village",
 			desc: "As the path unwinds, an eerie village emerges — its dilapidated cottages and empty streets concealing the ominous presence that looms over this forsaken place.",
 			stores: 0,
-			chests: 0,
 			doors: ["cemetery", "old_forest"], // Main door in first place
 			spawns: [],
 		},
@@ -121,7 +118,6 @@ export const db = {
 			name: "Old forest",
 			desc: "Its gnarled trees and twisted roots create a labyrinthine realm, where the dappled sunlight hides the lurking threats that prowl beneath the canopy.",
 			stores: 0,
-			chests: 0,
 			doors: ["cemetery"], // Main door in first place
 			spawns: [],
 		},
@@ -129,7 +125,6 @@ export const db = {
 			name: "Cemetery",
 			desc: "Amidst the graves of the forgotten, shadows writhe beneath the cold, unfeeling stones, and the silence is broken only by the mournful wails of unseen creatures.",
 			stores: 0,
-			chests: 0,
 			doors: ["church"], // Main door in first place
 			spawns: [],
 		},
@@ -137,7 +132,6 @@ export const db = {
 			name: "Church",
 			desc: "Beyond the village's edge,  a decrepit church stands, its ancient stones carrying the weight of a grim past, where shadows whisper the secrets of unspeakable horrors hidden within.",
 			stores: 0,
-			chests: 0,
 			doors: ["crossroad"], // Main door in first place
 			spawns: [],
 		},
