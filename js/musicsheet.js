@@ -1,6 +1,6 @@
 var soundEffects = {
 	page : new Howl({
-		src: ['../assets/audio/effects/page.mp3'],
+		src: ['./assets/audio/effects/page.mp3'],
 		sprite: {
 			1: [100, 1100],
 			2: [1100, 1400],
@@ -10,19 +10,19 @@ var soundEffects = {
 		preload: true,
 	}),
 	card : new Howl({
-		src: ['../assets/audio/effects/card.mp3'],
+		src: ['./assets/audio/effects/card.mp3'],
 	}),
 	slot : new Howl({
-		src: ['../assets/audio/effects/slot.mp3'],
+		src: ['./assets/audio/effects/slot.mp3'],
 	}),
 	burnPath : new Howl({
-		src: ['../assets/audio/effects/burnPath.mp3'],
+		src: ['./assets/audio/effects/burnPath.mp3'],
 	}),
 }
 
 var soundtrack = {
 	crossroad : new Howl({
-		src: ['../assets/audio/music/shadowsanddust.mp3'],
+		src: ['./assets/audio/music/shadowsanddust.mp3'],
 		loop: true,
 		html5: true,
 		preload: "metadata",
