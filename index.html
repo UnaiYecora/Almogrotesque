@@ -75,11 +75,11 @@
 					</div>
 					<div class="coins-left-wrapper">
 						<span class="coins-left">0</span>
-						<span class="coin"></span>
+						<span class="coin coin-light"></span>
 					</div>
 					<div class="fate-left-wrapper">
 						<span class="fate-left">0</span>
-						<span class="fate"></span>
+						<span class="fate fate-light"></span>
 					</div>
 				</div>
 			</div>
@@ -133,9 +133,9 @@
 						<button class="btn" id="attackBtn">Attack</button>
 					</div>
 					<div class="secondary-action">
-						<button class="btn change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate"></span>)</div></button>
+						<button class="btn change-fate" disabled>Change fate <div>(-<span class="fate-price">1</span> <span class="fate fate-light"></span>)</div></button>
 						or
-						<button class="btn end-turn">Accept fate</button>
+						<button class="btn end-turn">Accept<br>fate</button>
 					</div>
 					<div class="no-action">
 						<p>The enemy is attacking you.</p>
@@ -204,19 +204,25 @@
 
 		<section id="store">
 			<button class="btn close-store btn-close"></button>
+			<p class="store-title">Card seller</p>
+			<div class="shopkeeper"></div>
 			<div class="store-wrapper">
 				<div class="store-item" id="store1">
 					<div class="store-item-card"></div>
-					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin coin-light"></span></button>
 				</div>
 				<div class="store-item" id="store2">
 					<div class="store-item-card"></div>
-					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin coin-light"></span></button>
 				</div>
 				<div class="store-item" id="store3">
 					<div class="store-item-card"></div>
-					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin"></span></button>
+					<button class="btn buy-item"><span class="store-item-price"></span> <span class="coin coin-light"></span></button>
 				</div>
+			</div>
+			<div class="coins-left-wrapper">
+				<span class="coins-left">0</span>
+				<span class="coin"></span>
 			</div>
 		</section>
 
@@ -268,14 +274,6 @@
 			<button class="btn" onclick="location.reload();">Try again</button>
 		</section>
 
-		<section id="chest">
-			<div class="chest-wrapper">
-				<div class="chest-image"></div>
-				<div class="chest-puzzle"></div>
-			</div>
-			<button class="close-chest">X</button>
-		</section>
-
 		<section class="card-scroller modal">
 			<div class="modal-content">
 				<div class="text">
@@ -288,6 +286,16 @@
 				<button class="btn">Confirm</button>
 			</div>
 		</section>
+
+		<div class="book">
+			<div class="cover"></div>
+			<div class="page"></div>
+			<div class="page"></div>
+			<div class="page"></div>
+			<div class="page"></div>
+			<div class="page"></div>
+			<div class="page"></div>
+		</div>
 	</main>
 	<script src="js/lib/anime.min.js"></script>
 	<script src="js/lib/particles.js"></script>

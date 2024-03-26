@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse } from "./helpers.js?v=0.18";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability } from "./helpers.js?v=0.18";
 import { db, state, save } from "./db.js?v=0.18";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.18";
 import { generateCard } from "./inventory.js?v=0.18";
@@ -269,6 +269,7 @@ export async function toggleTurn(start) {
 		document.querySelector(".fate-price").textContent = state.fatePrice;
 		playerDiscs.style.display = "flex";
 		mobDiscs.style.display = "none";
+		document.querySelector(".main-action button").disabled = true;
 	}
 
 	else if (state.turn === "mob") {
@@ -420,8 +421,8 @@ function cardPositions() {
 	const cards = document.querySelectorAll('.hand .card');
 	const totalCards = cards.length;
 	const maxNumberOfCards = 20;
-	const minMargin = 2;
-	const maxMargin = -10;
+	const minMargin = -1;
+	const maxMargin = -5.5;
 	const fraction = Math.min(totalCards, maxNumberOfCards) / maxNumberOfCards;
 	const margin = minMargin + (maxMargin - minMargin) * fraction;
 	const antiMargin = margin * -0.5;
@@ -519,12 +520,15 @@ function cardPositions() {
 
 		const tiltFactor = (i - (totalCards - 1) / 2) * 5;
 		const tiltValue = `rotate(${tiltFactor}deg)`;
-		const verticalOffsetFactor = Math.abs(i - (totalCards - 1) / 2) * (0.05 * cards.length);
+		const verticalOffsetFactor = Math.abs(i - (totalCards - 1) / 2) * (0.03 * cards.length);
 		const verticalOffsetValue = `translateY(${verticalOffsetFactor}rem)`;
 
 		card.style.marginLeft = margin + "rem";
 		card.style.transform = "translateX(" + antiMargin + "rem) " + tiltValue + " " + verticalOffsetValue;
 	});
+
+	//Check cards for mana
+	cardManaCheck();
 }
 
 // Function to check if a point is inside a rectangle
@@ -552,6 +556,7 @@ async function onDrop(event) {
 	}
 	makeSlotsDraggable();
 	cardPositions();
+	checkAttackAvailability();
 }
 
 
@@ -1061,6 +1066,7 @@ async function spinDiscs() {
 
 				// Check for mana
 				await checkDiscsForMana(discId);
+				cardManaCheck();
 			}
 
 			resolve();

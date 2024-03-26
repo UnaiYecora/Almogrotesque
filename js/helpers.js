@@ -31,6 +31,22 @@ export function wait(ms) {
 export async function goTo(destination) {
 	return new Promise(async (resolve, reject) => {
 		try {
+
+			const book = document.querySelector(".book");
+			const cover = book.querySelector(".cover");
+			const pages = book.querySelectorAll(".page");
+
+			book.style.display = "flex";
+
+			await wait(100);
+
+			book.classList.add("booking");
+
+			await wait (350);
+			
+			book.classList.remove("booking");
+			book.classList.add("booked");
+
 			// Hide all screens
 			document.querySelectorAll("main section").forEach(el => {
 				el.style.display = "none";
@@ -38,6 +54,18 @@ export async function goTo(destination) {
 
 			// Display destination screen
 			document.querySelector("#" + destination).style.display = "flex";
+
+			pages.forEach(page => {
+				page.classList.add("turn-page");
+			});
+
+			await wait (900);
+
+			book.style.display = "none";
+			book.classList.remove("booked");
+			pages.forEach(page => {
+				page.classList.remove("turn-page");
+			});
 
 			resolve();
 		} catch (error) {
@@ -228,7 +256,7 @@ export async function secondaryAction() {
 /*===========================================================================*/
 export function iconify(string) {
 	const regex = /{([^}]+)}/g;
-	const replacedString = string.replace(regex, '<span class="icon $1"></span>');
+	const replacedString = string.replace(regex, '<span class="icon $1 $1-light"></span>');
 	return replacedString;
 
 }
@@ -321,5 +349,37 @@ export function heartPulse() {
 		case heartRate == 0:
 			selfHeartElement.classList.remove("pulse");
 			break;
+	}
+}
+
+/*===========================================================================*/
+// Card mana check
+/*===========================================================================*/
+export function cardManaCheck() {
+	const currentMana = state.player.mana + state.turnMana - state.turnManaToConsume;
+	const cardsInHand = document.querySelectorAll(".hand .inventory-card");
+	const cardsInPlay = document.querySelectorAll("#playerDiscs .charged .inventory-card");
+	const allCards = [...cardsInHand, ...cardsInPlay];
+
+	allCards.forEach(card => {
+		const cardID = card.dataset.cardid;
+		const manaCost = db.cards[cardID].mana_cost;
+		if (manaCost > currentMana) {
+			card.querySelector(".card-mana-cost").classList.add("too-expensive");
+		} else {
+			card.querySelector(".card-mana-cost").classList.remove("too-expensive");
+		}
+	});
+}
+
+/*===========================================================================*/
+// Check if attack is available
+/*===========================================================================*/
+export function checkAttackAvailability() {
+	const btn = document.querySelector(".main-action button");
+	if (document.querySelector("#playerDiscs .slot.charged")) {
+		btn.disabled = false;
+	} else {
+		btn.disabled = true;
 	}
 }

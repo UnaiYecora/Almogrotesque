@@ -38,8 +38,8 @@
 // VARIABLES 
 =============================================================================*/
 :root {
-	--black: #000;
-	--white: #D9D9D9;
+	--dark: #331b04;
+	--light: #dbc9a0;
 	font-size: var(--width-based-font);
 }
 
@@ -47,10 +47,10 @@
 // ELEMENTS 
 =============================================================================*/
 .btn{
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 588' preserveAspectRatio='none'%3E%3Cpath fill='%23C8C7B2' d='m15 24 101-8 38 8 116-8 75-10 78 5 71 16 126-16 158-5 17 21 20-27 118 16h90l109 4 116-4h88l89 8-7 68 7 69-7 67 7 70 7 37 5 114-23-5 13 15-2 18-21 12 19 18-2 30 4 34-93 3-84-3-96 3-71 6-97-2-66-5-123-2-105 8-27 9-11-17-9 17-84-14-66 9-139-9-81-3-59 12-125-5-74-7-7-69 12-85-12-66-7-100 5-13h11l12 6-4-19-17-17 7-116V24Z'/%3E%3Cpath fill='%23333' d='m27 37 43 5 130-5 2 4 2-4 74-5 80 10 43 1 42 12 21 5 33-5 17 2 8-6 140-14h76l57 6h90l110-6 69-6 75 8 104-8 103 6h61v65l5 61-5 69 4 68 3 90-14 123 7 45-86 4-86-4-83-5-90 5-66 6-113-10-85-1-81-10-85 2-108 8-69 12-83-7-91-5-84 15-100-6-70-4 4-35-1-116 4-44-7-32-2-33 24-76-24-48 5-93-3-44Z'/%3E%3Cpath fill='%23C8C7B2' d='M43 52h91l75-4 94-6 75 9 88 20 93-5 80-9h99l141 9 91-9 64-6h87l44-9 57-2 97 13 71-6-6 55 8 42-8 99-4 79 12 61-3 40-9 59-9 57-75-3-78 11-78-8-80 6-101-6-78-10-90-2-74-3-89 7-113-1-55 9-88-9-128 15-70 13-54-19-60-2-20-2 4-33 1-77 4-65-9-44-3-18 11-23 11-30 15-26-37-56 6-53V52Z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%231e0f00bb' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-	color: #000;
+	color: var(--light);
     font-weight: 600;
 }
 button:disabled {
@@ -59,7 +59,7 @@ button:disabled {
 }
 
 .btn-close{
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 729 661'%3E%3Cpath fill='%23C8C7B2' d='m366 530 10 15c-2 2-3 5-6 6-5 3-10 4-16 4-12-1-24-2-37-1l-33-3c-13 0-25-5-35-12l-31-25-27-21a99 99 0 0 1-35-44 154 154 0 0 1-16-37c-6-11-13-21-18-32-4-11-9-22-16-32l2-32 1-33c0-16 2-32 7-47l20-61c1-5 4-10 7-15 9-10 16-21 22-33 20-16 41-30 63-41l26-4a324 324 0 0 1 96-13h10a802 802 0 0 1 132 23l16-5a63 63 0 0 1 58 9l4 5c2 15-18 20-16 36 4 8 9 15 16 21 10 9 18 20 23 33l12 24c15 28 23 59 23 91v40a170 170 0 0 1-23 80c-12 18-26 34-43 48-7 5-14 11-20 18-14 12-29 24-46 33-16 8-33 14-51 16-3 0-4-1-10-8 2-2 3-6 6-7l31-14c21-10 41-23 58-39 12-16 25-32 39-47 12-15 19-33 23-51v-7l-3-3-9-2c-26-2-52-1-77 3h-24c-11-1-23 0-34 2-6 4-11 10-14 17-19 36-36 73-53 110-5 11-8 23-12 35Zm195-189 3 5c2 1 4 0 5-2l-3-2-6-1-10-8c-23-14-47-25-72-35-10 6-12 16-16 25a8 8 0 0 0 5 10c31 7 62 10 94 8Zm-61-169-12 4-74 47c1 3 0 7 2 9 9 8 19 15 30 20 12-7 14-9 18-17 7-13 15-27 24-39 6-7 10-15 12-24 2-1 3-2 1-2l-1 2ZM283 371c-13-3-27-4-41-3-18 0-36-1-53-5l-30-1a10 10 0 0 0-10 12c2 21 9 41 20 60 4 6 7 12 9 19 24 29 53 54 83 75a75 75 0 0 0 59 4v-6c-7-17-10-35-10-53-1-20-4-40-9-60-3-15-9-29-18-42Zm200-103a20 20 0 0 0 13 13c14 6 28 13 41 22a368 368 0 0 1 47 26h7l2-2c3-12 2-25-1-37-9-40-27-79-53-111-2-2-6-2-9-4-17 26-26 54-40 79l-7 14ZM288 121l4 9c16 18 34 35 53 51a19 19 0 0 0 22 2l3-1 75-51c2-2 2-6 4-10-21-7-44-11-67-11l-53 1c-14 0-28 3-41 10Zm-79 44c-13 8-24 20-32 33-11 18-20 38-26 58-3 12-4 25-2 37 0 2 5 6 7 5l13-4 67-38a15 15 0 0 0 6-15l-1-7-24-59-8-10Zm165 82c-36 15-39 16-52 29 2 18 9 35 19 50 21 3 42 3 63 0 14-11 24-27 31-44a14 14 0 0 0-9-10l-32-18-20-7Zm-109 79c5-13 5-15-7-24-15 5-29 11-42 18l-1 3c12 5 12 5 50 3Zm117 47c-6-8-14-7-21-7-4 0-8 5-8 9 0 10 3 19 8 28l6 2 4-5 11-27Zm-80-156 8-2a8 8 0 0 0 2-14l-14-9a4 4 0 0 0-6 1l-1 3a28 28 0 0 0 11 21ZM63 341l-3 30c-2 8-5 15-10 22a25 25 0 0 1-40 0c-7-8-10-18-10-28l3-21a40 40 0 0 1 27-21 21 21 0 0 1 19 4l14 14ZM182 52l1-8c4-10 6-19 8-29a21 21 0 0 1 20-15 39 39 0 0 1 33 14c4 4 7 8 9 13a11 11 0 0 1 0 10c-3 4-8 8-13 11-14 4-28 11-41 20-7 4-17-3-17-16Zm133 549 16-13a12 12 0 0 1 13 0c5 3 9 7 10 13 4 9 8 18 14 26-10 11-24 10-38 15l-13 13c-8 8-14 8-21-2-2-3-3-5-3-8l7-21-5-15 2-3 18-5ZM568 47c1-10 11-14 13-23 2-10 10-11 18-8a23 23 0 0 1 15 17c1 8 5 15 10 21l2 2c2 6 3 12 1 17a15 15 0 0 1-10 8h-6l-30-15c-6-3-9-9-13-19Zm132 301 12-9c9-6 15-4 16 6l1 11c-1 10-8 13-12 18l-11 11h-7c-15-8-26-21-33-36-1-1 1-4 3-5h10l21 4Z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 729 661'%3E%3Cpath fill='%23331b04' d='m366 530 10 15c-2 2-3 5-6 6-5 3-10 4-16 4-12-1-24-2-37-1l-33-3c-13 0-25-5-35-12l-31-25-27-21a99 99 0 0 1-35-44 154 154 0 0 1-16-37c-6-11-13-21-18-32-4-11-9-22-16-32l2-32 1-33c0-16 2-32 7-47l20-61c1-5 4-10 7-15 9-10 16-21 22-33 20-16 41-30 63-41l26-4a324 324 0 0 1 96-13h10a802 802 0 0 1 132 23l16-5a63 63 0 0 1 58 9l4 5c2 15-18 20-16 36 4 8 9 15 16 21 10 9 18 20 23 33l12 24c15 28 23 59 23 91v40a170 170 0 0 1-23 80c-12 18-26 34-43 48-7 5-14 11-20 18-14 12-29 24-46 33-16 8-33 14-51 16-3 0-4-1-10-8 2-2 3-6 6-7l31-14c21-10 41-23 58-39 12-16 25-32 39-47 12-15 19-33 23-51v-7l-3-3-9-2c-26-2-52-1-77 3h-24c-11-1-23 0-34 2-6 4-11 10-14 17-19 36-36 73-53 110-5 11-8 23-12 35Zm195-189 3 5c2 1 4 0 5-2l-3-2-6-1-10-8c-23-14-47-25-72-35-10 6-12 16-16 25a8 8 0 0 0 5 10c31 7 62 10 94 8Zm-61-169-12 4-74 47c1 3 0 7 2 9 9 8 19 15 30 20 12-7 14-9 18-17 7-13 15-27 24-39 6-7 10-15 12-24 2-1 3-2 1-2l-1 2ZM283 371c-13-3-27-4-41-3-18 0-36-1-53-5l-30-1a10 10 0 0 0-10 12c2 21 9 41 20 60 4 6 7 12 9 19 24 29 53 54 83 75a75 75 0 0 0 59 4v-6c-7-17-10-35-10-53-1-20-4-40-9-60-3-15-9-29-18-42Zm200-103a20 20 0 0 0 13 13c14 6 28 13 41 22a368 368 0 0 1 47 26h7l2-2c3-12 2-25-1-37-9-40-27-79-53-111-2-2-6-2-9-4-17 26-26 54-40 79l-7 14ZM288 121l4 9c16 18 34 35 53 51a19 19 0 0 0 22 2l3-1 75-51c2-2 2-6 4-10-21-7-44-11-67-11l-53 1c-14 0-28 3-41 10Zm-79 44c-13 8-24 20-32 33-11 18-20 38-26 58-3 12-4 25-2 37 0 2 5 6 7 5l13-4 67-38a15 15 0 0 0 6-15l-1-7-24-59-8-10Zm165 82c-36 15-39 16-52 29 2 18 9 35 19 50 21 3 42 3 63 0 14-11 24-27 31-44a14 14 0 0 0-9-10l-32-18-20-7Zm-109 79c5-13 5-15-7-24-15 5-29 11-42 18l-1 3c12 5 12 5 50 3Zm117 47c-6-8-14-7-21-7-4 0-8 5-8 9 0 10 3 19 8 28l6 2 4-5 11-27Zm-80-156 8-2a8 8 0 0 0 2-14l-14-9a4 4 0 0 0-6 1l-1 3a28 28 0 0 0 11 21ZM63 341l-3 30c-2 8-5 15-10 22a25 25 0 0 1-40 0c-7-8-10-18-10-28l3-21a40 40 0 0 1 27-21 21 21 0 0 1 19 4l14 14ZM182 52l1-8c4-10 6-19 8-29a21 21 0 0 1 20-15 39 39 0 0 1 33 14c4 4 7 8 9 13a11 11 0 0 1 0 10c-3 4-8 8-13 11-14 4-28 11-41 20-7 4-17-3-17-16Zm133 549 16-13a12 12 0 0 1 13 0c5 3 9 7 10 13 4 9 8 18 14 26-10 11-24 10-38 15l-13 13c-8 8-14 8-21-2-2-3-3-5-3-8l7-21-5-15 2-3 18-5ZM568 47c1-10 11-14 13-23 2-10 10-11 18-8a23 23 0 0 1 15 17c1 8 5 15 10 21l2 2c2 6 3 12 1 17a15 15 0 0 1-10 8h-6l-30-15c-6-3-9-9-13-19Zm132 301 12-9c9-6 15-4 16 6l1 11c-1 10-8 13-12 18l-11 11h-7c-15-8-26-21-33-36-1-1 1-4 3-5h10l21 4Z'/%3E%3C/svg%3E");
 	background-size: contain;
 	background-repeat: no-repeat;
 }
@@ -89,8 +89,8 @@ button:disabled {
 // LAYOUT 
 =============================================================================*/
 body {
-	background-color: var(--black);
-	color: var(--white);
+	background-color: black;
+	color: var(--light);
 	display: grid;
 	place-content: center;
 	font-family: 'Syne Mono', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
@@ -106,7 +106,7 @@ main {
 	width: calc(var(--h) * var(--ratio));
 
 	/* Styles */
-	background: var(--black);
+	background: var(--dark);
 	display: flex;
 	align-content: center;
 	align-items: center;
@@ -115,7 +115,7 @@ main {
 	overflow: hidden;
 }
 
-main:after {
+section#crossroad:after {
 	content: "";
 	position: absolute;
 	inset: 0;
@@ -125,6 +125,10 @@ main:after {
 	mix-blend-mode: multiply;
 	background-size: 50rem 95rem;
 	background-position: -5rem -5rem;
+}
+
+#discobar .slot:before {
+	border-radius: 100%;
 }
 
 main section:not(#start) {
@@ -140,11 +144,18 @@ section#start {
 	height: 100%;
 	justify-content: space-evenly;
 	padding: 1rem;
+	background: url(/assets/img/textures/encounter.jpg);
+	color: var(--dark);
+	width: 100%;
 }
 
 section#start h1 {
-	font-size: 5rem;
-	text-align: center;
+    font-size: 4.3rem;
+    text-align: center;
+    width: 100%;
+    font-family: 'Arslans Blood';
+	color: var(--dark);
+	
 }
 
 section#start div {
@@ -176,7 +187,7 @@ section#start p {
 	height: 100%;
 	justify-content: space-evenly;
 	align-items: center;
-	background-color: var(--white);
+	background-color: var(--light);
 	background-size: cover !important;
 	background-position: center !important;
 	transition: filter 3s;
@@ -217,7 +228,7 @@ img.screen-background {
 }
 
 .path-content {
-	color: var(--black);
+	color: var(--dark);
 	font-size: 1.3rem;
 	transition: opacity 0.2s, scale 1s;
 	padding: 1rem;
@@ -229,7 +240,10 @@ img.screen-background {
 	align-items: center;
 	gap: 1rem;
 	min-height: 10rem;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2056 3041' preserveAspectRatio='none'%3E%3Cpath fill='%23C8C7B2' d='m32 19 268 29 57-12 24 35 22-43L528 0h280l118 32 349 16 318-48 189 19h250l13 178-13 197-8 23-48 4 22 18-11 31 41 31 14 79 10 186-20 191v562l-21 356 41 394 2 176-46 41 35 3 4 17-1 15 10 13-4 20v96l-20 234v135h-102l-108-21-303 14-76 29-157-34H938l-126 34-205-46-75 24H432l-7-37-37 48-143 11-106-22H32v-187l39-104-10-164v-34l10-25 22-4 15-10-10-17-5-10 8-18-28-21 35-4 28-25-56-22-38-26 5-30-5-82-10-163 13-178-44-148 44-257-32-405 32-239V611L13 378l19-171V19Z'/%3E%3C/svg%3E");
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2056 3041' preserveAspectRatio='none'%3E%3Cpath fill='%23C8C7B2' d='m32 19 268 29 57-12 24 35 22-43L528 0h280l118 32 349 16 318-48 189 19h250l13 178-13 197-8 23-48 4 22 18-11 31 41 31 14 79 10 186-20 191v562l-21 356 41 394 2 176-46 41 35 3 4 17-1 15 10 13-4 20v96l-20 234v135h-102l-108-21-303 14-76 29-157-34H938l-126 34-205-46-75 24H432l-7-37-37 48-143 11-106-22H32v-187l39-104-10-164v-34l10-25 22-4 15-10-10-17-5-10 8-18-28-21 35-4 28-25-56-22-38-26 5-30-5-82-10-163 13-178-44-148 44-257-32-405 32-239V611L13 378l19-171V19Z'/%3E%3C/svg%3E");
+	background: url(/assets/img/textures/encounter.jpg);
+    background-size: cover;
+	background-position: center;
 }
 
 .path-content>div {
@@ -265,8 +279,6 @@ img.screen-background {
 	padding: 1rem;
 	font-weight: 700;
 	margin-top: auto;
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1436 588' preserveAspectRatio='none'%3E%3Cpath fill='%23222' d='m1422 564-101 9-38-9-116 9-75 9-78-5-71-16-126 16-158 5-17-21-20 27-118-15h-90l-109-5-117 5h-88l-88-9 7-67-7-70 7-66-7-70-7-38-5-113 23 5-13-16 2-18 21-12-19-18 2-30-4-34 93-3 83 3 97-3 71-5 97 2 66 5 123 1 105-8 27-9 11 17 9-17 84 14 66-9 139 9 81 3 59-12 125 6 74 6 7 70-12 85 12 65 7 100-5 14h-11l-12-7 4 19 17 17-7 116v68Z'/%3E%3Cpath fill='%23777' d='m1410 551-43-4-130 4-2-3-2 3-74 5-80-9-43-2-42-12-21-4-33 4-17-2-8 6-140 14h-76l-57-5h-90l-110 5-69 6-75-7-104 7-103-6H30v-65l-5-61 5-69-4-67-3-91L37 76l-7-46 86-4 86 4 83 6 90-6 66-5 113 9 85 2 81 9 85-2 108-7 69-13 83 7 91 6 84-16 100 6 70 4-4 36 1 116-4 43 7 33 2 33-24 75 24 48-5 94 3 43Z'/%3E%3Cpath fill='%23222' d='M1394 536h-91l-75 4-94 7-75-10-88-20-93 5-80 9h-99l-141-9-91 9-64 6h-87l-44 10-57 1-97-12-71 6 6-56-8-41 8-100 4-78-12-61 3-41 9-59 9-56 75 3 78-11 78 8 80-6 101 6 78 9 90 3 74 3 89-8 113 2 55-9 88 9 128-16 70-13 54 20 60 1 20 2-4 34-1 77-4 65 9 44 3 18-11 23-11 30-15 25 37 56-6 53v58Z'/%3E%3C/svg%3E");
-	color: white;
 }
 
 #crossroad .path [data-skip-path] {
@@ -276,13 +288,13 @@ img.screen-background {
     position: absolute;
     top: -0.5rem;
     right: -0.5rem;
-    color: var(--black);
-    background: #C8C7B2;
+    color: var(--dark);
+    background: var(--light);
     width: 2rem;
     height: 2rem;
     font-size: 1rem;
     border-radius: 100%;
-    border: 0.1rem solid var(--black);
+    border: 0.1rem solid var(--dark);
     line-height: 0;
     z-index: 1;
     font-weight: 700;
@@ -291,7 +303,7 @@ img.screen-background {
 #crossroad .path [data-skip-path] .btn-close{
 	width: 1.7rem;
     height: 1.6rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 522 489'%3E%3Cpath fill='%23000' d='m260 463 10 15c-2 2-3 5-6 6-5 3-10 4-16 4-12-1-24-2-37-1l-33-3c-13 0-25-5-35-12l-31-25-27-21a99 99 0 0 1-35-44 154 154 0 0 1-16-37c-6-11-13-21-18-32-4-11-9-22-16-32l2-32 1-33c0-16 2-32 7-47l20-61c1-5 4-10 7-15 9-10 16-21 22-33 20-16 41-30 63-41l26-4a324 324 0 0 1 96-13h10a802 802 0 0 1 132 23l16-5a63 63 0 0 1 58 9l4 5c2 15-18 20-16 36 4 8 9 15 16 21 10 9 18 20 23 33l12 24c15 28 23 59 23 91v40a170 170 0 0 1-23 80c-12 18-26 34-43 48-7 5-14 11-20 18-14 12-29 24-46 33-16 8-33 14-51 16-3 0-4-1-10-8 2-2 3-6 6-7l31-14c21-10 41-23 58-39 12-16 25-32 39-47 12-15 19-33 23-51v-7l-3-3-9-2c-26-2-52-1-77 3h-24c-11-1-23 0-34 2-6 4-11 10-14 17-19 36-36 73-53 110-5 11-8 23-12 35Zm195-189 3 5c2 1 4 0 5-2l-3-2-6-1-10-8c-23-14-47-25-72-35-10 6-12 16-16 25a8 8 0 0 0 5 10c31 7 62 10 94 8Zm-61-169-12 4-74 47c1 3 0 7 2 9 9 8 19 15 30 20 12-7 14-9 18-17 7-13 15-27 24-39 6-7 10-15 12-24 2-1 3-2 1-2l-1 2ZM177 304c-13-3-27-4-41-3-18 0-36-1-53-5l-30-1a10 10 0 0 0-10 12c2 21 9 41 20 60 4 6 7 12 9 19 24 29 53 54 83 75a75 75 0 0 0 59 4v-6c-7-17-10-35-10-53-1-20-4-40-9-60-3-15-9-29-18-42Zm200-103a20 20 0 0 0 13 13c14 6 28 13 41 22a368 368 0 0 1 47 26h7l2-2c3-12 2-25-1-37-9-40-27-79-53-111-2-2-6-2-9-4-17 26-26 54-40 79l-7 14ZM182 54l4 9c16 18 34 35 53 51a19 19 0 0 0 22 2l3-1 75-51c2-2 2-6 4-10-21-7-44-11-67-11l-53 1c-14 0-28 3-41 10Zm-79 44c-13 8-24 20-32 33-11 18-20 38-26 58-3 12-4 25-2 37 0 2 5 6 7 5l13-4 67-38a15 15 0 0 0 6-15l-1-7-24-59-8-10Zm165 82c-36 15-39 16-52 29 2 18 9 35 19 50 21 3 42 3 63 0 14-11 24-27 31-44a14 14 0 0 0-9-10l-32-18-20-7Zm-109 79c5-13 5-15-7-24-15 5-29 11-42 18l-1 3c12 5 12 5 50 3Zm117 47c-6-8-14-7-21-7-4 0-8 5-8 9 0 10 3 19 8 28l6 2 4-5 11-27Zm-80-156 8-2a8 8 0 0 0 2-14l-14-9a4 4 0 0 0-6 1l-1 3a28 28 0 0 0 11 21Z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 522 489'%3E%3Cpath fill='%23331b04' d='m260 463 10 15c-2 2-3 5-6 6-5 3-10 4-16 4-12-1-24-2-37-1l-33-3c-13 0-25-5-35-12l-31-25-27-21a99 99 0 0 1-35-44 154 154 0 0 1-16-37c-6-11-13-21-18-32-4-11-9-22-16-32l2-32 1-33c0-16 2-32 7-47l20-61c1-5 4-10 7-15 9-10 16-21 22-33 20-16 41-30 63-41l26-4a324 324 0 0 1 96-13h10a802 802 0 0 1 132 23l16-5a63 63 0 0 1 58 9l4 5c2 15-18 20-16 36 4 8 9 15 16 21 10 9 18 20 23 33l12 24c15 28 23 59 23 91v40a170 170 0 0 1-23 80c-12 18-26 34-43 48-7 5-14 11-20 18-14 12-29 24-46 33-16 8-33 14-51 16-3 0-4-1-10-8 2-2 3-6 6-7l31-14c21-10 41-23 58-39 12-16 25-32 39-47 12-15 19-33 23-51v-7l-3-3-9-2c-26-2-52-1-77 3h-24c-11-1-23 0-34 2-6 4-11 10-14 17-19 36-36 73-53 110-5 11-8 23-12 35Zm195-189 3 5c2 1 4 0 5-2l-3-2-6-1-10-8c-23-14-47-25-72-35-10 6-12 16-16 25a8 8 0 0 0 5 10c31 7 62 10 94 8Zm-61-169-12 4-74 47c1 3 0 7 2 9 9 8 19 15 30 20 12-7 14-9 18-17 7-13 15-27 24-39 6-7 10-15 12-24 2-1 3-2 1-2l-1 2ZM177 304c-13-3-27-4-41-3-18 0-36-1-53-5l-30-1a10 10 0 0 0-10 12c2 21 9 41 20 60 4 6 7 12 9 19 24 29 53 54 83 75a75 75 0 0 0 59 4v-6c-7-17-10-35-10-53-1-20-4-40-9-60-3-15-9-29-18-42Zm200-103a20 20 0 0 0 13 13c14 6 28 13 41 22a368 368 0 0 1 47 26h7l2-2c3-12 2-25-1-37-9-40-27-79-53-111-2-2-6-2-9-4-17 26-26 54-40 79l-7 14ZM182 54l4 9c16 18 34 35 53 51a19 19 0 0 0 22 2l3-1 75-51c2-2 2-6 4-10-21-7-44-11-67-11l-53 1c-14 0-28 3-41 10Zm-79 44c-13 8-24 20-32 33-11 18-20 38-26 58-3 12-4 25-2 37 0 2 5 6 7 5l13-4 67-38a15 15 0 0 0 6-15l-1-7-24-59-8-10Zm165 82c-36 15-39 16-52 29 2 18 9 35 19 50 21 3 42 3 63 0 14-11 24-27 31-44a14 14 0 0 0-9-10l-32-18-20-7Zm-109 79c5-13 5-15-7-24-15 5-29 11-42 18l-1 3c12 5 12 5 50 3Zm117 47c-6-8-14-7-21-7-4 0-8 5-8 9 0 10 3 19 8 28l6 2 4-5 11-27Zm-80-156 8-2a8 8 0 0 0 2-14l-14-9a4 4 0 0 0-6 1l-1 3a28 28 0 0 0 11 21Z'/%3E%3C/svg%3E");
 }
 
 #crossroad .path [data-skip-path].hideSkip {
@@ -349,6 +361,10 @@ section#encounter {
 	justify-content: flex-start;
 	height: 100%;
 	overflow: hidden;
+	background: url(/assets/img/textures/encounter.jpg);
+	background-size: cover;
+	background-position: center;
+	color: var(--dark);
 }
 
 .topbar,
@@ -372,13 +388,33 @@ section#encounter .right-side {
 
 div#mobBoard,
 div#playerBoard {
-	color: var(--black);
+	color: var(--dark);
 }
 
 div#mobBoard {
 	display: flex;
 	flex-direction: column;
 	position: relative;
+}
+
+.mob-image-wrapper {
+    /* filter: drop-shadow(2px 7px 8px #000000aa); */
+	mix-blend-mode: darken;
+    filter: sepia(1);
+}
+
+.mob-image-wrapper:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    background: url(../assets/img/textures/paper1.jpg);
+    mix-blend-mode: multiply;
+    width: 95%;
+    margin-inline: auto;
+    background-size: 50rem 95rem;
+    background-position: -5rem -5rem;
 }
 
 div#mobBoard img {
@@ -393,7 +429,11 @@ p.mobName {
     position: absolute;
     top: -1rem;
     left: 2.3rem;
-    font-weight: 100;
+	font-family: 'Arslans Blood';
+	font-size: 1rem;
+    width: 30rem;
+    word-spacing: 0.5rem;
+	color: var(--dark);
 }
 
 
@@ -402,7 +442,7 @@ p.mobName {
     flex-direction: column;
     gap: 1rem;
     font-weight: 700;
-    color: var(--white);
+    color: var(--light);
 	position: relative;
     z-index: 0;
 }
@@ -423,12 +463,11 @@ p.mobName {
 	gap: 2rem;
 }
 
-#playerBoard .secondary-action>* {
-	flex: 1;
-}
-
 #playerBoard .no-action{
-	color: var(--white);
+	font-family: 'Arslans Blood';
+    word-spacing: 1.3rem;
+	font-size: 1.6rem;
+	color: var(--dark);
 }
 
 div#playerBoard button {
@@ -440,9 +479,14 @@ div#playerBoard button {
 	flex-direction: column;
 }
 
+.secondary-action{
+	font-size: 1.5rem;
+}
+
 div#playerBoard .secondary-action button{
-	height: 100%;
     justify-content: center;
+	min-width: 15rem;
+	height: 6rem;
 }
 
 div#playerBoard button div {
@@ -454,12 +498,6 @@ div#playerBoard button div {
 	width: 1.6rem;
 	height: 1.6rem;
 	margin-left: 0.3rem;
-	filter: invert();
-}
-
-.no-action p {
-	font-size: 1.6rem;
-	font-weight: 700;
 }
 
 .hp {
@@ -481,17 +519,31 @@ div#playerBoard button div {
 	display: flex;
 	width: 14rem;
 	text-align: center;
-	border: 0.1rem solid #ffffffde;
-	border-left: 0.2rem solid #ffffffde;
+	border-left: 0.2rem solid #4d4532;
 	position: relative;
 	margin-left: -0.5rem;
 	z-index: -1;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2743 287'%3E%3Cpath fill='%23333' d='m27 254 193 4 72-4 222 4 142 4 75-1 37-56 37 55 135-7 242 7 301 2 23 25 16-36 256 7 171-11 208 9 60 6-11-32-23-35 34 10 29 18 36-7 30 23-14-44 56 21 23 38 104 26 109-36 125 10-21-38 21-22-39-31 39-29 15-17 13-33-58 3 34-24-14-5-62-7 59-11-10-15 23-11-177-2-159 2-184-2-134-2-186 1-125 2-236 1-181-8-75-6-16 14-17-8-160 6-126-4-266 4-154 2-27 49-29-52-57-3-237 3-142 3-12 30 22 38-22 28-15 44 10 6h22l22-2-8 8-31 7 12 51v30Z'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2743 287'%3E%3Cpath fill='%2333333366' d='m27 254 193 4 72-4 222 4 142 4 75-1 37-56 37 55 135-7 242 7 301 2 23 25 16-36 256 7 171-11 208 9 60 6-11-32-23-35 34 10 29 18 36-7 30 23-14-44 56 21 23 38 104 26 109-36 125 10-21-38 21-22-39-31 39-29 15-17 13-33-58 3 34-24-14-5-62-7 59-11-10-15 23-11-177-2-159 2-184-2-134-2-186 1-125 2-236 1-181-8-75-6-16 14-17-8-160 6-126-4-266 4-154 2-27 49-29-52-57-3-237 3-142 3-12 30 22 38-22 28-15 44 10 6h22l22-2-8 8-31 7 12 51v30Z'/%3E%3C/svg%3E");
+	background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.topbar .hp .bar {
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2743 287'%3E%3Cpath fill='%23333' d='m2716 32-193-4-72 4-222-4-142-4-74 1-38 57-37-56-135 7-241-7-301-2-23-24-17 36-256-8-171 12-207-10-60-6 11 33 23 35-34-10-30-18-35 7-30-23 14 44-56-21-24-38L262 7 154 43 28 32l21 39-21 21 39 31-39 30-14 16-14 34 58-3-34 24 14 5 62 7-58 11 9 15-23 11 177 1 159-1 184 1 135 3 186-1 125-2 235-1 181 8 76 6 16-15 16 9 160-7 126 4 266-4 154-1 28-49 29 52 56 2 237-2 142-3 13-30-22-38 22-29 14-44-10-6h-21l-22 3 7-8 32-8-13-51V32Z'/%3E%3C/svg%3E");
+	mask-repeat: no-repeat;
+    mask-size: 100%;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 2743 287'%3E%3Cpath fill='%2333333366' d='m2716 32-193-4-72 4-222-4-142-4-74 1-38 57-37-56-135 7-241-7-301-2-23-24-17 36-256-8-171 12-207-10-60-6 11 33 23 35-34-10-30-18-35 7-30-23 14 44-56-21-24-38L262 7 154 43 28 32l21 39-21 21 39 31-39 30-14 16-14 34 58-3-34 24 14 5 62 7-58 11 9 15-23 11 177 1 159-1 184 1 135 3 186-1 125-2 235-1 181 8 76 6 16-15 16 9 160-7 126 4 266-4 154-1 28-49 29 52 56 2 237-2 142-3 13-30-22-38 22-29 14-44-10-6h-21l-22 3 7-8 32-8-13-51V32Z'/%3E%3C/svg%3E");
+	background-size: 100%;
+    background-repeat: no-repeat;
 }
 
 .hp .bar .progress {
 	width: 100%;
 	height: 1.3rem;
-	background: #ffffffde;
+	background: var(--dark);
 	transition: width .3s;
 	position: relative;
 }
@@ -503,13 +555,11 @@ div#playerBoard button div {
 	right: 0;
 	height: 100%;
 	background: #91442c;
-	/* box-shadow: 0 0 1rem 0.4rem #91442ca1; */
 	transition: width .15s;
 }
 
 .hp .bar .heal-bar {
-	background: #2c9139;
-	/* box-shadow: 0 0 1rem 0.4rem #2c9139a1; */
+	background: #056a12;
 	position: relative;
 	height: 1.3rem;
 	transition: width .15s;
@@ -517,7 +567,7 @@ div#playerBoard button div {
 
 .hp .bar p {
 	z-index: 1;
-	color: black;
+	color: var(--dark);
 	mix-blend-mode: difference;
 	filter: invert(1);
 	display: flex;
@@ -539,11 +589,11 @@ div#playerBoard button div {
 }
 
 .hp .shield-wrapper.damaged {
-	filter: sepia(1) hue-rotate(290deg) saturate(999) grayscale(0.3) brightness(4) contrast(0.6);
+	filter: hue-rotate(10deg) saturate(5) brightness(1);
 }
 
 .hp .shield-wrapper.healed {
-	filter: sepia(1) hue-rotate(50deg) saturate(999) grayscale(0.5);
+	filter: hue-rotate(50deg) saturate(12) grayscale(0);
 }
 
 .hp .shield-wrapper .icon,
@@ -551,10 +601,6 @@ div#playerBoard button div {
 	width: 1.2rem;
 	height: 1.2rem;
 	display: inline-flex;
-}
-
-.hp .poison-wrapper {
-	color: #3aad48;
 }
 
 .poison.icon {
@@ -580,10 +626,6 @@ div#playerBoard button div {
 	z-index: 1;
 }
 
-.coins-left-wrapper {
-	z-index: 3;
-}
-
 .bottombar .fate,
 .bottombar .coin,
 .bottombar .mana,
@@ -592,11 +634,16 @@ div#playerBoard button div {
 .lvl-bottom-right .coin,
 .lvl-bottom-right .token,
 .reward .coin,
-.reward .fate {
+.reward .fate,
+#store .coins-left-wrapper .coin{
 	display: inline-block;
 	width: 2rem;
 	height: 2rem;
 	vertical-align: text-bottom;
+}
+
+.lvl-bottom-right .token{
+	filter: invert(1);
 }
 
 .fate-left,
@@ -617,11 +664,11 @@ div#playerBoard button div {
 
 @keyframes tokensToSpend {
 	0%, 100% {
-		filter: drop-shadow(0 0 0.85rem white) brightness(2);
+		filter: drop-shadow(0 0 0.5rem rgba(255, 255, 255, 0.5)) brightness(1.2) sepia(0.5);
 	}
 
 	50% {
-		filter: drop-shadow(0 0 0.5rem white) brightness(0.85);
+		filter: drop-shadow(0 0 0.85rem rgba(255, 255, 255, 0.5)) brightness(0.75) sepia(1);
 	}
 }
 
@@ -672,8 +719,23 @@ div#discobar>span {
 	pointer-events: none;
 }
 
-#discobar .slot.hover{
-	filter: drop-shadow(0 0 0.7rem #ffc478);
+#encounter:has(.slot.hover) .cardOnDrag .inventory-card{
+	--glow-color: #42188a;
+	box-shadow: var(--glow-color) 0 0 0.5rem;
+	animation: glow 1s infinite alternate;
+}
+@keyframes glow {
+	100% {
+		box-shadow: var(--glow-color) 0 0 1.5rem;
+	}
+}
+#encounter:has(.slot.hover) .cardOnDrag:before{
+	content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+	background-color: #42188a;
+    mix-blend-mode: color-dodge;
 }
 
 #discobar .slot.successful>.disc>.disc {
@@ -713,6 +775,7 @@ div#discobar>span {
 	top: 50%;
 	transform: translate(-50%, -50%);
 	z-index: 1;
+	filter: brightness(0);
 }
 
 #discobar .slot .mana-requirement .icon {
@@ -727,21 +790,20 @@ div#discobar>span {
 	aspect-ratio: 1 / 1;
 	display: flex;
 	border-radius: 100%;
-	background: var(--black);
-	box-shadow: 0 0 0 0.125rem black;
 	max-width: 7.5rem;
 	flex: 1;
+	z-index: 0;
 }
 
 .disc svg {
 	width: 100%;
 	height: 100%;
 	border-radius: 100%;
-	background: var(--black);
+	background: var(--dark);
 }
 
 .disc svg path {
-	stroke: var(--black);
+	stroke: var(--dark);
 	stroke-width: 1;
 }
 
@@ -772,9 +834,9 @@ div#discobar>span {
 }
 
 .slot .card{
-	width: 6rem;
+	width: 80%;
     position: absolute;
-    top: -3rem;
+    top: -60%;
 	pointer-events: all;
     cursor: pointer;
 }
@@ -853,7 +915,7 @@ div#discobar>span {
 	padding-inline: 6%;
 	width: 100%;
 	aspect-ratio: 2 / 3;
-	color: var(--white);
+	color: var(--light);
 	border-radius: 3cqw;
 	background-size: contain;
 	position: relative;
@@ -916,12 +978,13 @@ img.card-background {
 	line-height: 0;
 	font-weight: 700;
 	z-index: 1;
-	background: #a1a1a1;
-    color: black;
+	background: var(--light);
+    color: var(--dark);
 }
 
 .card-mana-cost.too-expensive {
 	background: #c9473f9e;
+	color: #000;
 }
 
 .card-inventory-title {
@@ -956,10 +1019,8 @@ img.card-background {
 	width: 7cqw;
     aspect-ratio: 1;
     display: inline-flex;
-    vertical-align: bottom;
-    filter: brightness(0);
 	vertical-align: middle;
-	filter: brightness(10);
+	filter: brightness(100);
 }
 
 .banish:after {
@@ -974,15 +1035,8 @@ img.card-background {
 	width: 6.667rem;
 	scale: 1;
 	translate: 0 0;
-	z-index: 2;
-	box-shadow: #af6030 0 0 0.5rem;
+	z-index: 12;
 	padding: 0;
-	animation: glow 1s infinite alternate;
-}
-@keyframes glow {
-	100% {
-		box-shadow: #af6030 0 0 1rem;
-	}
 }
 
 .card.cardOnDragStart{
@@ -997,7 +1051,7 @@ img.card-background {
 	justify-content: space-between;
 	width: 100%;
 	padding: 2rem 1rem 0;
-	box-shadow: 0 0rem 4rem 4rem black;
+	box-shadow: 0 0rem 3.5rem 4rem black;
 	z-index: 11;
 }
 
@@ -1065,7 +1119,7 @@ section#xpscreen .modal-content{
 }
 
 section#xpscreen .bar {
-	border: 0.1rem solid var(--white);
+	border: 0.1rem solid var(--light);
 	display: flex;
 	align-items: stretch;
 	position: relative;
@@ -1073,7 +1127,7 @@ section#xpscreen .bar {
 
 section#xpscreen .bar .progress {
 	display: block;
-	background: var(--white);
+	background: var(--light);
 	height: 4rem;
 	transition: 1s;
 }
@@ -1117,17 +1171,48 @@ section#xpscreen button {
 	justify-content: center;
 	width: 100%;
 	height: 100%;
-	background: #000000e0;
 	position: absolute;
 	inset: 0;
 	z-index: 2;
+	background: url(/assets/img/textures/encounter.jpg);
+	background-size: cover;
+	background-position: center;
+}
+
+#store .store-title{
+    font-family: 'Arslans Blood';
+    color: var(--dark);
+    font-size: 2rem;
+    position: absolute;
+    left: 0rem;
+    top: 7.5rem;
+    transform: rotate(-12deg);
+}
+
+#store .shopkeeper {
+    aspect-ratio: 1;
+    margin: 5% auto;
+	width: 95%;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+	mix-blend-mode: darken;
+    filter: sepia(1);
+}
+
+#store .shopkeeper{
+	background-image: url(/assets/img/shopkeepers/1.png);
+	background-image: var(--shopkeeper);
+	background-size: contain;
+	background-position: center;
+    background-repeat: no-repeat;
 }
 
 .store-wrapper {
 	z-index: 10;
 	display: flex;
-	gap: 0.5rem;
-	padding: 3rem 0.5rem;
+	gap: 1.5rem;
+	padding: 0rem 1.5rem;
 	height: auto;
 	width: 100%;
 }
@@ -1139,13 +1224,13 @@ section#xpscreen button {
 	align-items: center;
 	gap: 2rem;
 	text-align: center;
-	padding: 3rem 1rem;
+	padding-bottom: 5rem;
 	flex: 1;
 }
 
 .store-item-card{
 	width: 100%;
-	box-shadow: 0 0 2rem #ffffff59;
+	box-shadow: 0 0.75rem 1.5rem -0.2rem #000000cc;
 	cursor: pointer;
 	border-radius: 0.8rem;
 }
@@ -1158,8 +1243,9 @@ section#xpscreen button {
 	flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-inline: 1.4rem;
-	background: black;
+    padding-inline: 5rem;
+    background: #000000ed;
+    border-radius: 0;
 }
 
 .store-item-card.big-card .card{
@@ -1191,14 +1277,14 @@ section#xpscreen button {
 
 .store-item button s {
     opacity: 0.5;
+	font-weight: 100;
 }
 
 .store-item button[disabled] {
-	opacity: 0.1;
+	opacity: 0.5;
 }
 
 .store-item button .coin {
-	filter: invert(1);
 	width: 1.5rem;
 	height: 1.5rem;
 }
@@ -1206,7 +1292,12 @@ section#xpscreen button {
 button.close-store {
     width: 4rem;
     height: 3.7rem;
-    margin-right: 0.5rem;
+    margin: 1.5rem 1.5rem 0 0;
+}
+
+#store .coins-left-wrapper{
+	margin-right: 1.5rem;
+	color: var(--dark);
 }
 
 
@@ -1221,7 +1312,7 @@ section#skilltree {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	background-color: #121212;
+	background: url(/assets/img/textures/encounter.jpg);
 }
 
 .close-skilltree {
@@ -1245,77 +1336,52 @@ section#skilltree {
 .skilltree-wrapper:before {
 	content: "";
 	position: absolute;
-	background-color: #937c49;
+	background-color: #00000000;
 	z-index: -1;
 	width: 0.1rem;
 	transform: translate(-50%, -50%) rotate(-45deg);
 	height: 100%;
 	left: 50%;
 	top: 50%;
-	opacity: 0.2;
 }
 
 .skilltree-wrapper .skill {
 	aspect-ratio: 1;
 	width: 6.2rem;
-	background-color: var(--white);
-	transition: 1s;
 	cursor: pointer;
-}
-
-.skilltree-wrapper .skill.skillslot {
-	--skillcolor: hsl(40, 34%, 63%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillmaxhp,
-.skilltree-wrapper .skill.skillmana {
-	--skillcolor: hsl(40, 30%, 73%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillshield ,
-.skilltree-wrapper .skill.skillcoins {
-	--skillcolor: hsl(40, 30%, 83%);
-	background-color: var(--skillcolor);
-}
-
-.skilltree-wrapper .skill.skillheal,
-.skilltree-wrapper .skill.skillfate {
-	--skillcolor: hsl(40, 30%, 93%);
-	background-color: var(--skillcolor);
+	position: relative;
 }
 
 .skilltree-wrapper .skill[data-skillstate="0"] {
-	filter: saturate(0.1) brightness(0.15);
+	opacity: 0.15;
 }
 
-.skilltree-wrapper .skill[data-skillstate="1"] {
-	transform: scale(0.9);
-	box-shadow: 0 0 0 0.3rem #121212, 0 0 0 0.4rem var(--skillcolor);
+.skilltree-wrapper .skill[data-skillstate="1"]:after {
+    transition: .7s;
+	animation: skillbeat 2s infinite ;
 }
 
-.skilltree-wrapper .skill[data-skillstate="2"] {
-	filter: brightness(0.5);
+@keyframes skillbeat {
+	0%, 100%{
+		filter: drop-shadow(0rem 0rem 0rem #550000);
+	}
+	50%{
+		filter: drop-shadow(0rem 0rem 0.2rem #550000);
+	}
 }
 
-.skill.skillslot.skillstart {
-	background-color: #937c49;
-	cursor: default;
-	box-shadow:
-		inset 0 0 0 0.5rem #937c49,
-		inset 0 0 0 0.75rem #0000004d,
-		inset 0 0 0 1.75rem #937c49,
-		inset 0 0 0 2rem #00000045,
-		inset 0 0 0 2.75rem #937c49,
-		inset 0 0 0 5rem #00000045;
+.skilltree-wrapper .skill:before{
+	filter: invert(1) brightness(0.5) opacity(0.5) sepia(1);
 }
 
-.skilltree-wrapper .skill[data-skillstate="1"]:hover {
-	filter: brightness(1.35);
-	box-shadow: 0 0 0 0rem #121212, 0 0 0 0.1rem var(--skillcolor);
-	transform: scale(0.98);
-	transition: .6s;
+.skilltree-wrapper .skill[data-skillstate="2"]:before{
+	filter: invert(0);
+	z-index: 1;
+}
+
+.skill.skillslot.skillstart{
+	pointer-events: none;
+	opacity: 0.6;
 }
 
 #skilltree .tokens-left-wrapper {
@@ -1327,6 +1393,7 @@ section#skilltree {
 
 #skilltree .tokens-left-wrapper .tokens-left {
 	font-size: 3.2rem;
+	color: var(--dark);
 }
 
 #skilltree .tokens-left-wrapper .token {
@@ -1353,16 +1420,18 @@ button.skill-modal-close {
     right: 1.5rem;
     width: 3rem;
     height: 2.8rem;
+	filter: invert(1) saturate(2) hue-rotate(200deg) brightness(0.8);
 }
 
 button.skill-modal-buy {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	border: 0.1rem solid;
 	width: 40%;
 	margin-inline: auto;
 	padding: 0.4rem 2rem;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%23dbc9a0' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
+	color: #222;
 
 }
 
@@ -1376,10 +1445,6 @@ p.skill-modal-desc {
 	width: 2rem;
 	height: 2rem;
 	margin: -0.1rem 0 0 0.4rem;
-}
-
-.skill-modal .btn .icon{
-	filter: invert();
 }
 
 /*===========================================================================
@@ -1521,40 +1586,71 @@ section#death button{
 }
 
 /*===========================================================================
-// CHESTS
+// PAGE TURN ANIMATION
 =============================================================================*/
-section#chest {
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	height: 100%;
-	width: 100%;
-	overflow: hidden;
+.book{
+	display: none;
+	z-index: 20;
 }
 
-section#chest .chest-image {
-	width: 100%;
-	aspect-ratio: 1;
-	background-color: #121212;
-}
-
-section#chest .chest-puzzle {
-	width: 100%;
-	aspect-ratio: 1;
-	background-color: #0a0a0a;
-}
-
-button.close-chest {
+.book,
+.book > *{
 	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	font-size: 1.2rem;
+	inset: 0;
 }
 
-.puzzle-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 0.1rem;
+.book > *{
+	transform-origin: left center;
+    transform: translateZ(0rem);
+    rotate: 0 1 0 0deg;
+}
+
+.book .turn-page{
+	transform: translateZ(1rem);
+    rotate: 0 1 0 -180deg;
+}
+
+.book .cover{
+	background-color: transparent;
+	transition: .9s ease-in;
+	z-index: 30;
+}
+.book.booking .cover{
+	background-color: #000;
+	transition: .35s;
+}
+
+.book .page{
+	background: url(/assets/img/textures/encounter.jpg);
+	opacity: 0;
+	transition: opacity 0s, rotate 1.5s .3s, transform 1.5s .3s;
+}
+
+.book .page:nth-child(3){
+	transition: opacity 0s, rotate 1.5s .28s, transform 1.5s .28s;
+}
+.book .page:nth-child(4){
+	transition: opacity 0s, rotate 1.5s .225s, transform 1.5s .225s;
+}
+.book .page:nth-child(5){
+	transition: opacity 0s, rotate 1.5s .175s, transform 1.5s .175s;
+}
+.book .page:nth-child(6){
+	transition: opacity 0s, rotate 1.5s .1s, transform 1.5s .1s;
+}
+.book .page:nth-child(7){
+	transition: opacity 0s, rotate 1.5s 0s, transform 1.5s 0s;
+}
+
+.book .page::after{
+	content: "";
+	position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #00000091, transparent);
+}
+
+.book.booked .page{
+	opacity: 1;
 }
 
 /*===========================================================================
