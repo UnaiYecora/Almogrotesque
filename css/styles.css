@@ -119,12 +119,13 @@ section#crossroad:after {
 	content: "";
 	position: absolute;
 	inset: 0;
-	z-index: 10;
+	z-index: 1;
 	pointer-events: none;
 	background: url("../assets/img/textures/paper1.jpg");
 	mix-blend-mode: multiply;
 	background-size: 50rem 95rem;
 	background-position: -5rem -5rem;
+	opacity: 0.5;
 }
 
 #discobar .slot:before {
@@ -147,6 +148,7 @@ section#start {
 	background: url("../assets/img/textures/encounter.jpg");
 	color: var(--dark);
 	width: 100%;
+	transition: filter .75s;
 }
 
 section#start h1 {
@@ -174,6 +176,8 @@ section#start button {
 
 section#start p {
 	text-align: center;
+	font-size: 1.2rem;
+    font-weight: 700;
 }
 
 
@@ -190,7 +194,8 @@ section#start p {
 	background-color: var(--light);
 	background-size: cover !important;
 	background-position: center !important;
-	transition: filter 3s;
+	transition: filter .75s;
+	background: url("../assets/img/textures/encounter.jpg");
 }
 
 #crossroad:after {
@@ -204,16 +209,14 @@ section#start p {
 
 img.screen-background {
 	position: absolute;
-	object-fit: cover;
-	width: calc(100% + 2rem);
-	height: calc(100% + 2rem);
-	max-width: unset;
-	inset: -1rem;
-	filter: invert(0) saturate(0) brightness(0.3) blur(0px);
-	opacity: 1;
-	user-select: none;
-	-webkit-user-drag: none;
-	pointer-events: none;
+    object-fit: cover;
+    max-width: unset;
+    inset: 0;
+    filter: saturate(1) brightness(1) contrast(2) blur(0px) sepia(1) opacity(0.5);
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    mix-blend-mode: darken;
 }
 
 #crossroad .path {
@@ -221,6 +224,7 @@ img.screen-background {
 	z-index: 1;
 	position: relative;
 	transition: .3s;
+	filter: drop-shadow(0 0.4rem 0.8rem #00000099);
 }
 
 #crossroad .path[data-skippable="false"] [data-skip-path] {
@@ -313,22 +317,28 @@ img.screen-background {
 	opacity: 0;
 }
 
-#crossroad.fadedCrossroad {
-	filter: brightness(0);
-	pointer-events: none;
-}
-
 div#lvl-top {
 	z-index: 1;
 	position: absolute;
-	top: 2rem;
+	top: 0;
+	padding-top: 2rem;
 	text-align: center;
 	padding-inline: 3rem;
+	color: var(--dark);
+}
+
+div#lvl-top:before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -3rem;
+    background: radial-gradient(#dbc9a0, transparent 80%);
+	z-index: -1;
 }
 
 div#lvl-top .level-title {
 	font-size: 2rem;
-	font-weight: 700;
+	font-family: 'Arslans Blood';
+	word-spacing: 1.5rem;
 }
 
 div#lvl-bottom {
@@ -341,6 +351,13 @@ div#lvl-bottom {
 	padding: 1rem;
 }
 
+div#lvl-bottom:before{
+	content: "";
+	position: absolute;
+	inset: -5rem 0 0;
+	background: linear-gradient(0deg, black, transparent);
+}
+
 div#lvl-bottom .level-title {
 	font-size: 2rem;
 	font-weight: 700;
@@ -350,6 +367,11 @@ div#lvl-bottom .level-title {
 	display: flex;
 	gap: 2rem;
 	margin-left: auto;
+}
+
+p.level-desc{
+	font-size: 1.3rem;
+	line-height: 1.2;
 }
 
 /*===========================================================================

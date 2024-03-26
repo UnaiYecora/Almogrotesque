@@ -66,7 +66,7 @@ document.querySelector(".card-scroller .card-list").addEventListener('mousedown'
 document.querySelector("#start #newGame").addEventListener("click", function () {
 	// TO-DO: Turn fullscreen on
 	// document.documentElement.requestFullscreen();
-	setLevel("crossroad", true, false);
+	setLevel("crossroad", false);
 
 	/////////////////
 	// Display fate, coins, tokens, skills...
@@ -85,7 +85,7 @@ document.querySelector("#start #continue").addEventListener("click", async funct
 	// TO-DO: Turn fullscreen on
 	// document.documentElement.requestFullscreen();
 	await load();
-	setLevel(state.currentLevel, true, true);
+	setLevel(state.currentLevel, true);
 
 	/////////////////
 	// Display fate, coins, tokens, skills...
@@ -116,7 +116,6 @@ document.querySelector("#crossroad").addEventListener("click", async function (e
 			// Door
 			if (type === "door") {
 				takeDoor(path);
-				state.endOfTheRoad = 0;
 			}
 
 			// Store

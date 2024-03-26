@@ -66,7 +66,7 @@ export async function generateStore(storeid) {
 
 			// Add id to store element
 			storeElement.dataset.storeid = storeid;
-			// TO-DO: Next line if for testing only, remove and use storeid
+			// TO-DO: Next line is for testing only, remove and use storeid
 			const shopkeeper = "url(../assets/img/shopkeepers/" + await rand(1, 12) + ".png)";
 			storeElement.style.setProperty("--shopkeeper", shopkeeper);
 

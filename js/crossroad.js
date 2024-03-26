@@ -21,36 +21,33 @@ import { db, state, save } from "./db.js?v=0.19";
 /*===========================================================================*/
 // Set level
 /*===========================================================================*/
-export async function setLevel(lvl, fast, fromSavedState = false) {
+export async function setLevel(lvl, fromSavedState = false) {
 	try {
+
+		// Fade crossroad screen by starting the goTo() effect early
+		const book = document.querySelector(".book");
+		book.style.display = "flex";
+		await wait(100);
+		book.classList.add("booking");
+		await wait (350);
+
 		// Save new level
 		state.currentLevel = lvl;
 
-		// Fade crossroad screen
-		const crossroadEl = document.querySelector("#crossroad");
-		crossroadEl.classList.add("fadedCrossroad");
-		if (!fast) {
-			await wait(2000); // Half of the fade-out
-			// Get every path ready
-			document.querySelectorAll(".path").forEach(path => {
-				path.dataset.filled = false;
-				path.style.visibility = "hidden";
-			});
-			await wait(1000); // Wait for fade-out to finish
-		}
+		// Get every path ready
+		document.querySelectorAll(".path").forEach(path => {
+			path.dataset.filled = false;
+			path.style.visibility = "hidden";
+		});
 
 		// Functions to run
-		if (!fromSavedState) {
-			await createLvlArray(lvl);
-		}
+		await createLvlArray(lvl, fromSavedState);
 		await fillPaths(fromSavedState);
 		await setLevelUI(lvl);
 
-		// Remove fade on crossroad screen
-		crossroadEl.classList.remove("fadedCrossroad");
-
 		// Go to crossroad screen
 		goTo("crossroad");
+
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
@@ -59,21 +56,29 @@ export async function setLevel(lvl, fast, fromSavedState = false) {
 /////////////////
 // Create array with every path in the level
 /////////////////
-function createLvlArray(lvl) {
+function createLvlArray(lvl, fromSavedState = false) {
 	return new Promise((resolve, reject) => {
 		try {
-			const lvlData = db.levels[lvl];
 
-			const arrayOfMobs = [...lvlData.spawns.map(mob => ({ type: "mob", mobId: mob }))];
+			let levelArray = [];
 
-			const saferoomsArray = [
-				...Array(lvlData.stores).fill({ type: "store" }),
-				...lvlData.doors.map(door => ({ type: "door", level: door }))
-			];
+			if (fromSavedState) {
+				levelArray.push(state.paths.path1, state.paths.path2, state.paths.path3);
+			} else {
+				const lvlData = db.levels[lvl];
+	
+				const arrayOfMobs = [...lvlData.spawns.map(mob => ({ type: "mob", mobId: mob }))];
+	
+				const saferoomsArray = [
+					...Array(lvlData.stores).fill({ type: "store" }),
+					...lvlData.doors.map(door => ({ type: "door", level: door }))
+				];
+	
+				levelArray = injectArrInArr(arrayOfMobs, saferoomsArray);
+			}
 
-			const levelArray = injectArrInArr(arrayOfMobs, saferoomsArray);
 
-			state.currentLevelArray = levelArray;
+			state.currentLevelArray = [...levelArray];
 
 			resolve();
 		} catch (error) {
@@ -88,22 +93,17 @@ function createLvlArray(lvl) {
 export function fillPaths(fromSavedState = false) {
 	return new Promise((resolve, reject) => {
 		try {
+
 			let levelArray = [];
 
-			if (fromSavedState) {
-				levelArray.push(state.paths.path1, state.paths.path2, state.paths.path3);
-				console.log(levelArray);
+			if (state.endOfTheRoad === 1) {
+				levelArray = [{ type: 'door', level: db.levels[state.currentLevel].doors[0] }];
+				state.endOfTheRoad++;
+			} else if (state.endOfTheRoad === 2 && !fromSavedState) {
+				levelArray = [];
 			} else {
-				if (state.endOfTheRoad === 1) {
-					levelArray = [{ type: 'door', level: db.levels[state.currentLevel].doors[0] }];
-					state.endOfTheRoad++;
-				} else if (state.endOfTheRoad === 2) {
-					levelArray = []
-				} else {
-					levelArray = state.currentLevelArray;
-				}
+				levelArray = state.currentLevelArray;
 			}
-
 
 			const emptyPaths = document.querySelectorAll("#crossroad div[data-filled='false']");
 
@@ -200,18 +200,26 @@ export function fillPaths(fromSavedState = false) {
 // Set level UI elements (background, title, description...)
 /////////////////
 async function setLevelUI(lvl) {
-	const lvlData = db.levels[lvl];
+	return new Promise((resolve, reject) => {
+		try {
+			const lvlData = db.levels[lvl];
+		
+			// Background
+			document.querySelector("#crossroadBg").src = `./assets/img/bg/${lvl}.png`;
+		
+			// Title and description
+			const title = document.querySelector("#crossroad .level-title");
+			const desc = document.querySelector("#crossroad .level-desc");
+			title.textContent = lvlData.name;
+			desc.textContent = lvlData.desc;
+		
+			updateHP();
 
-	// Background
-	document.querySelector("#crossroadBg").src = `./assets/img/bg/${lvl}.png`;
-
-	// Title and description
-	const title = document.querySelector("#crossroad .level-title");
-	const desc = document.querySelector("#crossroad .level-desc");
-	title.textContent = lvlData.name;
-	desc.textContent = lvlData.desc;
-
-	updateHP();
+			resolve();
+		} catch (error) {
+			reject(error);
+		}
+	});
 }
 
 
@@ -221,6 +229,7 @@ async function setLevelUI(lvl) {
 export async function burnPath(path) {
 	return new Promise(async (resolve, reject) => {
 		try {
+
 			const pathContent = path.querySelector(".path-content");
 			const skipBtn = path.querySelector("[data-skip-path]")
 
@@ -288,6 +297,8 @@ export async function takeDoor(path) {
 	const crossroad = document.querySelector("#crossroad");
 
 	crossroad.style.pointerEvents = "none";
+
+	state.endOfTheRoad = false;
 
 	await burnPath(path);
 
