@@ -5,10 +5,10 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { randomItem, iconify } from "./helpers.js?v=0.18";
-import { generateCard } from "./inventory.js?v=0.18";
-import { db, state, save } from "./db.js?v=0.18";
-import { rand } from "./helpers.js?v=0.18";
+import { randomItem, iconify } from "./helpers.js?v=0.19";
+import { generateCard } from "./inventory.js?v=0.19";
+import { db, state, save } from "./db.js?v=0.19";
+import { rand } from "./helpers.js?v=0.19";
 
 
 
