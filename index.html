@@ -18,7 +18,7 @@
 				<button class="btn" id="continue" disabled>Continue</button>
 				<button class="btn" id="newGame">New Game</button>
 				<button class="btn" disabled>Collection</button>
-				<button class="btn" disabled>Settings</button>
+				<button class="btn" id="settings">Settings</button>
 				<button class="btn" disabled>How to play</button>
 			</div>
 			<p>v=0.21</p>
@@ -258,7 +258,7 @@
 				<div class="modal-content">
 					<button class="skill-modal-close btn-close"></button>
 					<p class="skill-modal-desc"></p>
-					<button class="btn skill-modal-buy"></button>
+					<button class="btn btn-light skill-modal-buy"></button>
 				</div>
 			</div>
 			<div class="tokens-left-wrapper" data-goto="skilltree">
@@ -287,6 +287,21 @@
 			</div>
 		</section>
 
+		<section class="settings modal">
+			<div class="modal-content">
+				<button class="btn btn-close-light"></button>
+				<div class="settings-fullscreen">
+					<p class="title">Fullscreen</p>
+					<button class="btn btn-light" onclick="document.documentElement.requestFullscreen()">Turn on</button>
+				</div>
+
+				<div class="settings-volume">
+					<p class="title">Volume</p>
+					<input type="range" id="volumeRange" min="0" max="1" step="0.01" value="1">
+				</div>
+			</div>
+		</section>
+
 		<div class="book">
 			<div class="cover"></div>
 			<div class="page"></div>
@@ -299,6 +314,8 @@
 	</main>
 	<script src="js/lib/anime.min.js"></script>
 	<script src="js/lib/particles.js"></script>
+	<script src="js/lib/howler.core.min.js"></script>
+	<script src="js/musicsheet.js"></script>
 </body>
 
 </html>

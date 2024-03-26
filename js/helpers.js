@@ -33,17 +33,19 @@ export async function goTo(destination) {
 		try {
 
 			const book = document.querySelector(".book");
-			const cover = book.querySelector(".cover");
 			const pages = book.querySelectorAll(".page");
 
 			book.style.display = "flex";
+
+			const pageSound = (await rand(1, 4)).toString();
+			soundEffects.page.play(pageSound);
 
 			await wait(100);
 
 			book.classList.add("booking");
 
-			await wait (350);
-			
+			await wait(350);
+
 			book.classList.remove("booking");
 			book.classList.add("booked");
 
@@ -59,7 +61,7 @@ export async function goTo(destination) {
 				page.classList.add("turn-page");
 			});
 
-			await wait (900);
+			await wait(900);
 
 			book.style.display = "none";
 			book.classList.remove("booked");

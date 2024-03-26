@@ -50,6 +50,11 @@ if (!(localStorage.getItem("almogrotesque") === null)) {
 /////////////////
 document.querySelector(".card-scroller .card-list").addEventListener('mousedown', handleDragScroll);
 
+/////////////////
+// Audio settings
+/////////////////
+Howler.volume(1);
+Howler.autoUnlock = true;
 
 
 /* ··········································································*/
@@ -68,9 +73,12 @@ document.querySelector("#start #newGame").addEventListener("click", function () 
 	// document.documentElement.requestFullscreen();
 	setLevel("crossroad", false);
 
-	/////////////////
+	// Music
+	if (!soundtrack.crossroad.playing()) {
+		soundtrack.crossroad.play();
+	}
+
 	// Display fate, coins, tokens, skills...
-	/////////////////
 	updateFate();
 	updateCoins();
 	updateTokens();
@@ -87,9 +95,7 @@ document.querySelector("#start #continue").addEventListener("click", async funct
 	await load();
 	setLevel(state.currentLevel, true);
 
-	/////////////////
 	// Display fate, coins, tokens, skills...
-	/////////////////
 	updateFate();
 	updateCoins();
 	updateTokens();
@@ -312,6 +318,42 @@ document.querySelector(".skill-modal-close").addEventListener("click", function 
 /*===========================================================================*/
 document.querySelectorAll(".store-item-card").forEach(el => {
 	el.addEventListener("click", function () {
-		el.classList.toggle("big-card");
+
+		if (el.classList.contains("big-card")) {
+			el.classList.remove("big-card");
+			soundEffects.card.play();
+		} else {
+			el.classList.add("big-card");
+			soundEffects.slot.play();
+		}
+
 	})
 });
+
+
+/*===========================================================================*/
+// Open / close settings
+/*===========================================================================*/
+document.querySelector("#settings").addEventListener("click", function() {
+	const settingsModal = document.querySelector(".settings.modal");
+	settingsModal.style.display = "flex";
+	if (!soundtrack.crossroad.playing()) {
+		soundtrack.crossroad.play();
+	}
+})
+
+document.querySelector(".settings.modal .btn-close-light").addEventListener("click", function() {
+	const settingsModal = document.querySelector(".settings.modal");
+	settingsModal.style.display = "none";
+})
+
+/*===========================================================================*/
+// Music settings
+/*===========================================================================*/
+document.getElementById('volumeRange').addEventListener('input', handleVolumeChange);
+
+// Function to handle volume change
+function handleVolumeChange() {
+    var volume = parseFloat(this.value);
+    Howler.volume(volume);
+}

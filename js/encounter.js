@@ -385,7 +385,7 @@ function enforceHandLimit() {
 				// Click to confirm
 				confirm.addEventListener("click", function () {
 					const cardsInHand = document.querySelectorAll("#playerBoard .hand .card");
-					for (const selectedCard of selectedCards){
+					for (const selectedCard of selectedCards) {
 						cardsInHand.forEach(card => {
 							if (card.firstElementChild.dataset.cardid === selectedCard) {
 								card.remove();
@@ -450,6 +450,9 @@ function cardPositions() {
 				card.classList.remove("cardOnDrag");
 				card.classList.remove("neodrag-dragging");
 				card.classList.add("cardOnDragStart");
+
+				// Sound
+				soundEffects.card.play();
 
 				let parent = document.querySelector("main");
 
@@ -549,6 +552,9 @@ async function onDrop(event) {
 		event.target.classList.add("target-slot");
 		await placeCardInSlot(cardId);
 		event.target.classList.remove("hover");
+
+		// Sound
+		soundEffects.slot.play();
 	}
 	if (event.slotToEmpty) {
 		event.slotToEmpty.innerHTML = "";
@@ -604,6 +610,9 @@ function makeSlotsDraggable() {
 				slot.classList.add("cardOnDragStart");
 
 				currentSlot = slot.parentElement;
+
+				// Sound
+				soundEffects.card.play();
 
 				let parent = document.querySelector("main");
 

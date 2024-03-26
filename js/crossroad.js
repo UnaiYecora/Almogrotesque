@@ -241,6 +241,9 @@ export async function burnPath(path) {
 				color: "#fff"
 			};
 
+			// Sound
+			soundEffects.burnPath.play();
+
 			particlesOpts.complete = () => {
 				path.style.opacity = "0";
 				path.style.transition = "0s";
