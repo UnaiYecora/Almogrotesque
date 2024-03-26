@@ -220,6 +220,8 @@ img.screen-background {
     object-fit: cover;
     max-width: unset;
     inset: 0;
+	width: 100%;
+    height: 100%;
     filter: saturate(1) brightness(1) contrast(2) blur(0px) sepia(1) opacity(0.5);
     user-select: none;
     -webkit-user-drag: none;
