@@ -753,14 +753,9 @@ div#discobar>span {
 
 #encounter:has(.slot.hover) .cardOnDrag .inventory-card{
 	--glow-color: #42188a;
-	box-shadow: var(--glow-color) 0 0 0.5rem;
-	animation: glow 1s infinite alternate;
+	box-shadow: var(--glow-color) 0 0 1rem;
 }
-@keyframes glow {
-	100% {
-		box-shadow: var(--glow-color) 0 0 1.5rem;
-	}
-}
+
 #encounter:has(.slot.hover) .cardOnDrag:before{
 	content: "";
     position: absolute;
