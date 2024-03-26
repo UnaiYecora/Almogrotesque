@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateHP, shuffleArray, goTo, wait, injectArrInArr } from "./helpers.js?v=0.20";
-import { generateStoreItems } from "./store.js?v=0.20";
-import { db, state, save } from "./db.js?v=0.20";
+import { updateHP, shuffleArray, goTo, wait, injectArrInArr } from "./helpers.js?v=0.21";
+import { generateStoreItems } from "./store.js?v=0.21";
+import { db, state, save } from "./db.js?v=0.21";
 
 
 /* ··········································································*/
