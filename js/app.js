@@ -95,6 +95,11 @@ document.querySelector("#start #continue").addEventListener("click", async funct
 	await load();
 	setLevel(state.currentLevel, true);
 
+	// Music
+	if (!soundtrack.crossroad.playing()) {
+		soundtrack.crossroad.play();
+	}
+
 	// Display fate, coins, tokens, skills...
 	updateFate();
 	updateCoins();
