@@ -238,7 +238,7 @@ export async function burnPath(path) {
 			let particlesOpts = {
 				particlesAmountCoefficient: 3,
 				direction: "bottom",
-				color: "#fff"
+				color: "#331b04"
 			};
 
 			// Sound
