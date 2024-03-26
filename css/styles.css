@@ -152,6 +152,7 @@ section#start {
 	justify-content: space-evenly;
 	padding: 1rem;
 	background: url("../assets/img/textures/encounter.jpg");
+	background-size: cover;
 	color: var(--dark);
 	width: 100%;
 	transition: filter .75s;
@@ -202,6 +203,7 @@ section#start p {
 	background-position: center !important;
 	transition: filter .75s;
 	background: url("../assets/img/textures/encounter.jpg");
+	background-size: cover;
 }
 
 #crossroad:after {
@@ -1341,6 +1343,7 @@ section#skilltree {
 	height: 100%;
 	overflow: hidden;
 	background: url("../assets/img/textures/encounter.jpg");
+	background-size: cover;
 }
 
 .close-skilltree {
@@ -1650,6 +1653,7 @@ section#death button{
 
 .book .page{
 	background: url("../assets/img/textures/encounter.jpg");
+	background-size: cover;
 	opacity: 0;
 	transition: opacity 0s, rotate 1.5s .3s, transform 1.5s .3s;
 }
