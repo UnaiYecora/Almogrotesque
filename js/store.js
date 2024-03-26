@@ -105,7 +105,7 @@ export async function generateStore(storeid) {
 					} else {
 						priceEl.textContent = price;
 					}
-					let cardIItemContent = '<button class="btn btn-close"></button>';
+					let cardIItemContent = '<button class="btn btn-close-light"></button>';
 					cardIItemContent += await generateCard(item);
 					cardEl.innerHTML = cardIItemContent;
 
