@@ -385,3 +385,18 @@ export function checkAttackAvailability() {
 		btn.disabled = true;
 	}
 }
+
+/*===========================================================================*/
+// Set music and sfx volumes
+/*===========================================================================*/
+export function setVolume(group, volume) {
+	if (group === "music") {
+		for (const [key, value] of Object.entries(soundtrack)) {
+			soundtrack[key].volume(volume)
+		}
+	} else if (group === "sfx") {
+		for (const [key, value] of Object.entries(soundEffects)) {
+			soundEffects[key].volume(volume)
+		}
+	}
+}

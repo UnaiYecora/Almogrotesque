@@ -43,6 +43,11 @@ export var state = {
 	endOfTheRoad: 0,
 }
 
+export var global = {
+	musicVolume: 1,
+	sfxVolume: 1,
+}
+
 
 /*===========================================================================*/
 // Save
@@ -50,6 +55,11 @@ export var state = {
 export function save() {
 	const stateData = JSON.stringify(state);
 	localStorage.setItem('almogrotesque', stateData);
+}
+
+export function saveGlobal() {
+	const globalData = JSON.stringify(global);
+	localStorage.setItem('almogrotesque-global', globalData);
 }
 
 /*===========================================================================*/
@@ -69,6 +79,24 @@ export function load() {
 		return Promise.resolve();
 	} catch (error) {
 		console.error("An error occurred loading data: " + error.message);
+		throw error;
+	}
+}
+
+export function loadGlobal() {
+	try {
+		const savedGlobalData = localStorage.getItem('almogrotesque-global');
+
+		if (savedGlobalData) {
+			const savedGlobal = JSON.parse(savedGlobalData);
+			global = savedGlobal;
+		} else {
+			console.log('No saved global data found');
+		}
+
+		return Promise.resolve();
+	} catch (error) {
+		console.error("An error occurred loading global data: " + error.message);
 		throw error;
 	}
 }

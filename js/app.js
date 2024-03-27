@@ -5,13 +5,13 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateMana, updateTokens, iconify, handleDragScroll } from "./helpers.js?v=0.23";
+import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume } from "./helpers.js?v=0.23";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.23";
 import { generateInventory } from "./inventory.js?v=0.23";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn, placeCardInSlot } from "./encounter.js?v=0.23";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.23";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.23";
 import { buySkill, updateSkilltree } from "./skills.js?v=0.23";
-import { db, state, save, load } from "./db.js?v=0.23";
+import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.23";
 
 
 /* ··········································································*/
@@ -22,9 +22,7 @@ import { db, state, save, load } from "./db.js?v=0.23";
 /* ··········································································*/
 /* ··········································································*/
 
-/////////////////
 // Window scaler
-/////////////////
 window.addEventListener("resize", widthBasedFontSize);
 function widthBasedFontSize() {
 	const root = document.querySelector(':root');
@@ -37,23 +35,24 @@ function widthBasedFontSize() {
 widthBasedFontSize();
 
 
-/////////////////
 // Check for saved game
-/////////////////
 if (!(localStorage.getItem("almogrotesque") === null)) {
 	document.querySelector("#start #continue").disabled = false;
 }
 
 
-/////////////////
 // Horizontal drag to scroll
-/////////////////
 document.querySelector(".card-scroller .card-list").addEventListener('mousedown', handleDragScroll);
 
-/////////////////
+
+// Load global data
+loadGlobal();
+
 // Audio settings
-/////////////////
-Howler.volume(1);
+setVolume("music", global.musicVolume);
+setVolume("sfx", global.sfxVolume);
+document.querySelector("#musicVolumeRange").value = global.musicVolume;
+document.querySelector("#effectsVolumeRange").value = global.sfxVolume;
 Howler.autoUnlock = true;
 
 
@@ -342,9 +341,6 @@ document.querySelectorAll(".store-item-card").forEach(el => {
 document.querySelector("#settings").addEventListener("click", function() {
 	const settingsModal = document.querySelector(".settings.modal");
 	settingsModal.style.display = "flex";
-	if (!soundtrack.crossroad.playing()) {
-		soundtrack.crossroad.play();
-	}
 })
 
 document.querySelector(".settings.modal .btn-close-light").addEventListener("click", function() {
@@ -355,10 +351,30 @@ document.querySelector(".settings.modal .btn-close-light").addEventListener("cli
 /*===========================================================================*/
 // Music settings
 /*===========================================================================*/
-document.getElementById('volumeRange').addEventListener('input', handleVolumeChange);
+document.getElementById('musicVolumeRange').addEventListener('input', musicVolumeChange);
 
 // Function to handle volume change
-function handleVolumeChange() {
-    var volume = parseFloat(this.value);
-    Howler.volume(volume);
+function musicVolumeChange() {
+	if (!soundtrack.crossroad.playing()) {
+		soundtrack.crossroad.play();
+	}
+
+    const volume = parseFloat(this.value);
+    setVolume("music", volume);
+	global.musicVolume = volume;
+	saveGlobal();
+}
+
+document.getElementById('effectsVolumeRange').addEventListener('input', sfcVolumeChange);
+
+// Function to handle volume change
+function sfcVolumeChange() {
+	if (!soundEffects.slot.playing()) {
+		soundEffects.slot.play();
+	}
+
+    const volume = parseFloat(this.value);
+	setVolume("sfx", volume);
+	global.sfxVolume = volume;
+	saveGlobal();
 }
