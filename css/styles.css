@@ -1465,7 +1465,6 @@ button.skill-modal-close {
 	right: 1.5rem;
 	width: 3rem;
 	height: 2.8rem;
-	filter: invert(1) saturate(2) hue-rotate(200deg) brightness(0.8);
 }
 
 button.skill-modal-buy {
@@ -1637,11 +1636,11 @@ section#death button {
 // SETTINGS 
 =============================================================================*/
 .settings.modal .btn-close-light {
-	width: 3.5rem;
-	aspect-ratio: 1;
 	position: absolute;
-	top: -5rem;
-	right: 0rem;
+	top: 1.5rem;
+	right: 1.5rem;
+	width: 3rem;
+	height: 2.8rem;
 }
 
 .settings.modal .modal-content {

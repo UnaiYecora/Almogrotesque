@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume } from "./helpers.js?v=0.23";
+import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume, changeMusic } from "./helpers.js?v=0.23";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.23";
 import { generateInventory } from "./inventory.js?v=0.23";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.23";
@@ -346,6 +346,31 @@ document.querySelector("#settings").addEventListener("click", function() {
 document.querySelector(".settings.modal .btn-close-light").addEventListener("click", function() {
 	const settingsModal = document.querySelector(".settings.modal");
 	settingsModal.style.display = "none";
+	soundtrack.crossroad.fade(global.musicVolume, 0, 3000);
+	setTimeout(() => {
+		soundtrack.crossroad.stop();
+		soundtrack.crossroad.volume(global.musicVolume);
+	}, 1000);
+})
+
+/*===========================================================================*/
+// Fullscreen settings
+/*===========================================================================*/
+// On fullscreen change event
+document.addEventListener("fullscreenchange", function() {
+	const btn = document.querySelector("#fullscreen-btn");
+	if (document.fullscreenElement) {
+		btn.textContent = "Turn off";
+	} else {
+		btn.textContent = "Turn on";
+	}
+});
+
+// On click event
+document.querySelector("#fullscreen-btn").addEventListener("click", function() {
+	document.fullscreenElement ?
+	document.exitFullscreen() :
+	document.querySelector('body').requestFullscreen();
 })
 
 /*===========================================================================*/
@@ -372,7 +397,7 @@ function sfcVolumeChange() {
 	if (!soundEffects.slot.playing()) {
 		soundEffects.slot.play();
 	}
-
+	
     const volume = parseFloat(this.value);
 	setVolume("sfx", volume);
 	global.sfxVolume = volume;

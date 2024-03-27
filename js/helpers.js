@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { db, state } from "./db.js?v=0.23";
+import { db, state, global } from "./db.js?v=0.23";
 
 
 
@@ -399,4 +399,21 @@ export function setVolume(group, volume) {
 			soundEffects[key].volume(volume)
 		}
 	}
+}
+
+/*===========================================================================*/
+// Change music
+/*===========================================================================*/
+export function changeMusic(currentSong, nextSong){
+	const current = soundtrack[currentSong];
+	const next = soundtrack[nextSong];
+	const volume = global.musicVolume;
+
+	current.fade(volume, 0, 3000);
+	setTimeout(() => {
+		current.stop();
+		current.volume(volume);
+	}, 3000);
+	next.fade(0, volume, 3000);
+	next.play();
 }

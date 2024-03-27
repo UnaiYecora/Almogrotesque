@@ -44,7 +44,7 @@ export var state = {
 }
 
 export var global = {
-	musicVolume: 1,
+	musicVolume: 0.65,
 	sfxVolume: 1,
 }
 
