@@ -236,7 +236,7 @@ document.querySelector("#store").addEventListener("click", async function (e) {
 
 		save();
 
-		storeItemEL.style.visibility = "hidden";
+		storeItemEL.classList.add("itemBought");
 
 		// If it's the last item, burn path
 		if (state[store][0] == "" && state[store][1] == "" && state[store][2] == "") {

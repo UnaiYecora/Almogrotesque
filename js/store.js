@@ -86,7 +86,7 @@ export async function generateStore(storeid) {
 
 				if (item) {
 					// Display item
-					place.style.visibility = "visible";
+					place.classList.remove("itemBought");
 
 					// Get price
 					let price = itemData.price;
@@ -111,11 +111,10 @@ export async function generateStore(storeid) {
 
 					// Datasets
 					place.dataset.price = price;
-					place.dataset.amount = itemData.amount;
 					place.dataset.store = storeid;
 					place.dataset.position = i;
 				} else {
-					place.style.visibility = "hidden";
+					place.classList.add("itemBought");
 				}
 
 
