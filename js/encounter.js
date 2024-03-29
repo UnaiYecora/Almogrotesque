@@ -40,6 +40,7 @@ export async function loadEncounter(mobId) {
 		state.player.poison = 0;
 
 		state.player.hand = [];
+		state.player.cemetery = [];
 		state.player.deck = [];
 		state.player.deck = [...state.player.cards];
 		shuffleArray(state.player.deck);
