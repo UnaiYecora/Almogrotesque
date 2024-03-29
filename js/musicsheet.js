@@ -27,4 +27,9 @@ var soundtrack = {
 		html5: true,
 		preload: "metadata",
 	}),
+	battle1 : new Howl({
+		src: ['./assets/audio/music/battle.mp3'],
+		loop: true,
+		html5: true,
+	}),
 }

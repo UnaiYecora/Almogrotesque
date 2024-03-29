@@ -5,10 +5,10 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability } from "./helpers.js?v=0.23";
-import { db, state, save } from "./db.js?v=0.23";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.23";
-import { generateCard } from "./inventory.js?v=0.23";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic } from "./helpers.js?v=0.24";
+import { db, state, save } from "./db.js?v=0.24";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.24";
+import { generateCard } from "./inventory.js?v=0.24";
 import { Draggable } from "./lib/drag.js";
 
 /* ··········································································*/
@@ -50,6 +50,9 @@ export async function loadEncounter(mobId) {
 
 		// Navigate to the encounter screen
 		goTo("encounter");
+
+		// Change music
+		//changeMusic("crossroad", "battle1");
 
 		// Toggle the player's turn
 		toggleTurn(true);
