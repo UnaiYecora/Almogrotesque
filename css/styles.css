@@ -1550,6 +1550,16 @@ section#death button {
 	z-index: 11;
 }
 
+.hand:before {
+    content: "";
+    position: absolute;
+    background: black;
+    width: 37rem;
+    height: 12rem;
+    top: 0;
+    filter: blur(7px) opacity(0.17);
+}
+
 .hand .card {
 	width: 6.667rem;
 	cursor: pointer;
