@@ -9,7 +9,9 @@ import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait
 import { db, state, save } from "./db.js?v=0.24";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.24";
 import { generateCard } from "./inventory.js?v=0.24";
-import { Draggable } from "./lib/drag.js";
+import { burnPath, fillPaths } from "./crossroad.js?v=0.24";
+import { Draggable } from "./lib/drag.js?v=0.24";
+
 
 /* ··········································································*/
 /* ··········································································*/
@@ -38,10 +40,11 @@ export async function loadEncounter(mobId) {
 		}
 		state.fatePrice = state.startingFatePrice;
 		state.player.poison = 0;
-
 		state.player.hand = [];
 		state.player.cemetery = [];
 		state.player.deck = [];
+
+		// Set deck
 		state.player.deck = [...state.player.cards];
 		shuffleArray(state.player.deck);
 
@@ -72,17 +75,22 @@ async function generateEncounterCard(mobId) {
 			const mobData = db.mobs[mobId];
 			state.mob = { ...mobData, mana: 0, shield: 0, poison: 0, maxHp: mobData.hp, mobid: mobId };
 
-			// Reset secondary action defaults
+			// Get elements
 			const changeFateButton = document.querySelector(".change-fate");
 			const secondaryAction = document.querySelector(".secondary-action");
 			const fatePriceElement = document.querySelector(".fate-price");
+			const playerSlots = document.querySelector("#playerDiscs");
+			const mobSlots = document.querySelector("#mobDiscs");
+			const encounter = document.querySelector("#encounter");
+			const conversation = encounter.querySelector("#conversation");
+			const hand = document.querySelector("#playerBoard .hand");
 
+			// Reset secondary action defaults
 			changeFateButton.disabled = true;
 			secondaryAction.style.display = "none";
 			fatePriceElement.textContent = state.fatePrice;
 
 			// Player Slots
-			const playerSlots = document.querySelector("#playerDiscs");
 			playerSlots.innerHTML = "";
 			for (let i = 0; i < state.player.slots; i++) {
 				let newSlot = document.createElement("div");
@@ -92,10 +100,9 @@ async function generateEncounterCard(mobId) {
 			playerSlots.style.display = "flex";
 
 			// Empty hand
-			document.querySelector("#playerBoard .hand").innerHTML = "";
+			hand.innerHTML = "";
 
 			// Mob slots
-			const mobSlots = document.querySelector("#mobDiscs");
 			mobSlots.innerHTML = "";
 			for (let i = 0; i < mobData.slots; i++) {
 				let newSlot = document.createElement("div");
@@ -104,14 +111,24 @@ async function generateEncounterCard(mobId) {
 			}
 			mobDiscs.style.display = "none";
 
-			// Mob image and description
-			const encounter = document.querySelector("#encounter");
-			encounter.querySelector(".mob-image").src = "./assets/img/mobs/" + mobId + ".png";
-
-			encounter.querySelector(".mobName").textContent = mobData.name;
-
 			// Update HP
 			updateHP();
+
+			// Mob image and name
+			encounter.querySelector(".mob-image").src = "./assets/img/mobs/" + mobId + ".png";
+			encounter.querySelector(".mobName").textContent = mobData.name;
+
+			// Conversation mode
+			conversation.querySelector(".message").innerHTML = "";
+			conversation.querySelector(".options").innerHTML = "";
+			if (mobData.talkative) {
+				encounter.classList.add("on-conversation");
+				conversation.classList.remove("hidden");
+				startConversation();
+			} else {
+				encounter.classList.remove("on-conversation");
+				conversation.classList.add("hidden");
+			}
 
 			resolve();
 		} catch (error) {
@@ -121,6 +138,129 @@ async function generateEncounterCard(mobId) {
 	})
 }
 
+/*===========================================================================*/
+// Conversations
+/*===========================================================================*/
+/* function startConversation(mobId) {
+	const dialog = db.mobs[mobId].dialog;
+
+	let current_line = 0;
+	while (current_line < dialog.length) {
+		let current_step = dialog[current_line];
+
+		if (undefined !== current_step.m) {
+			//display_message(current_step.m);
+			if (undefined !== current_step.next) {
+				//current_line = find_label(mobId, current_step.next);
+			} else {
+				//current_line = current_line + 1;
+			}
+		} else if (undefined !== current_step.question) {
+			// display the question: current_step.question
+			// display the answers: current_step.answers
+			// choose an answer
+			// and change current_line accordingly
+		}
+	}
+} */
+
+function startConversation() {
+	const dialog = state.mob.dialog;
+
+	let current_line = 0;
+	let current_step = dialog[current_line];
+	
+
+	if (undefined !== current_step.m && undefined !== current_step.a) {
+		display_message(current_step.m);
+		display_options(current_step.a);
+	}
+}
+
+async function continueConversation(line) {
+	const dialog = state.mob.dialog;
+	const current_line = dialog[line];
+
+	if (undefined !== current_line.end) {
+		const messageElement = document.querySelector("#encounter #conversation .message");
+		messageElement.textContent = current_line.m;
+
+		await wait(1000);
+
+		transitionConversation(current_line.end);
+	}
+}
+
+async function transitionConversation(end) {
+	let type = end;
+
+	if (end === "random") {
+		type = Math.random() < 0.5 ? "exit" : "combat";
+	}
+
+	// Exit
+	if (type === "exit") {
+		const path = document.querySelector('#crossroad [data-mobid="' + state.mob.mobid + '"]');
+		await goTo("crossroad");
+		await burnPath(path);
+		await fillPaths();
+
+	// Combat
+	} else if (type === "combat") {
+		document.querySelector("#encounter #conversation").classList.add("fade-out");
+		document.querySelector("#encounter").classList.remove("on-conversation");
+
+		setTimeout(() => {
+			document.querySelector("#encounter #conversation .message").innerHTML = "";
+			document.querySelector("#encounter #conversation .options").innerHTML = "";
+			document.querySelector("#encounter #conversation").classList.remove("fade-out");
+			document.querySelector("#encounter #conversation").classList.add("hidden");
+		}, 800);
+
+	// Error
+	} else {
+		console.error("Type of conversation end not valid.")
+	}
+}
+
+function display_message(m) {
+	const messageElement = document.querySelector("#encounter #conversation .message");
+	messageElement.textContent = m;
+}
+
+function display_options(a) {
+	const optionsElement = document.querySelector("#encounter #conversation .options");
+
+	let options = "";
+	a.forEach(answer => {
+		options += '<button class="btn" data-next="'+ answer.next +'">';
+		options += answer.m;
+		options += '</button>';
+	});
+
+	optionsElement.innerHTML = options;
+
+	let allButtons = optionsElement.querySelectorAll("button");
+	allButtons.forEach(button => {
+		button.addEventListener("click", function() {
+			const next = button.dataset.next;
+			continueConversation(find_label(next));
+			optionsElement.innerHTML = "";
+			allButtons = null;
+		})
+	});
+}
+
+function find_label(label) {
+	const dialog = state.mob.dialog;
+
+	for (var i = 0; i < dialog.length; i++) {
+		if (dialog[i].label === label) {
+			return i;
+		}
+	}
+	return -1;
+}
 
 /*===========================================================================*/
 // Turn System
@@ -303,6 +443,101 @@ export async function toggleTurn(start) {
 }
 
 /*===========================================================================*/
+// Generate XP screen
+/*===========================================================================*/
+async function generateXpScreen() {
+	return new Promise(async (resolve, reject) => {
+		try {
+
+			// Get elements
+			const xpscreen = document.querySelector("#xpscreen");
+			const lvl = xpscreen.querySelector(".lvl span");
+			const [toTargetElement, targetElement] = xpscreen.querySelectorAll(".bar span");
+			const bar = xpscreen.querySelector(".progress");
+			const reward = document.querySelector("#xpscreen .reward span");
+			const lvlUpReward = document.querySelectorAll(".lvl-up-reward");
+
+
+			// Update player's coins and display reward
+			// TO-DO: Rewards per mob, or standar reward for each mob (with rand variation)
+			let coinsReward = db.coinTiers[state.mob.lvl];
+			if (state.player.skills.includes("skilleco1")) {
+				coinsReward += Math.ceil(coinsReward * 25 / 100);
+			}
+			state.player.coins += coinsReward;
+			reward.textContent = "+" + coinsReward;
+			updateCoins();
+
+			// Fetch XP data
+			const lvlArr = db.xpTiers;
+			let lvlIndex = state.player.lvl - 1;
+			let target = lvlArr[lvlIndex + 1];
+			const gainedXP = state.mob.lvl;
+			const oldTotalXP = state.player.xp;
+			const newTotalXP = oldTotalXP + gainedXP;
+
+			// Display current level and progress bar
+			lvlUpReward.forEach(el => {
+				el.style.display = "none";
+			});
+			lvl.textContent = state.player.lvl;
+			targetElement.textContent = target - lvlArr[lvlIndex];
+			toTargetElement.textContent = Math.min(oldTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
+			bar.style.width = ((oldTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
+
+			// Update player's XP
+			state.player.xp = newTotalXP;
+
+			// Update stats
+			await wait(500);
+			toTargetElement.textContent = Math.min(newTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
+			bar.style.width = ((newTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
+			await wait(1000);
+
+			if (newTotalXP >= target) {
+				state.player.lvl++;
+				bar.style.transition = "0s";
+				bar.style.width = "0%";
+				lvl.textContent = state.player.lvl;
+				const newLvlIndex = state.player.lvl - 1;
+				target = lvlArr[newLvlIndex + 1];
+				targetElement.textContent = target - lvlArr[newLvlIndex];
+				toTargetElement.textContent = Math.min(newTotalXP - lvlArr[newLvlIndex], target - lvlArr[newLvlIndex]);
+
+				// Level up reward
+				// TO-DO
+				lvlUpReward.forEach(el => {
+					el.style.display = "flex";
+				});
+				state.player.maxHp += 5;
+				state.player.hp = state.player.maxHp;
+				state.player.fate += 10;
+				updateFate();
+
+				// Update stats again
+				await wait(500);
+				bar.style.transition = "1s";
+				bar.style.width = ((newTotalXP - lvlArr[newLvlIndex]) * 100) / (target - lvlArr[newLvlIndex]) + "%";
+			}
+
+			resolve();
+
+		} catch (error) {
+			console.log("An error occurred displaying XP screen: " + error.message);
+			reject(error);
+		}
+	});
+}
+
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+/* ················  C A R D S,   S L O T S,   D I S C S  ···················*/
+/* ··········································································*/
+/* ··········································································*/
+/* ··········································································*/
+
+/*===========================================================================*/
 // Draw cards
 /*===========================================================================*/
 async function drawCards() {
@@ -323,94 +558,51 @@ async function drawCards() {
 }
 
 /*===========================================================================*/
-// Turn System
+// Place card disc in slot
 /*===========================================================================*/
-function enforceHandLimit() {
+export async function placeCardInSlot(cardId) {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const modal = document.querySelector(".card-scroller");
-			const container = document.querySelector(".card-scroller .modal-content .card-list");
-			const hand = document.querySelector("#playerBoard .hand");
-			const confirmBtn = document.querySelector(".card-scroller button");
-			const amountToRemoveElement = document.querySelector(".amount-to-remove");
-			const maxHandLimitElement = document.querySelector(".max-hand-limit");
-			const amountOfCards = hand.childElementCount;
-			const cardLimit = state.player.slots;
-			const amountToRemove = amountOfCards - cardLimit;
 
-			// If hand over limit
-			if (amountOfCards > cardLimit) {
+			// Get Elements
+			const slot = document.querySelector(".target-slot");
 
-				let selectedCards = [];
+			let randomID;
 
-				// Reset container
-				container.innerHTML = "";
-				const confirm = confirmBtn.cloneNode(true);
-				confirmBtn.parentNode.replaceChild(confirm, confirmBtn);
-				confirm.disabled = true;
 
-				// Clone hand into modal
-				for (const child of hand.children) {
-					const clonedChild = child.cloneNode(true);
-					clonedChild.removeAttribute('style');
-					clonedChild.classList.remove("neodrag");
-					container.appendChild(clonedChild);
+			// Generate disc
+			let newDisc = document.createElement("div");
+			randomID = "id-" + crypto.randomUUID();
+			newDisc.id = randomID;
 
-					// Add event listener to toggle selection
-					clonedChild.addEventListener("click", function (event) {
-						if (!event.currentTarget.closest('.card-scroller .card-list').classList.contains('scrolling')) {
-							const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
-							if (!clonedChild.classList.contains("selectedToBeRemoved") && selectedCount < amountToRemove) {
-								clonedChild.classList.add("selectedToBeRemoved");
-								selectedCards.push(clonedChild.firstElementChild.dataset.cardid);
-								updateButtonState();
-							} else if (clonedChild.classList.contains("selectedToBeRemoved")) {
-								clonedChild.classList.remove("selectedToBeRemoved");
-								selectedCards = selectedCards.filter(item => item !== clonedChild.firstElementChild.dataset.cardid);
-								updateButtonState();
-							}
-						}
-					});
-				}
 
-				function updateButtonState() {
-					const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
-					confirm.disabled = selectedCount !== amountToRemove;
-				}
+			// Add class
+			newDisc.classList.add("disc");
 
-				// Update text
-				amountToRemoveElement.innerHTML = amountToRemove;
-				maxHandLimitElement.innerHTML = cardLimit;
+			// Clear slot
+			slot.innerHTML = "";
 
-				// Display modal
-				modal.style.display = "flex";
-				container.scrollLeft = 0;
+			// Append card
+			slot.innerHTML += await generateCard(cardId);
 
-				// Click to confirm
-				confirm.addEventListener("click", function () {
-					const cardsInHand = document.querySelectorAll("#playerBoard .hand .card");
-					for (const selectedCard of selectedCards) {
-						cardsInHand.forEach(card => {
-							if (card.firstElementChild.dataset.cardid === selectedCard) {
-								card.remove();
-								state.player.cemetery.push(selectedCard);
-							}
-						});
-					}
-					cardPositions();
-					modal.style.display = "none";
-					resolve();
-				});
-			} else {
-				resolve();
-			}
+			// Insert disc in slot
+			slot.append(newDisc);
 
+
+			// Modify classes
+			slot.classList.remove("target-slot");
+			slot.classList.add("charged");
+
+			generatePlayingDisc(cardId, randomID);
+
+
+			resolve();
 		} catch (error) {
-			console.log("An error occurred enforcing the hand limit: " + error.message);
+			console.log("An error occurred trying to place a card in a slot: " + error.message);
 			reject(error);
 		}
-	});
-}
+	})
+};
 
 /*===========================================================================*/
 // Card positions
@@ -696,232 +888,95 @@ function makeSlotsDraggable() {
 	});
 }
 
-
 /*===========================================================================*/
-// Victory
+// Hand limit
 /*===========================================================================*/
-export async function victory() {
-	state.turn = false;
-	state.player.poison = 0;
-	state.player.shield = 0;
-	state.player.mana = 0;
-	document.querySelector("#playerBoard").style.display = "none";
-	document.querySelector("#xpscreen").style.display = "flex";
-	generateXpScreen();
-	save();
-}
-
-
-/*===========================================================================*/
-// Death
-/*===========================================================================*/
-export function death() {
-	document.querySelector("#death").style.display = "flex";
-}
-
-/*===========================================================================*/
-// Generate XP screen
-/*===========================================================================*/
-async function generateXpScreen() {
+function enforceHandLimit() {
 	return new Promise(async (resolve, reject) => {
 		try {
+			const modal = document.querySelector(".card-scroller");
+			const container = document.querySelector(".card-scroller .modal-content .card-list");
+			const hand = document.querySelector("#playerBoard .hand");
+			const confirmBtn = document.querySelector(".card-scroller button");
+			const amountToRemoveElement = document.querySelector(".amount-to-remove");
+			const maxHandLimitElement = document.querySelector(".max-hand-limit");
+			const amountOfCards = hand.childElementCount;
+			const cardLimit = state.player.slots;
+			const amountToRemove = amountOfCards - cardLimit;
 
-			// Get elements
-			const xpscreen = document.querySelector("#xpscreen");
-			const lvl = xpscreen.querySelector(".lvl span");
-			const [toTargetElement, targetElement] = xpscreen.querySelectorAll(".bar span");
-			const bar = xpscreen.querySelector(".progress");
-			const reward = document.querySelector("#xpscreen .reward span");
-			const lvlUpReward = document.querySelectorAll(".lvl-up-reward");
+			// If hand over limit
+			if (amountOfCards > cardLimit) {
 
+				let selectedCards = [];
 
-			// Update player's coins and display reward
-			// TO-DO: Rewards per mob, or standar reward for each mob (with rand variation)
-			let coinsReward = db.coinTiers[state.mob.lvl];
-			if (state.player.skills.includes("skilleco1")) {
-				coinsReward += Math.ceil(coinsReward * 25 / 100);
-			}
-			state.player.coins += coinsReward;
-			reward.textContent = "+" + coinsReward;
-			updateCoins();
+				// Reset container
+				container.innerHTML = "";
+				const confirm = confirmBtn.cloneNode(true);
+				confirmBtn.parentNode.replaceChild(confirm, confirmBtn);
+				confirm.disabled = true;
 
-			// Fetch XP data
-			const lvlArr = db.xpTiers;
-			let lvlIndex = state.player.lvl - 1;
-			let target = lvlArr[lvlIndex + 1];
-			const gainedXP = state.mob.lvl;
-			const oldTotalXP = state.player.xp;
-			const newTotalXP = oldTotalXP + gainedXP;
+				// Clone hand into modal
+				for (const child of hand.children) {
+					const clonedChild = child.cloneNode(true);
+					clonedChild.removeAttribute('style');
+					clonedChild.classList.remove("neodrag");
+					container.appendChild(clonedChild);
 
-			// Display current level and progress bar
-			lvlUpReward.forEach(el => {
-				el.style.display = "none";
-			});
-			lvl.textContent = state.player.lvl;
-			targetElement.textContent = target - lvlArr[lvlIndex];
-			toTargetElement.textContent = Math.min(oldTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
-			bar.style.width = ((oldTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
+					// Add event listener to toggle selection
+					clonedChild.addEventListener("click", function (event) {
+						if (!event.currentTarget.closest('.card-scroller .card-list').classList.contains('scrolling')) {
+							const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
+							if (!clonedChild.classList.contains("selectedToBeRemoved") && selectedCount < amountToRemove) {
+								clonedChild.classList.add("selectedToBeRemoved");
+								selectedCards.push(clonedChild.firstElementChild.dataset.cardid);
+								updateButtonState();
+							} else if (clonedChild.classList.contains("selectedToBeRemoved")) {
+								clonedChild.classList.remove("selectedToBeRemoved");
+								selectedCards = selectedCards.filter(item => item !== clonedChild.firstElementChild.dataset.cardid);
+								updateButtonState();
+							}
+						}
+					});
+				}
 
-			// Update player's XP
-			state.player.xp = newTotalXP;
+				function updateButtonState() {
+					const selectedCount = container.querySelectorAll(".selectedToBeRemoved").length;
+					confirm.disabled = selectedCount !== amountToRemove;
+				}
 
-			// Update stats
-			await wait(500);
-			toTargetElement.textContent = Math.min(newTotalXP - lvlArr[lvlIndex], target - lvlArr[lvlIndex]);
-			bar.style.width = ((newTotalXP - lvlArr[lvlIndex]) * 100 / (target - lvlArr[lvlIndex])) + "%";
-			await wait(1000);
+				// Update text
+				amountToRemoveElement.innerHTML = amountToRemove;
+				maxHandLimitElement.innerHTML = cardLimit;
 
-			if (newTotalXP >= target) {
-				state.player.lvl++;
-				bar.style.transition = "0s";
-				bar.style.width = "0%";
-				lvl.textContent = state.player.lvl;
-				const newLvlIndex = state.player.lvl - 1;
-				target = lvlArr[newLvlIndex + 1];
-				targetElement.textContent = target - lvlArr[newLvlIndex];
-				toTargetElement.textContent = Math.min(newTotalXP - lvlArr[newLvlIndex], target - lvlArr[newLvlIndex]);
+				// Display modal
+				modal.style.display = "flex";
+				container.scrollLeft = 0;
 
-				// Level up reward
-				// TO-DO
-				lvlUpReward.forEach(el => {
-					el.style.display = "flex";
+				// Click to confirm
+				confirm.addEventListener("click", function () {
+					const cardsInHand = document.querySelectorAll("#playerBoard .hand .card");
+					for (const selectedCard of selectedCards) {
+						cardsInHand.forEach(card => {
+							if (card.firstElementChild.dataset.cardid === selectedCard) {
+								card.remove();
+								state.player.cemetery.push(selectedCard);
+							}
+						});
+					}
+					cardPositions();
+					modal.style.display = "none";
+					resolve();
 				});
-				state.player.maxHp += 5;
-				state.player.hp = state.player.maxHp;
-				state.player.fate += 10;
-				updateFate();
-
-				// Update stats again
-				await wait(500);
-				bar.style.transition = "1s";
-				bar.style.width = ((newTotalXP - lvlArr[newLvlIndex]) * 100) / (target - lvlArr[newLvlIndex]) + "%";
+			} else {
+				resolve();
 			}
 
-			resolve();
-
 		} catch (error) {
-			console.log("An error occurred displaying XP screen: " + error.message);
+			console.log("An error occurred enforcing the hand limit: " + error.message);
 			reject(error);
 		}
 	});
 }
-
-
-
-/* ··········································································*/
-/* ··········································································*/
-/* ··········································································*/
-/* ·························  F U N C T I O N S  ····························*/
-/* ··········································································*/
-/* ··········································································*/
-/* ··········································································*/
-
-/*===========================================================================*/
-// Reset temporal damage/heal/shield
-/*===========================================================================*/
-async function resetTemporalEffects() {
-	return new Promise(async (resolve, reject) => {
-		try {
-
-			// Reset damage, piercing damage, heal, shield, and poison
-			state.turnDamage = 0;
-			state.turnDamage_self = 0;
-			state.turnPiercingDamage = 0;
-			state.turnPiercingDamage_self = 0;
-			state.turnFireDamage = 0;
-			state.turnHeal = 0;
-			state.turnShield = 0;
-			state.turnPoison = 0;
-			state.turnFate = 0;
-			state.turnMana = 0;
-			state.turnManaToConsume = 0;
-			state.turnRemoveAllShield = false;
-
-			// Reset temporal damage and temporal heal bars
-			document.querySelectorAll("#encounter .progress .damage-bar, .heal-bar").forEach(el => {
-				el.style.width = "0%";
-			});
-
-			// Reset shields
-			document.querySelector("#encounter .player-hp .shield-amount").textContent = state.player.shield;
-			document.querySelector("#encounter .mob-hp .shield-amount").textContent = state.mob.shield;
-			document.querySelectorAll("#encounter .shield-wrapper").forEach(el => {
-				el.classList.remove("healed", "damaged");
-			});
-
-			// Reset poison
-			document.querySelector("#encounter .player-hp .poison-amount").textContent = state.player.poison;
-			document.querySelector("#encounter .mob-hp .poison-amount").textContent = state.mob.poison;
-
-			// Reset mana
-			updateMana();
-
-			// Reset fate
-			updateFate();
-
-			resolve();
-		} catch (error) {
-			console.log("An error occurred during attack: " + error.message);
-			reject(error);
-		}
-	});
-}
-
-/* ··········································································*/
-/* ··········································································*/
-/* ··········································································*/
-/* ················  C A R D S,   S L O T S,   D I S C S  ···················*/
-/* ··········································································*/
-/* ··········································································*/
-/* ··········································································*/
-
-/*===========================================================================*/
-// Place card disc in slot
-/*===========================================================================*/
-export async function placeCardInSlot(cardId) {
-	return new Promise(async (resolve, reject) => {
-		try {
-
-			// Get Elements
-			const slot = document.querySelector(".target-slot");
-
-			let randomID;
-
-
-			// Generate disc
-			let newDisc = document.createElement("div");
-			randomID = "id-" + crypto.randomUUID();
-			newDisc.id = randomID;
-
-
-			// Add class
-			newDisc.classList.add("disc");
-
-			// Clear slot
-			slot.innerHTML = "";
-
-			// Append card
-			slot.innerHTML += await generateCard(cardId);
-
-			// Insert disc in slot
-			slot.append(newDisc);
-
-
-			// Modify classes
-			slot.classList.remove("target-slot");
-			slot.classList.add("charged");
-
-			generatePlayingDisc(cardId, randomID);
-
-
-			resolve();
-		} catch (error) {
-			console.log("An error occurred trying to place a card in a slot: " + error.message);
-			reject(error);
-		}
-	})
-};
-
 
 
 /* ··········································································*/
@@ -1090,7 +1145,6 @@ async function spinDiscs() {
 	});
 }
 
-
 /*===========================================================================*/
 // Apply discs' effects
 /*===========================================================================*/
@@ -1204,6 +1258,78 @@ export async function applyDiscsEffects() {
 	});
 }
 
+/*===========================================================================*/
+// Victory
+/*===========================================================================*/
+export async function victory() {
+	state.turn = false;
+	state.player.poison = 0;
+	state.player.shield = 0;
+	state.player.mana = 0;
+	document.querySelector("#playerBoard").style.display = "none";
+	document.querySelector("#xpscreen").style.display = "flex";
+	generateXpScreen();
+	save();
+}
+
+
+/*===========================================================================*/
+// Death
+/*===========================================================================*/
+export function death() {
+	document.querySelector("#death").style.display = "flex";
+}
+
+/*===========================================================================*/
+// Reset temporal damage/heal/shield
+/*===========================================================================*/
+async function resetTemporalEffects() {
+	return new Promise(async (resolve, reject) => {
+		try {
+
+			// Reset damage, piercing damage, heal, shield, and poison
+			state.turnDamage = 0;
+			state.turnDamage_self = 0;
+			state.turnPiercingDamage = 0;
+			state.turnPiercingDamage_self = 0;
+			state.turnFireDamage = 0;
+			state.turnHeal = 0;
+			state.turnShield = 0;
+			state.turnPoison = 0;
+			state.turnFate = 0;
+			state.turnMana = 0;
+			state.turnManaToConsume = 0;
+			state.turnRemoveAllShield = false;
+
+			// Reset temporal damage and temporal heal bars
+			document.querySelectorAll("#encounter .progress .damage-bar, .heal-bar").forEach(el => {
+				el.style.width = "0%";
+			});
+
+			// Reset shields
+			document.querySelector("#encounter .player-hp .shield-amount").textContent = state.player.shield;
+			document.querySelector("#encounter .mob-hp .shield-amount").textContent = state.mob.shield;
+			document.querySelectorAll("#encounter .shield-wrapper").forEach(el => {
+				el.classList.remove("healed", "damaged");
+			});
+
+			// Reset poison
+			document.querySelector("#encounter .player-hp .poison-amount").textContent = state.player.poison;
+			document.querySelector("#encounter .mob-hp .poison-amount").textContent = state.mob.poison;
+
+			// Reset mana
+			updateMana();
+
+			// Reset fate
+			updateFate();
+
+			resolve();
+		} catch (error) {
+			console.log("An error occurred during attack: " + error.message);
+			reject(error);
+		}
+	});
+}
 
 /* ··········································································*/
 /* ··········································································*/

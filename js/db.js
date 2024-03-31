@@ -611,6 +611,20 @@ export const db = {
 					attacks: [["poison1"]]
 				},
 			],
+			talkative: true,
+			dialog: [
+				{
+					m: "Croak! Croak!",
+					a: [
+						{m: "Stomp it.", next: "stomp"},
+						{m: "Pet it.", next: "pet"},
+						{m: "Talk about Dostoievski.", next: "talk"},
+					]
+				},
+				{label: "stomp", m: "CROAK! x_x", end: "exit"},
+				{label: "pet", m: "CROAK! >:|", end: "combat"},
+				{label: "talk", m: "...zzzZZZ...", end: "random"}
+			]
 		},
 		master_frog: {
 			name: "Master Frog",

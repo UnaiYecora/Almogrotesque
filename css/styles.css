@@ -44,10 +44,28 @@
 }
 
 /*===========================================================================
+// UTILITIES 
+=============================================================================*/
+.hidden{
+	opacity: 0;
+	pointer-events: none;
+}
+.fade-in{
+	opacity: 1;
+	transition: opacity .8s;
+}
+.fade-out{
+	opacity: 0;
+	transition: opacity .8s;
+	pointer-events: none;
+}
+
+
+/*===========================================================================
 // ELEMENTS 
 =============================================================================*/
 .btn {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%231e0f00bb' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' preserveAspectRatio='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%231e0f00bb' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	color: var(--light);
@@ -55,7 +73,7 @@
 }
 
 .btn-light {
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%23dbc9a0' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' preserveAspectRatio='none' viewBox='0 0 1437 589'%3E%3Cpath fill='%23dbc9a0' d='m1423 565-102 8-37-8-117 8-74 10-78-5-71-16-127 16-158 5-16-21-20 27-119-16h-90l-108-5-117 5h-88l-88-9 7-67-7-69 7-67-7-70-8-38-4-113 23 5-13-16 2-17 20-13-18-18 2-30-4-34 93-3 83 3 97-3 70-5 98 2 65 5 124 2 104-9 28-9 11 18 8-18 84 15 66-10 140 10 81 3 59-12 124 5 75 7 6 69-11 85 11 66 8 100-5 13h-12l-11-6 4 19 16 17-6 115v69Z'/%3E%3C/svg%3E");
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	color: var(--dark);
@@ -245,6 +263,10 @@ img.screen-background {
 	position: relative;
 	transition: .3s;
 	filter: drop-shadow(0 0.4rem 0.8rem #00000099);
+}
+
+#crossroad .path.burning{
+	pointer-events: none;
 }
 
 #crossroad .path[data-skippable="false"] [data-skip-path] {
@@ -1758,6 +1780,48 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="range"]:focus::-moz-range-thumb {
 	border: 1px solid #635536;
+}
+
+
+/*===========================================================================
+// CONVERSATIONS
+=============================================================================*/
+div#conversation{
+    position: absolute;
+    top: 55%;
+    width: 100%;
+    padding: 1rem 5rem;
+    display: grid;
+    gap: 2rem;
+    justify-items: center;
+}
+
+div#conversation .message{
+	font-size: 1.75rem;
+	font-weight: 700;
+}
+
+div#conversation .options{
+	display: grid;
+	gap: 1rem;
+}
+
+div#conversation .options button{
+	height: 5rem;
+	padding: 1rem;
+	font-size: 1.25rem;
+}
+
+section#encounter #discobar,
+section#encounter #playerBoard {
+	transition: opacity .8s;
+}
+
+section#encounter.on-conversation #discobar,
+section#encounter.on-conversation #playerBoard {
+	opacity: 0;
+	transition: opacity 0s;
+	pointer-events: none;
 }
 
 

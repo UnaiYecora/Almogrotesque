@@ -175,6 +175,7 @@ export function fillPaths(fromSavedState = false) {
 					}, 100);
 					state.paths[path.id] = mobOrRoom;
 					levelArray.shift();
+					path.classList.remove("burning");
 				} else {
 					if (!state.endOfTheRoad) {
 						state.endOfTheRoad = 1;
@@ -232,6 +233,8 @@ export async function burnPath(path) {
 
 			const pathContent = path.querySelector(".path-content");
 			const skipBtn = path.querySelector("[data-skip-path]")
+
+			path.classList.add("burning");
 
 			skipBtn.classList.add("hideSkip");
 
