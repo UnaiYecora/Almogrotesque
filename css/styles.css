@@ -959,7 +959,7 @@ div#discobar>span {
 .card {
 	aspect-ratio: 2 / 3;
 	container-type: inline-size;
-	transition: scale .2s;
+	transition: scale .2s, translate .2s;
 }
 
 #playerDiscs>.card {

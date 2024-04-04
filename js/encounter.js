@@ -622,11 +622,13 @@ function cardPositions() {
 	const fraction = Math.min(totalCards, maxNumberOfCards) / maxNumberOfCards;
 	const margin = minMargin + (maxMargin - minMargin) * fraction;
 	const antiMargin = margin * -0.5;
-
+	
 	cards.forEach((card, i) => {
 		let stuck = false;
+		let deadzone = {width: 16, height: 7};
 		if (document.querySelector("#encounter").classList.contains("midturn")) {
 			stuck = true;
+			deadzone = {width: 99, height: 99};
 		}
 		const dragInstance = new Draggable(card, {
 			onDragEnd: (data) => {
@@ -707,10 +709,7 @@ function cardPositions() {
 			bounds: 'main',
 			legacyTranslate: true,
 			stuck: stuck,
-			deadzone: {
-				width: 16,
-				height: 7,
-			},
+			deadzone: deadzone,
 		});
 		dragInstances.push({
 			element: card,
@@ -770,6 +769,11 @@ function makeSlotsDraggable() {
 		instance.destroy();
 	});
 
+	let deadzone = {width: 3, height: 5};
+	if (document.querySelector("#encounter").classList.contains("midturn")) {
+		deadzone = {width: 99, height: 99};
+	}
+
 	slots.forEach((slot) => {
 		let stuck = false;
 		if (document.querySelector("#encounter").classList.contains("midturn")) {
@@ -778,7 +782,6 @@ function makeSlotsDraggable() {
 		const slotDragInstance = new Draggable(slot, {
 			onDragEnd: (data) => {
 				slot.classList.remove("cardOnDrag");
-				slot.classList.remove("cardOnDragStart");
 				slot.classList.remove("cardOnDragStart");
 
 				slot.style.transform = "none";
@@ -876,15 +879,72 @@ function makeSlotsDraggable() {
 			bounds: 'main',
 			legacyTranslate: true,
 			stuck: stuck,
-			deadzone: {
-				width: 3,
-				height: 5,
-			},
+			deadzone: deadzone,
 		});
 		slotDragInstances.push({
 			element: slot,
 			instance: slotDragInstance,
 		});
+	});
+}
+
+
+var mobSlotDragInstances = [];
+function makeMobSlotsDraggable(slot) {
+	const mobSlotDragInstance = new Draggable(slot, {
+		onDragEnd: async () => {
+			slot.classList.remove("cardOnDragStart");
+			slot.style.transform = "none";
+		},
+		onDragStart: async () => {
+			slot.style.transition = "none";
+			await wait(0);
+			slot.style.removeProperty("transition");
+
+			let scale = 3;
+			slot.classList.add("cardOnDragStart");
+
+			// Sound
+			soundEffects.card.play();
+
+			let parent = document.querySelector("main");
+
+			const slotRect = slot.getBoundingClientRect();
+			const parentRect = parent.getBoundingClientRect();
+
+			let scaledChildWidth = slotRect.width * scale;
+			let scaledChildLeft = slotRect.left - (scaledChildWidth - slotRect.width) / 2;
+			let scaledChildRight = scaledChildLeft + scaledChildWidth;
+
+			let overflowLeft = Math.max(0, parentRect.left - scaledChildLeft);
+			let overflowRight = Math.max(0, scaledChildRight - parentRect.right);
+
+			if (overflowLeft > 0) {
+				slot.style.transform = `translateX(${overflowLeft / 3}px)`;
+			}
+			if (overflowRight > 0) {
+				slot.style.transform = `translateX(-${overflowRight / 3}px)`;
+			}
+
+		},
+		onDrag: () => {},
+		bounds: 'main',
+		legacyTranslate: true,
+		stuck: true,
+		deadzone: {
+			width: 99,
+			height: 99,
+		},
+	});
+	mobSlotDragInstances.push({
+		element: slot,
+		instance: mobSlotDragInstance,
+	});
+}
+
+function destroyAllMobSlotDraggableInstances() {
+	mobSlotDragInstances.forEach(({ instance }) => {
+		instance.destroy();
 	});
 }
 
@@ -1080,6 +1140,7 @@ async function enemyAttack() {
 				slot.classList.add("target-slot");
 				await wait(await rand(200, 1200));
 				await placeCardInSlot(pattern[i]);
+				makeMobSlotsDraggable(slot.querySelector(".card"));
 			}
 
 			await wait(1200);
@@ -1088,6 +1149,8 @@ async function enemyAttack() {
 			await applyDiscsEffects();
 
 			toggleTurn();
+
+			destroyAllMobSlotDraggableInstances();
 
 			resolve();
 		} catch (error) {
