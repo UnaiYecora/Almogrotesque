@@ -5,12 +5,12 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic } from "./helpers.js?v=0.24";
-import { db, state, save } from "./db.js?v=0.24";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.24";
-import { generateCard } from "./inventory.js?v=0.24";
-import { burnPath, fillPaths } from "./crossroad.js?v=0.24";
-import { Draggable } from "./lib/drag.js?v=0.24";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic } from "./helpers.js?v=0.25";
+import { db, state, save } from "./db.js?v=0.25";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.25";
+import { generateCard } from "./inventory.js?v=0.25";
+import { burnPath, fillPaths } from "./crossroad.js?v=0.25";
+import { Draggable } from "./lib/drag.js?v=0.25";
 
 
 /* ··········································································*/
