@@ -804,6 +804,10 @@ function makeSlotsDraggable() {
 				makeSlotsDraggable();
 			},
 			onDragStart: async (data) => {
+				slot.style.transition = "none";
+				await wait(0);
+				slot.style.removeProperty("transition");
+
 				let scale = 3;
 				slot.classList.remove("cardOnDrag");
 				slot.classList.add("cardOnDragStart");
