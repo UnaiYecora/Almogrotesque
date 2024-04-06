@@ -126,7 +126,7 @@ export const db = {
 			desc: "A rustic crossroad, where well-trodden paths converge under the open sky, inviting travelers to choose their fate — each direction hiding both promise and peril.",
 			stores: 7,
 			doors: ["outskirts"], // Main door in first place
-			spawns: ["frog", "rat", "bats", "raven", "goblin", "chest", "master_frog", "goblin2", "rat_bandit", "lagoon_dweller", "necrow", "seridra", "eggman", "forest_warden", "gigant_crab", "desert_mouth", "ecosystem"],
+			spawns: ["frog", "rat", "bats", "raven", "goblin", "master_frog", "chest", "goblin2", "rat_bandit", "lagoon_dweller", "necrow", "seridra", "eggman", "forest_warden", "gigant_crab", "desert_mouth", "ecosystem"],
 		},
 		outskirts: {
 			name: "Outskirts path",
@@ -611,19 +611,33 @@ export const db = {
 					attacks: [["poison1"]]
 				},
 			],
-			talkative: true,
 			dialog: [
 				{
+					label: "start",
 					m: "Croak! Croak!",
 					a: [
-						{m: "Stomp it.", next: "stomp"},
-						{m: "Pet it.", next: "pet"},
-						{m: "Talk about Dostoievski.", next: "talk"},
+						{ o: "Stomp it.", end: "win", m: "CROAK!" },
+						{ o: "Pet it.", end: "combat", m: "CROAK!" },
+						{ o: "Talk about Dostoievski.", next: "talk" },
 					]
 				},
-				{label: "stomp", m: "CROAK! x_x", end: "exit"},
-				{label: "pet", m: "CROAK! >:|", end: "combat"},
-				{label: "talk", m: "...zzzZZZ...", end: "random"}
+				{
+					label: "talk",
+					m: "...zzzZZZ...",
+					a: [
+						{ o: "Kick it.", end: "combat", m: "CROAK!" },
+						{ o: "Wake up!", next: "wake", }
+					],
+				},
+				{
+					label: "wake",
+					m: "Croak?",
+					a: [
+						{ o: "Stomp it!", end: "win", m: "CROAK!" },
+						{ o: "Walk away.", end: "exit", m: "...croak..." },
+						{ o: "Grab.", end: "combat", m: "CROAK!" },
+					]
+				}
 			]
 		},
 		master_frog: {
@@ -659,6 +673,28 @@ export const db = {
 					]
 				},
 			],
+			dialog: [
+				{
+					label: "start",
+					m: "Have you seen my son? He's still a small frog, should be somewhere in this path.",
+					a: [
+						{ o: "Yes, I saw him.", next: "seen"},
+						{ o: "(Lie) No, sorry.", end: "exit", m: "Alright, thank you. I must go find him now."},
+						{ o: "Yeah, about that...", end: "combat", m: "You'll pay for this!"},
+					]
+				},
+				{
+					label: "seen",
+					m: "Was he alright? I'm very worried...",
+					a: [
+						{o: "He... was.", end: "combat", m: "You're a monster!"},
+						{o: "He died fighting a brave warrior.", next: ["caught", "uncaught"]},
+						{o: "(Lie) I tried to save him...", end: "win", m: "Oh no, my poor son! Well, thanks for trying..."}
+					]
+				},
+				{label: "caught", end: "combat", m: "It was you, I know it was! You'll pay for this!"},
+				{label: "uncaught", end: "exit", m: "I won't rest until that monster is dead!"},
+			]
 		},
 		raven: {
 			name: "Raven",

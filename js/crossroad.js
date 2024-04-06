@@ -157,7 +157,7 @@ export function fillPaths(fromSavedState = false) {
 							}
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom.mobId;
-							path.dataset.skippable = true;
+							path.dataset.skippable = false;
 							path.dataset.filled = true;
 							path.style.visibility = "visible";
 							break;

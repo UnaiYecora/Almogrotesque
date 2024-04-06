@@ -2,12 +2,12 @@
 
 *{
 	-webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 /*===========================================================================
@@ -565,12 +565,12 @@ div#playerBoard button div {
 }
 
 .hp {
-    display: flex;
-    z-index: 1;
-    align-items: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    position: relative;
+	display: flex;
+	z-index: 1;
+	align-items: center;
+	font-size: 0.9rem;
+	font-weight: 700;
+	position: relative;
 }
 
 .hp .heart {
@@ -629,17 +629,17 @@ div#playerBoard button div {
 }
 
 .hp .bar p {
-    z-index: 1;
-    color: #ede3cf;
-    text-shadow: 0.1rem 0.1rem 0.2rem #331b04;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    position: absolute;
-    inset: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 100%;
+	z-index: 1;
+	color: #ede3cf;
+	text-shadow: 0.1rem 0.1rem 0.2rem #331b04;
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+	position: absolute;
+	inset: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	height: 100%;
 	font-weight: 700;
 }
 
@@ -1296,15 +1296,15 @@ section#xpscreen button {
 }
 
 .store-item.itemBought .store-item-card {
-    box-shadow: none;
+	box-shadow: none;
 	pointer-events: none;
-    filter: brightness(0) opacity(0.3) blur(7px);
-    scale: 0.95;
+	filter: brightness(0) opacity(0.3) blur(7px);
+	scale: 0.95;
 }
 
 .store-item.itemBought button.buy-item {
 	pointer-events: none;
-    opacity: 0;
+	opacity: 0;
 }
 
 .store-item-card {
@@ -1573,13 +1573,13 @@ section#death button {
 }
 
 .hand:before {
-    content: "";
-    position: absolute;
-    background: black;
-    width: 37rem;
-    height: 12rem;
-    top: 0;
-    filter: blur(7px) opacity(0.17);
+	content: "";
+	position: absolute;
+	background: black;
+	width: 37rem;
+	height: 12rem;
+	top: 0;
+	filter: blur(7px) opacity(0.17);
 }
 
 .hand .card {
@@ -1787,29 +1787,33 @@ input[type="range"]:focus::-moz-range-thumb {
 // CONVERSATIONS
 =============================================================================*/
 div#conversation{
-    position: absolute;
-    top: 55%;
-    width: 100%;
-    padding: 1rem 5rem;
-    display: grid;
-    gap: 2rem;
-    justify-items: center;
+	position: absolute;
+	top: 55%;
+	width: 100%;
+	padding: 1rem 5rem;
+	display: grid;
+	gap: 2rem;
+	justify-items: center;
 }
 
 div#conversation .message{
 	font-size: 1.75rem;
 	font-weight: 700;
+	font-style: italic;
+	text-align: center;
 }
 
 div#conversation .options{
 	display: grid;
 	gap: 1rem;
+	width: 100%;
 }
 
 div#conversation .options button{
 	height: 5rem;
-	padding: 1rem;
+	padding: 1rem 2rem;
 	font-size: 1.25rem;
+	text-align: start;
 }
 
 section#encounter #discobar,

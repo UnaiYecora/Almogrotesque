@@ -121,7 +121,7 @@ async function generateEncounterCard(mobId) {
 			// Conversation mode
 			conversation.querySelector(".message").innerHTML = "";
 			conversation.querySelector(".options").innerHTML = "";
-			if (mobData.talkative) {
+			if (mobData.dialog) {
 				encounter.classList.add("on-conversation");
 				conversation.classList.remove("hidden");
 				startConversation();
@@ -141,72 +141,92 @@ async function generateEncounterCard(mobId) {
 /*===========================================================================*/
 // Conversations
 /*===========================================================================*/
-/* function startConversation(mobId) {
-	const dialog = db.mobs[mobId].dialog;
-
-	let current_line = 0;
-	while (current_line < dialog.length) {
-		let current_step = dialog[current_line];
-
-		if (undefined !== current_step.m) {
-			//display_message(current_step.m);
-			if (undefined !== current_step.next) {
-				//current_line = find_label(mobId, current_step.next);
-			} else {
-				//current_line = current_line + 1;
-			}
-		} else if (undefined !== current_step.question) {
-			// display the question: current_step.question
-			// display the answers: current_step.answers
-			// choose an answer
-			// and change current_line accordingly
-		}
-	}
-} */
-
 function startConversation() {
-	const dialog = state.mob.dialog;
-
-	let current_line = 0;
-	let current_step = dialog[current_line];
-	
-
-	if (undefined !== current_step.m && undefined !== current_step.a) {
-		display_message(current_step.m);
-		display_options(current_step.a);
-	}
+	const dialog = state.mob.dialog;	
+	display_message(dialog[0].m);
+	display_options(dialog[0].a);
 }
 
-async function continueConversation(line) {
+function display_message(m) {
+	const messageElement = document.querySelector("#encounter #conversation .message");
+	messageElement.textContent = m;
+}
+
+function display_options(a) {
+	const optionsElement = document.querySelector("#encounter #conversation .options");
+
+	let options = "";
+	a.forEach(answer => {
+		const { end, m = "", o } = answer;
+		const type = end ? "end" : "next";
+
+		let next = answer.next;
+		if (next) {
+			next = next.constructor === Array
+			? next[Math.floor(Math.random() * next.length)]
+			: next;
+		}
+
+		options += /*html*/`
+			<button class="btn" data-type="${type}" data-next="${next || end}" data-m="${m}">
+				${o}
+			</button>
+		`;
+	});
+	
+	optionsElement.innerHTML = options;
+
+	let allButtons = optionsElement.querySelectorAll("button");
+	allButtons.forEach(button => {
+		button.addEventListener("click", function() {
+			optionsElement.innerHTML = "";
+			allButtons = null;
+			const { type, next, m } = button.dataset;
+			continueConversation(type, next, m);
+		})
+	});
+}
+
+async function continueConversation(type, next, m) {
+
 	const dialog = state.mob.dialog;
-	const current_line = dialog[line];
 
-	if (undefined !== current_line.end) {
-		const messageElement = document.querySelector("#encounter #conversation .message");
-		messageElement.textContent = current_line.m;
+	if (type === "next") {
+		const current_line = dialog[find_label(next)];
+		display_message(current_line.m);
 
-		await wait(1000);
+		if (current_line.a) {
+			display_options(current_line.a);
+		}
+		
+		else if (current_line.end){
+			transitionConversation(current_line.end);
+		}
+	}
 
-		transitionConversation(current_line.end);
+	else if (type === "end"){
+		display_message(m);
+		transitionConversation(next);
 	}
 }
 
 async function transitionConversation(end) {
-	let type = end;
 
-	if (end === "random") {
-		type = Math.random() < 0.5 ? "exit" : "combat";
-	}
+	await wait(1000);
 
-	// Exit
-	if (type === "exit") {
+	// Exit (no rewards)
+	if (end === "exit") {
 		const path = document.querySelector('#crossroad [data-mobid="' + state.mob.mobid + '"]');
 		await goTo("crossroad");
 		await burnPath(path);
 		await fillPaths();
 
+	// Win (rewards)
+	} else if (end === "win") {
+		victory();
+		
 	// Combat
-	} else if (type === "combat") {
+	} else if (end === "combat") {
 		document.querySelector("#encounter #conversation").classList.add("fade-out");
 		document.querySelector("#encounter").classList.remove("on-conversation");
 
@@ -223,44 +243,17 @@ async function transitionConversation(end) {
 	}
 }
 
-function display_message(m) {
-	const messageElement = document.querySelector("#encounter #conversation .message");
-	messageElement.textContent = m;
-}
-
-function display_options(a) {
-	const optionsElement = document.querySelector("#encounter #conversation .options");
-
-	let options = "";
-	a.forEach(answer => {
-		options += '<button class="btn" data-next="'+ answer.next +'">';
-		options += answer.m;
-		options += '</button>';
-	});
-
-	optionsElement.innerHTML = options;
-
-	let allButtons = optionsElement.querySelectorAll("button");
-	allButtons.forEach(button => {
-		button.addEventListener("click", function() {
-			const next = button.dataset.next;
-			continueConversation(find_label(next));
-			optionsElement.innerHTML = "";
-			allButtons = null;
-		})
-	});
-}
-
 function find_label(label) {
 	const dialog = state.mob.dialog;
 
-	for (var i = 0; i < dialog.length; i++) {
+	for (let i = 0; i < dialog.length; i++) {
 		if (dialog[i].label === label) {
 			return i;
 		}
 	}
 	return -1;
 }
+
 
 /*===========================================================================*/
 // Turn System
