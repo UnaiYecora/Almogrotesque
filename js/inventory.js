@@ -68,8 +68,10 @@ export async function generateCard(cardId) {
 				let cardHTML = "";
 				cardHTML += "<div class='card'>";
 				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '" data-type="' + card.type +'">';
-				cardHTML += '<div class="card-mana-cost">'+ card.mana_cost +'</div>';
-				cardHTML += disc;
+				if (card.mana_cost > 0) {
+					cardHTML += '<div class="card-mana-cost">'+ card.mana_cost +'</div>';
+				}
+				cardHTML += '<div class="card-inventory-disc-wrapper">'+ disc +'</div>';
 				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
 				cardHTML += '<div class="card-inventory-icon">';
 				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';

@@ -1002,7 +1002,7 @@ div#discobar>span {
 	z-index: 1;
 }
 
-.inventory-card .disc-indicator {
+.card-inventory-disc-wrapper {
 	aspect-ratio: 1;
 	border-radius: 100%;
 	position: absolute;
@@ -1010,7 +1010,40 @@ div#discobar>span {
 	top: 1.1%;
 	right: 1.7%;
 	width: 11.5%;
-	background: #222423;
+	background: #090909;
+}
+
+.card-inventory-disc-wrapper:before,
+.card-inventory-disc-wrapper:after{
+	content: "";
+	position: absolute;
+	inset: -0.65cqw;
+	border-radius: 100%;
+	background-color: #00000045;
+	z-index: -1;
+}
+.card-inventory-disc-wrapper:before{
+	background-color: #5F5F5F;
+}
+
+.inventory-card .disc-indicator {
+	border-radius: 100%;
+	background: #090909;
+	width: 100%;
+	aspect-ratio: 1;
+}
+
+.inventory-card .disc-indicator:after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: #090909;
+	border-radius: 100%;
+	z-index: 0;
+	width: 5cqw;
+	aspect-ratio: 1;
+	margin: auto;
+	outline: 0.5cqw solid #00000080;
 }
 
 img.card-background {
@@ -1024,7 +1057,7 @@ img.card-background {
 	border-radius: 3cqw;
 	opacity: 0.3;
 	mix-blend-mode: lighten;
-	filter: grayscale(1) invert(1) blur(1px) brightness(0.55);
+	filter: grayscale(1) invert(1) blur(0.25cqw) brightness(0.55);
 	pointer-events: none;
 }
 
@@ -1044,11 +1077,12 @@ img.card-background {
 	z-index: 1;
 	background: var(--light);
 	color: var(--dark);
+	outline: 1cqw solid #dbc9a078;
 }
 
 .card-mana-cost.too-expensive {
-	background: #c9473f9e;
-	color: #000;
+	background: #b74b3b;
+	color: var(--dark);
 }
 
 .card-inventory-title {
@@ -1126,14 +1160,7 @@ button.close-inventory {
 	margin-left: auto;
 }
 
-
-.inventory-card:before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	opacity: 1;
-	z-index: 0;
-	border-radius: 3cqw;
+.inventory-card{
 	--damage: #75000033;
 	--heal: #00a1af33;
 	--shield: #ffffff33;
@@ -1142,27 +1169,45 @@ button.close-inventory {
 	--mana: #00000099;
 }
 
-.inventory-card[data-type="damage"]:before {
+.inventory-card:before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	opacity: 1;
+	z-index: 0;
+	border-radius: 3cqw;
+}
+
+.inventory-card[data-type="damage"]:before,
+.inventory-card[data-type="damage"] .card-inventory-disc-wrapper:after,
+.inventory-card[data-type="damage-shield"] .card-inventory-disc-wrapper:after,
+.inventory-card[data-type="damage-heal"] .card-inventory-disc-wrapper:after,
+.inventory-card[data-type="damage-mana"] .card-inventory-disc-wrapper:after {
 	background: var(--damage);
 }
 
-.inventory-card[data-type="heal"]:before {
+.inventory-card[data-type="heal"]:before,
+.inventory-card[data-type="heal"] .card-inventory-disc-wrapper:after {
 	background: var(--heal);
 }
 
-.inventory-card[data-type="poison"]:before {
+.inventory-card[data-type="poison"]:before,
+.inventory-card[data-type="poison"] .card-inventory-disc-wrapper:after {
 	background: var(--poison);
 }
 
-.inventory-card[data-type="shield"]:before {
+.inventory-card[data-type="shield"]:before,
+.inventory-card[data-type="shield"] .card-inventory-disc-wrapper:after {
 	background: var(--shield);
 }
 
-.inventory-card[data-type="fate"]:before {
+.inventory-card[data-type="fate"]:before,
+.inventory-card[data-type="fate"] .card-inventory-disc-wrapper:after {
 	background: var(--fate);
 }
 
-.inventory-card[data-type="mana"]:before {
+.inventory-card[data-type="mana"]:before,
+.inventory-card[data-type="mana"] .card-inventory-disc-wrapper:after {
 	background: var(--mana);
 }
 

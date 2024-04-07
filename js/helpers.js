@@ -366,10 +366,12 @@ export function cardManaCheck() {
 	allCards.forEach(card => {
 		const cardID = card.dataset.cardid;
 		const manaCost = db.cards[cardID].mana_cost;
-		if (manaCost > currentMana) {
-			card.querySelector(".card-mana-cost").classList.add("too-expensive");
-		} else {
-			card.querySelector(".card-mana-cost").classList.remove("too-expensive");
+		if (manaCost > 0) {
+			if (manaCost > currentMana) {
+				card.querySelector(".card-mana-cost").classList.add("too-expensive");
+			} else {
+				card.querySelector(".card-mana-cost").classList.remove("too-expensive");
+			}
 		}
 	});
 }
