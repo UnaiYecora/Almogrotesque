@@ -16,7 +16,7 @@ export var state = {
 		coins: 23,
 		slots: 3,
 		cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2"],
-		//cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", "bloodletting"],
+		//cards: ["basic_attack_1", "mana1", "shield1", "poison1", "basic_attack_2", "heal_1", "double_damage", "attack_heal", "eldertide_timepiece", "shield_attack", "damage_to_piercing", "hp_loss_to_damage", "affliction_advantage", "deffensive_stance", "plague", "exasperater", "aggressive_stance", "pyreburst", "embersteel", "fireseal", "poison2", "rotten_soul", "drinkin", "attack_and_mana", "antidote", /* "bloodletting" */],
 		deck: [],
 		hand: [],
 		cemetery: [],
@@ -452,7 +452,7 @@ export const db = {
 		deffensive_stance: {
 			name: "Deffensive Stance",
 			get desc() {
-				return "If this turn you're dealing damage before this card, gain " + this.shield + " {shield}.";
+				return "If this turn you're dealing damage before this card, gain " + this.shield + "{shield}.";
 			},
 			type: "shield",
 			price: 20,
@@ -528,7 +528,7 @@ export const db = {
 		fireseal: {
 			name: "Fireseal Barrier",
 			get desc() {
-				return "Gain " + this.shield + " {shield} / Also deal " + this.fire_damage + " fire damage."
+				return "Gain " + this.shield + "{shield} / Also deal " + this.fire_damage + " fire damage."
 			},
 			type: "damage-shield",
 			price: 20,
