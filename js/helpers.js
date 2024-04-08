@@ -256,11 +256,10 @@ export async function secondaryAction() {
 /*===========================================================================*/
 // Modify string to add icons
 /*===========================================================================*/
-export function iconify(string) {
+export function iconify(string, light = true) {
 	const regex = /{([^}]+)}/g;
-	const replacedString = string.replace(regex, '<span class="icon $1 $1-light"></span>');
+	let replacedString = string.replace(regex, `<span class="icon $1${light ? ' $1-light' : ''}"></span>`);
 	return replacedString;
-
 }
 
 

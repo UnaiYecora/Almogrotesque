@@ -1854,6 +1854,15 @@ div#conversation .message{
 	text-align: center;
 }
 
+div#conversation .message .icon {
+	width: 1.75rem;
+	aspect-ratio: 1;
+	display: inline-block;
+	vertical-align: sub;
+	margin-left: 0.25rem;
+	margin-right: -0.25rem;
+}
+
 div#conversation .options{
 	display: grid;
 	gap: 1rem;
@@ -1867,6 +1876,15 @@ div#conversation .options button{
 	text-align: start;
 }
 
+div#conversation .options button .icon {
+	width: 1.5rem;
+	aspect-ratio: 1;
+	display: inline-block;
+	vertical-align: sub;
+	margin-left: 0.15rem;
+	margin-right: -0.15rem;
+}
+
 section#encounter #discobar,
 section#encounter #playerBoard {
 	transition: opacity .8s;
@@ -1877,6 +1895,15 @@ section#encounter.on-conversation #playerBoard {
 	opacity: 0;
 	transition: opacity 0s;
 	pointer-events: none;
+}
+
+section#encounter.on-conversation .right-side .deck-icon,
+section#encounter.on-conversation .right-side .mana-left-wrapper,
+section#encounter.on-conversation .right-side .fate-left-wrapper{
+	display: none;
+}
+section#encounter:not(.on-conversation) .right-side .coins-left-wrapper{
+	display: none;
 }
 
 

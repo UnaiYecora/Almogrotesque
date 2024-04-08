@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic } from "./helpers.js?v=0.25";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify } from "./helpers.js?v=0.25";
 import { db, state, save } from "./db.js?v=0.25";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.25";
 import { generateCard } from "./inventory.js?v=0.25";
@@ -142,53 +142,47 @@ async function generateEncounterCard(mobId) {
 // Conversations
 /*===========================================================================*/
 function startConversation() {
-	const dialog = state.mob.dialog;	
+	const dialog = state.mob.dialog;
 	display_message(dialog[0].m);
 	display_options(dialog[0].a);
 }
 
 function display_message(m) {
 	const messageElement = document.querySelector("#encounter #conversation .message");
-	messageElement.textContent = m;
+	messageElement.innerHTML = iconify(m, false);
 }
 
 function display_options(a) {
 	const optionsElement = document.querySelector("#encounter #conversation .options");
+	optionsElement.innerHTML = "";
 
-	let options = "";
 	a.forEach(answer => {
-		const { end, m = "", o } = answer;
-		const type = end ? "end" : "next";
-
-		let next = answer.next;
-		if (next) {
-			next = next.constructor === Array
-			? next[Math.floor(Math.random() * next.length)]
-			: next;
-		}
-
-		options += /*html*/`
-			<button class="btn" data-type="${type}" data-next="${next || end}" data-m="${m}">
-				${o}
-			</button>
-		`;
-	});
-	
-	optionsElement.innerHTML = options;
-
-	let allButtons = optionsElement.querySelectorAll("button");
-	allButtons.forEach(button => {
-		button.addEventListener("click", function() {
+		let newBtn = document.createElement("button");
+		newBtn.classList.add("btn");
+		newBtn.innerHTML = iconify(answer.o);
+		newBtn.addEventListener("click", function () {
 			optionsElement.innerHTML = "";
-			allButtons = null;
-			const { type, next, m } = button.dataset;
-			continueConversation(type, next, m);
+			newBtn = null;
+
+			const { end, m = "" } = answer;
+			const type = end ? "end" : "next";
+			let next = answer.next;
+			if (next) {
+				next = next.constructor === Array
+					? next[Math.floor(Math.random() * next.length)]
+					: next;
+			}
+			if (answer.run) {
+				answer.run(state.mob, state.player);
+				updateCoins();
+			}
+			continueConversation(type, next || end, m);
 		})
+		optionsElement.append(newBtn);
 	});
 }
 
 async function continueConversation(type, next, m) {
-
 	const dialog = state.mob.dialog;
 
 	if (type === "next") {
@@ -198,21 +192,20 @@ async function continueConversation(type, next, m) {
 		if (current_line.a) {
 			display_options(current_line.a);
 		}
-		
-		else if (current_line.end){
+
+		else if (current_line.end) {
 			transitionConversation(current_line.end);
 		}
 	}
 
-	else if (type === "end"){
+	else if (type === "end") {
 		display_message(m);
 		transitionConversation(next);
 	}
 }
 
 async function transitionConversation(end) {
-
-	await wait(1000);
+	await wait(2000);
 
 	// Exit (no rewards)
 	if (end === "exit") {
@@ -221,11 +214,11 @@ async function transitionConversation(end) {
 		await burnPath(path);
 		await fillPaths();
 
-	// Win (rewards)
+		// Win (rewards)
 	} else if (end === "win") {
 		victory();
-		
-	// Combat
+
+		// Combat
 	} else if (end === "combat") {
 		document.querySelector("#encounter #conversation").classList.add("fade-out");
 		document.querySelector("#encounter").classList.remove("on-conversation");
@@ -237,7 +230,10 @@ async function transitionConversation(end) {
 			document.querySelector("#encounter #conversation").classList.add("hidden");
 		}, 800);
 
-	// Error
+		// Store // TO-DO
+	} else if (end === "store") {
+
+		// Error
 	} else {
 		console.error("Type of conversation end not valid.")
 	}
@@ -615,13 +611,13 @@ function cardPositions() {
 	const fraction = Math.min(totalCards, maxNumberOfCards) / maxNumberOfCards;
 	const margin = minMargin + (maxMargin - minMargin) * fraction;
 	const antiMargin = margin * -0.5;
-	
+
 	cards.forEach((card, i) => {
 		let stuck = false;
-		let deadzone = {width: 16, height: 7};
+		let deadzone = { width: 16, height: 7 };
 		if (document.querySelector("#encounter").classList.contains("midturn")) {
 			stuck = true;
-			deadzone = {width: 99, height: 99};
+			deadzone = { width: 99, height: 99 };
 		}
 		const dragInstance = new Draggable(card, {
 			onDragEnd: (data) => {
@@ -762,9 +758,9 @@ function makeSlotsDraggable() {
 		instance.destroy();
 	});
 
-	let deadzone = {width: 3, height: 5};
+	let deadzone = { width: 3, height: 5 };
 	if (document.querySelector("#encounter").classList.contains("midturn")) {
-		deadzone = {width: 99, height: 99};
+		deadzone = { width: 99, height: 99 };
 	}
 
 	slots.forEach((slot) => {
@@ -924,7 +920,7 @@ function makeMobSlotsDraggable(slot) {
 			}
 
 		},
-		onDrag: () => {},
+		onDrag: () => { },
 		bounds: 'main',
 		legacyTranslate: true,
 		stuck: true,

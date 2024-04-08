@@ -678,22 +678,22 @@ export const db = {
 					label: "start",
 					m: "Have you seen my son? He's still a small frog, should be somewhere in this path.",
 					a: [
-						{ o: "Yes, I saw him.", next: "seen"},
-						{ o: "(Lie) No, sorry.", end: "exit", m: "Alright, thank you. I must go find him now."},
-						{ o: "Yeah, about that...", end: "combat", m: "You'll pay for this!"},
+						{ o: "Yes, I saw him.", next: "seen" },
+						{ o: "(Lie) No, sorry.", end: "exit", m: "Alright, thank you. I must go find him now." },
+						{ o: "Yeah, about that...", end: "combat", m: "You'll pay for this!" },
 					]
 				},
 				{
 					label: "seen",
 					m: "Was he alright? I'm very worried...",
 					a: [
-						{o: "He... was.", end: "combat", m: "You're a monster!"},
-						{o: "He died fighting a brave warrior.", next: ["caught", "uncaught"]},
-						{o: "(Lie) I tried to save him...", end: "win", m: "Oh no, my poor son! Well, thanks for trying..."}
+						{ o: "He... was.", end: "combat", m: "What have you done‽" },
+						{ o: "He died fighting a brave warrior.", next: ["caught", "uncaught"] },
+						{ o: "(Lie) I tried to save him...", end: "win", m: "Oh no, my poor son! Well, thanks for trying..." }
 					]
 				},
-				{label: "caught", end: "combat", m: "It was you, I know it was! You'll pay for this!"},
-				{label: "uncaught", end: "exit", m: "I won't rest until that monster is dead!"},
+				{ label: "caught", end: "combat", m: "It was you, I know it was! You'll pay for this!" },
+				{ label: "uncaught", end: "exit", m: "I won't rest until that monster is dead!" },
 			]
 		},
 		raven: {
@@ -733,6 +733,37 @@ export const db = {
 					]
 				}
 			],
+			dialog: [
+				{
+					label: "start",
+					m: "Give me 5{coin} and I'll let you pass!",
+					a: [
+						{ o: "Nope.", next: ["nope-fight", "nope-exit", "nope-win"] },
+						{
+							o: "(Give 5{coin}) Ok...", next: ["pay-fight", "pay-exit"], run: function (mob, player) {
+								player.coins -= 5;
+							}
+						},
+					]
+				},
+				{ label: "nope-fight", end: "combat", m: "You'll pay, one way or another!" },
+				{ label: "nope-exit", end: "exit", m: "Wait, wait, it was a joke... Ha ha..." },
+				{
+					label: "nope-win",
+					m: "Wait, don't hurt me! I'll pay you!",
+					a: [
+						{ o: "You better!", end: "win", m: "This is all I have, don't hurt me." }
+					]
+				},
+				{
+					label: "pay-fight",
+					m: "Now that I know you're a weakling, you'll pay far more than just 5{coin}.",
+					a: [
+						{ o: "You rat!", end: "combat", m: "Now that I know you're a weakling, you'll pay far more than just 5{coin}." }
+					]
+				},
+				{ label: "pay-exit", end: "exit", m: "Alright you coward, begone!" },
+			]
 		},
 		rat_bandit: {
 			name: "Rat bandit",
