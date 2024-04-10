@@ -89,8 +89,6 @@ document.querySelector("#start #newGame").addEventListener("click", function () 
 // Continue
 /*===========================================================================*/
 document.querySelector("#start #continue").addEventListener("click", async function () {
-	// TO-DO: Turn fullscreen on
-	// document.documentElement.requestFullscreen();
 	await load();
 	setLevel(state.currentLevel, true);
 
@@ -411,6 +409,10 @@ function sfcVolumeChange() {
 /*===========================================================================*/
 document.querySelector("div#lvl-top button.btn-close").addEventListener("click", function () {
 	goTo("start");
+	// Check for saved game
+	if (!(localStorage.getItem("almogrotesque") === null)) {
+		document.querySelector("#start #continue").disabled = false;
+	}
 })
 
 /*===========================================================================*/
