@@ -6,7 +6,7 @@
 /* ··········································································*/
 /* ··········································································*/
 import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify } from "./helpers.js?v=0.26";
-import { db, state, save } from "./db.js?v=0.26";
+import { db, state, save, global, saveGlobal } from "./db.js?v=0.26";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.26";
 import { generateCard } from "./inventory.js?v=0.26";
 import { burnPath, fillPaths } from "./crossroad.js?v=0.26";
@@ -1318,14 +1318,23 @@ export async function applyDiscsEffects() {
 // Victory
 /*===========================================================================*/
 export async function victory() {
+	// Save stat
+	const mobsKilled = global.mobsKilled;
+	if (!mobsKilled.includes(state.mob.mobid)) {
+        mobsKilled.push(state.mob.mobid);
+    }
+	saveGlobal();
+
+	// Reset data 
 	state.turn = false;
 	state.player.poison = 0;
 	state.player.shield = 0;
 	state.player.mana = 0;
+
+	// Display XP Screen
 	document.querySelector("#playerBoard").style.display = "none";
 	document.querySelector("#xpscreen").style.display = "flex";
 	generateXpScreen();
-	save();
 }
 
 

@@ -28,7 +28,7 @@
 				<button class="btn" id="continue" disabled>Continue</button>
 				<button class="btn" id="newGame">New Game</button>
 				<button class="btn" id="settings">Settings</button>
-				<button class="btn" disabled>Collection</button>
+				<button class="btn" id="collection-btn">Collection</button>
 				<button class="btn" disabled>How to play</button>
 			</div>
 			<p>v=0.26</p>
@@ -39,6 +39,7 @@
 			<div id="lvl-top">
 				<p class="level-title"></p>
 				<p class="level-desc"></p>
+				<button class="btn-close"></button>
 			</div>
 			<div id="path1" class="path" data-position="1" data-filled="false" data-pathtype="" data-mobname="" data-skippable="">
 				<button data-skip-path=""><span class="btn-close"></span></button>
@@ -107,13 +108,15 @@
 						<div class="heal-bar"></div>
 						<p><span></span>/<span></span></p>
 					</div>
-					<div class="shield-wrapper">
-						<span class="shield-amount">0</span>
-						<span class="shield icon"></span>
-					</div>
-					<div class="poison-wrapper">
-						<span class="poison-amount">0</span>
-						<span class="poison icon"></span>
+					<div class="mob-statuses">
+						<div class="shield-wrapper">
+							<span class="shield-amount">0</span>
+							<span class="shield icon"></span>
+						</div>
+						<div class="poison-wrapper">
+							<span class="poison-amount">0</span>
+							<span class="poison icon"></span>
+						</div>
 					</div>
 				</div>
 				<div class="right-side" data-goto="crossroad">
@@ -168,13 +171,15 @@
 						<div class="heal-bar"></div>
 						<p><span></span>/<span></span></p>
 					</div>
-					<div class="shield-wrapper">
-						<span class="shield-amount">0</span>
-						<span class="shield icon"></span>
-					</div>
-					<div class="poison-wrapper">
-						<span class="poison-amount">0</span>
-						<span class="poison icon"></span>
+					<div class="player-statuses">
+						<div class="shield-wrapper">
+							<span class="shield-amount">0</span>
+							<span class="shield icon"></span>
+						</div>
+						<div class="poison-wrapper">
+							<span class="poison-amount">0</span>
+							<span class="poison icon"></span>
+						</div>
 					</div>
 				</div>
 				<div class="right-side">
@@ -323,6 +328,18 @@
 					<input type="range" id="effectsVolumeRange" min="0" max="1" step="0.01" value="1">
 				</div>
 			</div>
+		</section>
+
+		<section id="collection">
+			<div class="collection-nav">
+				<button class="btn" data-collectiontab="bestiary">Bestiary</button>
+				<button class="btn" data-collectiontab="cards">Cards</button>
+				<button class="btn" data-collectiontab="stats">Stats</button>
+				<button class="btn-close" data-collectiontab="close"></button>
+			</div>
+			<div class="collection-content mob-collection"></div>
+			<div class="collection-content card-collection" style="display: none;"></div>
+			<div class="collection-content stats-collection" style="display: none;"></div>
 		</section>
 
 		<div class="book">

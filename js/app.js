@@ -12,6 +12,7 @@ import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, t
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.26";
 import { buySkill, updateSkilltree } from "./skills.js?v=0.26";
 import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.26";
+import { loadCollection } from "./stats.js?v=0.26";
 
 
 /* ··········································································*/
@@ -68,8 +69,7 @@ Howler.autoUnlock = true;
 // Start button
 /*===========================================================================*/
 document.querySelector("#start #newGame").addEventListener("click", function () {
-	// TO-DO: Turn fullscreen on
-	// document.documentElement.requestFullscreen();
+	state.endOfTheRoad = false;
 	setLevel("crossroad", false);
 
 	// Music
@@ -205,6 +205,7 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 	document.querySelector("#playerBoard").style.display = "flex";
 	await goTo("crossroad");
 	await burnPath(path);
+	save();
 	await fillPaths();
 });
 
@@ -338,12 +339,12 @@ document.querySelectorAll(".store-item-card").forEach(el => {
 /*===========================================================================*/
 // Open / close settings
 /*===========================================================================*/
-document.querySelector("#settings").addEventListener("click", function() {
+document.querySelector("#settings").addEventListener("click", function () {
 	const settingsModal = document.querySelector(".settings.modal");
 	settingsModal.style.display = "flex";
 })
 
-document.querySelector(".settings.modal .btn-close-light").addEventListener("click", function() {
+document.querySelector(".settings.modal .btn-close-light").addEventListener("click", function () {
 	const settingsModal = document.querySelector(".settings.modal");
 	settingsModal.style.display = "none";
 	soundtrack.crossroad.fade(global.musicVolume, 0, 3000);
@@ -357,7 +358,7 @@ document.querySelector(".settings.modal .btn-close-light").addEventListener("cli
 // Fullscreen settings
 /*===========================================================================*/
 // On fullscreen change event
-document.addEventListener("fullscreenchange", function() {
+document.addEventListener("fullscreenchange", function () {
 	const btn = document.querySelector("#fullscreen-btn");
 	if (document.fullscreenElement) {
 		btn.textContent = "Turn off";
@@ -367,10 +368,10 @@ document.addEventListener("fullscreenchange", function() {
 });
 
 // On click event
-document.querySelector("#fullscreen-btn").addEventListener("click", function() {
+document.querySelector("#fullscreen-btn").addEventListener("click", function () {
 	document.fullscreenElement ?
-	document.exitFullscreen() :
-	document.querySelector('body').requestFullscreen();
+		document.exitFullscreen() :
+		document.querySelector('body').requestFullscreen();
 })
 
 /*===========================================================================*/
@@ -384,8 +385,8 @@ function musicVolumeChange() {
 		soundtrack.crossroad.play();
 	}
 
-    const volume = parseFloat(this.value);
-    setVolume("music", volume);
+	const volume = parseFloat(this.value);
+	setVolume("music", volume);
 	global.musicVolume = volume;
 	saveGlobal();
 }
@@ -397,9 +398,51 @@ function sfcVolumeChange() {
 	if (!soundEffects.slot.playing()) {
 		soundEffects.slot.play();
 	}
-	
-    const volume = parseFloat(this.value);
+
+	const volume = parseFloat(this.value);
 	setVolume("sfx", volume);
 	global.sfxVolume = volume;
 	saveGlobal();
 }
+
+
+/*===========================================================================*/
+// Back to start
+/*===========================================================================*/
+document.querySelector("div#lvl-top button.btn-close").addEventListener("click", function () {
+	goTo("start");
+})
+
+/*===========================================================================*/
+// Collection
+/*===========================================================================*/
+// Open collection
+document.querySelector("#start #collection-btn").addEventListener("click", async function () {
+	await loadCollection();
+	goTo("collection");
+});
+
+// Collection tabs
+document.querySelector('.collection-nav').addEventListener("click", async function (e) {
+	const tabTarget = e.target.dataset.collectiontab;
+	const tabContents = document.querySelectorAll("#collection .collection-content");
+	switch (tabTarget) {
+		case "bestiary":
+			tabContents.forEach(el => { el.style.display = "none"; });
+			document.querySelector(".mob-collection").style.display = "grid";
+			break;
+		case "cards":
+			tabContents.forEach(el => { el.style.display = "none"; });
+			document.querySelector(".card-collection").style.display = "flex";
+			break;
+		case "stats":
+			tabContents.forEach(el => { el.style.display = "none"; });
+			document.querySelector(".stats-collection").style.display = "grid";
+			break;
+		case "close":
+			goTo("start");
+			break;
+		default:
+			break;
+	}
+});

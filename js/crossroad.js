@@ -60,27 +60,40 @@ function createLvlArray(lvl, fromSavedState = false) {
 	return new Promise((resolve, reject) => {
 		try {
 
-			let levelArray = [];
+			let levelArray;
 
 			if (fromSavedState) {
-				levelArray.push(state.paths.path1, state.paths.path2, state.paths.path3);
-			} else {
+				levelArray = [];
+				if (state.paths.path1) {
+					levelArray.push(state.paths.path1)
+				}
+				if (state.paths.path2) {
+					levelArray.push(state.paths.path2)
+				}
+				if (state.paths.path3) {
+					levelArray.push(state.paths.path3)
+				}
+				levelArray = [...levelArray, ...state.currentLevelArray]
+				state.currentLevelArray = [...levelArray];
+				resolve();
+			}
+			
+			
+			else if (!fromSavedState) {
 				const lvlData = db.levels[lvl];
-	
 				const arrayOfMobs = [...lvlData.spawns.map(mob => ({ type: "mob", mobId: mob }))];
-	
+				
 				const saferoomsArray = [
 					...Array(lvlData.stores).fill({ type: "store" }),
 					...lvlData.doors.map(door => ({ type: "door", level: door }))
 				];
-	
+				
+				levelArray = [];
 				levelArray = injectArrInArr(arrayOfMobs, saferoomsArray);
+				state.currentLevelArray = [...levelArray];
+				resolve();
 			}
 
-
-			state.currentLevelArray = [...levelArray];
-
-			resolve();
 		} catch (error) {
 			reject(error);
 		}
@@ -117,6 +130,7 @@ export function fillPaths(fromSavedState = false) {
 					switch (mobOrRoom.type) {
 						case "store":
 							roomName.textContent = "Store";
+							lvlTxt.innerHTML = "";
 							btnTxt.textContent = "Enter";
 							path.dataset.pathtype = "store";
 							path.dataset.skippable = true;
@@ -139,6 +153,7 @@ export function fillPaths(fromSavedState = false) {
 							const lvl = mobOrRoom.level;
 							const lvlName = db.levels[lvl].name;
 							roomName.textContent = `Go to ${lvlName}`;
+							lvlTxt.innerHTML = "";
 							btnTxt.textContent = "Exit";
 							path.dataset.pathtype = "door";
 							path.dataset.door = lvl;
@@ -157,12 +172,11 @@ export function fillPaths(fromSavedState = false) {
 							}
 							path.dataset.pathtype = "encounter";
 							path.dataset.mobid = mobOrRoom.mobId;
-							path.dataset.skippable = false;
+							path.dataset.skippable = true;
 							path.dataset.filled = true;
 							path.style.visibility = "visible";
 							break;
 						default:
-							console.log('case false');
 							path.style.visibility = "hidden";
 							path.dataset.filled = false;
 							break;
@@ -176,6 +190,8 @@ export function fillPaths(fromSavedState = false) {
 					state.paths[path.id] = mobOrRoom;
 					levelArray.shift();
 					path.classList.remove("burning");
+					save();
+					resolve();
 				} else {
 					if (!state.endOfTheRoad) {
 						state.endOfTheRoad = 1;
@@ -183,14 +199,11 @@ export function fillPaths(fromSavedState = false) {
 					} else {
 						path.style.visibility = "hidden";
 						path.dataset.filled = false;
+						save();
+						resolve();
 					}
-
 				}
 			});
-
-			save();
-
-			resolve();
 		} catch (error) {
 			reject(error);
 		}
@@ -303,14 +316,14 @@ export async function takeDoor(path) {
 	const crossroad = document.querySelector("#crossroad");
 
 	crossroad.style.pointerEvents = "none";
-
-	state.endOfTheRoad = false;
-
+	
 	await burnPath(path);
-
+	
 	// Reset saved paths
-	state.paths = { path1: false, path2: false, path3: false }
-
+	state.paths = { path1: false, path2: false, path3: false };
+	
+	state.endOfTheRoad = false;
+	
 	await setLevel(door);
 
 	crossroad.style.pointerEvents = "auto";
