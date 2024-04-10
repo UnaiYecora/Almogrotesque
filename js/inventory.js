@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { iconify } from "./helpers.js?v=0.26";
-import { generateCardDisc } from "./discs.js?v=0.26";
-import { db, state } from "./db.js?v=0.26";
+import { iconify } from "./helpers.js?v=0.27";
+import { generateCardDisc } from "./discs.js?v=0.27";
+import { db, state } from "./db.js?v=0.27";
 
 
 

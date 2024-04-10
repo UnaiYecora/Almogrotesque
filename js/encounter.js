@@ -5,12 +5,12 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify } from "./helpers.js?v=0.26";
-import { db, state, save, global, saveGlobal } from "./db.js?v=0.26";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.26";
-import { generateCard } from "./inventory.js?v=0.26";
-import { burnPath, fillPaths } from "./crossroad.js?v=0.26";
-import { Draggable } from "./lib/drag.js?v=0.26";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify } from "./helpers.js?v=0.27";
+import { db, state, save, global, saveGlobal } from "./db.js?v=0.27";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.27";
+import { generateCard } from "./inventory.js?v=0.27";
+import { burnPath, fillPaths } from "./crossroad.js?v=0.27";
+import { Draggable } from "./lib/drag.js?v=0.27";
 
 
 /* ··········································································*/
@@ -1319,9 +1319,8 @@ export async function applyDiscsEffects() {
 /*===========================================================================*/
 export async function victory() {
 	// Save stat
-	const mobsKilled = global.mobsKilled;
-	if (!mobsKilled.includes(state.mob.mobid)) {
-        mobsKilled.push(state.mob.mobid);
+	if (!global.mobsKilled.includes(state.mob.mobid)) {
+        global.mobsKilled.push(state.mob.mobid);
     }
 	saveGlobal();
 

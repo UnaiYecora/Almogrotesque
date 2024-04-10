@@ -5,9 +5,9 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { wait } from "./helpers.js?v=0.26";
-import { generateCard } from "./inventory.js?v=0.26";
-import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.26";
+import { wait } from "./helpers.js?v=0.27";
+import { generateCard } from "./inventory.js?v=0.27";
+import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.27";
 
 
 
