@@ -72,11 +72,23 @@ export function load() {
 
 		if (savedStateData) {
 			const savedState = JSON.parse(savedStateData);
-			state = savedState;
+
+			for (const item in state) {
+				if (undefined !== savedState[item]) {
+					state[item] = savedState[item];
+				}
+			}
+			for (const item in savedState) {
+				if (undefined === state[item]) {
+					state[item] = savedState[item];
+				}
+			}
 		} else {
 			const stateData = JSON.stringify(state);
 			localStorage.setItem('almogrotesque', stateData);
 		}
+
+		save();
 
 		return Promise.resolve();
 	} catch (error) {
@@ -91,11 +103,17 @@ export function loadGlobal() {
 
 		if (savedGlobalData) {
 			const savedGlobal = JSON.parse(savedGlobalData);
-			global = savedGlobal;
+			for (const item in global) {
+				if (undefined !== savedGlobal[item]) {
+					global[item] = savedGlobal[item];
+				}
+			}
 		} else {
 			const globalData = JSON.stringify(global);
 			localStorage.setItem('almogrotesque-global', globalData);
 		}
+
+		saveGlobal();
 
 		return Promise.resolve();
 	} catch (error) {
