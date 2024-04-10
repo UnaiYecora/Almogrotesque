@@ -74,7 +74,8 @@ export function load() {
 			const savedState = JSON.parse(savedStateData);
 			state = savedState;
 		} else {
-			console.log('No saved data found');
+			const stateData = JSON.stringify(state);
+			localStorage.setItem('almogrotesque', stateData);
 		}
 
 		return Promise.resolve();
@@ -92,7 +93,8 @@ export function loadGlobal() {
 			const savedGlobal = JSON.parse(savedGlobalData);
 			global = savedGlobal;
 		} else {
-			console.log('No saved global data found');
+			const globalData = JSON.stringify(global);
+			localStorage.setItem('almogrotesque-global', globalData);
 		}
 
 		return Promise.resolve();
