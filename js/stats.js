@@ -75,7 +75,7 @@ export function loadCollection() {
 			<p>${global.places.length} / ${amountOfLevels}</p>
 			<h3>Enemies seen</h3>
 			<p>${global.mobsSeen.length} / ${amountOfMobs}</p>
-			<h3>Enemies killed</h3>
+			<h3>Enemies defeated</h3>
 			<p>${global.mobsKilled.length} / ${amountOfMobs}</p>
 			`;
 			statsCollectionHTML += "</div>";
