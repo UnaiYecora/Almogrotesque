@@ -1322,6 +1322,7 @@ export async function victory() {
 	if (!global.mobsKilled.includes(state.mob.mobid)) {
         global.mobsKilled.push(state.mob.mobid);
     }
+	global.kills++;
 	saveGlobal();
 
 	// Reset data 
@@ -1342,6 +1343,8 @@ export async function victory() {
 /*===========================================================================*/
 export function death() {
 	document.querySelector("#death").style.display = "flex";
+	global.deaths++;
+	saveGlobal();
 }
 
 /*===========================================================================*/

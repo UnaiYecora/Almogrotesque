@@ -63,14 +63,10 @@ export function loadCollection() {
 			const statsCollectionElement = document.querySelector("section#collection .stats-collection");
 			let statsCollectionHTML = "<div class='list-of-stats'>";
 			statsCollectionHTML += /*html*/`
-			<h3>Enemies defeated</h3>
-			<p>0</p>
 			<h3>Enemies killed</h3>
-			<p>0</p>
-			<h3>Damage dealt</h3>
-			<p>420</p>
+			<p>${global.kills}</p>
 			<h3>Deaths</h3>
-			<p>69</p>
+			<p>${global.deaths}</p>
 			`;
 			statsCollectionHTML += "</div>";
 

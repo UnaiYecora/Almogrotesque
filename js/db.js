@@ -47,6 +47,8 @@ export var global = {
 	musicVolume: 0.65,
 	sfxVolume: 1,
 	mobsKilled: [],
+	kills: 0,
+	deaths: 0,
 }
 
 
