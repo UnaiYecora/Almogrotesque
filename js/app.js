@@ -205,6 +205,8 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 	await burnPath(path);
 	save();
 	await fillPaths();
+	global.kills++;
+	saveGlobal();
 });
 
 /*===========================================================================*/

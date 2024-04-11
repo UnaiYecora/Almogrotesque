@@ -7,7 +7,7 @@
 /* ··········································································*/
 import { updateHP, shuffleArray, goTo, wait, injectArrInArr } from "./helpers.js?v=0.27";
 import { generateStoreItems } from "./store.js?v=0.27";
-import { db, state, save } from "./db.js?v=0.27";
+import { db, state, global, save, saveGlobal } from "./db.js?v=0.27";
 
 
 /* ··········································································*/
@@ -33,6 +33,12 @@ export async function setLevel(lvl, fromSavedState = false) {
 
 		// Save new level
 		state.currentLevel = lvl;
+
+		// Save places visited stat
+		if (!global.places.includes(lvl)) {
+			global.places.push(lvl);
+		}
+		saveGlobal();
 
 		// Get every path ready
 		document.querySelectorAll(".path").forEach(path => {

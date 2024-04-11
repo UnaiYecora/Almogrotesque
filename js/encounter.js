@@ -57,6 +57,12 @@ export async function loadEncounter(mobId) {
 		// Change music
 		//changeMusic("crossroad", "battle1");
 
+		// Save places visited stat
+		if (!global.mobsSeen.includes(mobId)) {
+			global.mobsSeen.push(mobId);
+		}
+		saveGlobal();
+
 		// Toggle the player's turn
 		toggleTurn(true);
 	} catch (error) {
@@ -485,6 +491,8 @@ async function generateXpScreen() {
 
 			if (newTotalXP >= target) {
 				state.player.lvl++;
+				global.maxLvl = global.maxLvl > state.player.lvl ? global.maxLvl : state.player.lvl;
+				saveGlobal();
 				bar.style.transition = "0s";
 				bar.style.width = "0%";
 				lvl.textContent = state.player.lvl;
@@ -1322,8 +1330,6 @@ export async function victory() {
 	if (!global.mobsKilled.includes(state.mob.mobid)) {
         global.mobsKilled.push(state.mob.mobid);
     }
-	global.kills++;
-	saveGlobal();
 
 	// Reset data 
 	state.turn = false;

@@ -61,12 +61,22 @@ export function loadCollection() {
 			// STATS
 			/////////////////
 			const statsCollectionElement = document.querySelector("section#collection .stats-collection");
+			const amountOfLevels = Object.keys(db.levels).length;
+			const amountOfMobs = Object.keys(db.mobs).length;
 			let statsCollectionHTML = "<div class='list-of-stats'>";
 			statsCollectionHTML += /*html*/`
-			<h3>Enemies killed</h3>
+			<h3>Kills</h3>
 			<p>${global.kills}</p>
 			<h3>Deaths</h3>
 			<p>${global.deaths}</p>
+			<h3>Max. level</h3>
+			<p>${global.maxLvl}</p>
+			<h3>Places visited</h3>
+			<p>${global.places.length} / ${amountOfLevels}</p>
+			<h3>Enemies seen</h3>
+			<p>${global.mobsSeen.length} / ${amountOfMobs}</p>
+			<h3>Enemies killed</h3>
+			<p>${global.mobsKilled.length} / ${amountOfMobs}</p>
 			`;
 			statsCollectionHTML += "</div>";
 

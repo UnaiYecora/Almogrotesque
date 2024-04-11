@@ -47,8 +47,11 @@ export var global = {
 	musicVolume: 0.65,
 	sfxVolume: 1,
 	mobsKilled: [],
+	mobsSeen: [],
 	kills: 0,
 	deaths: 0,
+	maxLvl: 1,
+	places: [],
 }
 
 
@@ -123,10 +126,6 @@ export function loadGlobal() {
 		throw error;
 	}
 }
-
-
-
-
 
 
 

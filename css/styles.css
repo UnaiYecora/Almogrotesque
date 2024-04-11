@@ -2007,8 +2007,14 @@ section#collection .collection-content{
 }
 
 .list-of-stats h3{
-	margin-top: 2rem;
+	margin-top: 3rem;
 	font-weight: 700;
+	font-size: 2.25rem;
+}
+
+.list-of-stats p {
+	font-family: var(--f2);
+	font-size: 2rem;
 }
 
 /*===========================================================================
