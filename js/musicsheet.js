@@ -53,6 +53,8 @@ var soundEffects = {
 	}),
 }
 
+var currentPlaying = null;
+var seekTime = 0;
 var soundtrack = {
 	crossroad: new Howl({
 		src: ['./assets/audio/music/shadowsanddust.mp3'],

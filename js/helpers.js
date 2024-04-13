@@ -419,6 +419,28 @@ export function changeMusic(currentSong, nextSong) {
 	next.play();
 }
 
+/*===========================================================================*/
+// Toggle music
+/*===========================================================================*/
+export function toggleMusic() {
+	if (document.visibilityState === 'hidden') {
+		// When the page is not visible
+		for (var key in soundtrack) {
+			if (soundtrack[key].playing()) {
+				currentPlaying = soundtrack[key];
+				seekTime = currentPlaying.seek();
+				currentPlaying.pause();
+				break;
+			}
+		}
+	} else if (document.visibilityState === 'visible') {
+		// When the page is visible again
+		if (currentPlaying) {
+			currentPlaying.seek(seekTime);
+			currentPlaying.play();
+		}
+	}
+}
 
 /*===========================================================================*/
 // Damage effect

@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume, changeMusic } from "./helpers.js?v=0.28";
+import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume, changeMusic, toggleMusic } from "./helpers.js?v=0.28";
 import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.28";
 import { generateInventory } from "./inventory.js?v=0.28";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.28";
@@ -450,3 +450,9 @@ document.querySelector('.collection-nav').addEventListener("click", async functi
 			break;
 	}
 });
+
+
+/*===========================================================================*/
+// Stop audio on tab change
+/*===========================================================================*/
+document.addEventListener('visibilitychange', toggleMusic);
