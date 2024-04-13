@@ -183,12 +183,24 @@ export async function spin(discId) {
 
             const extraSpins = await rand(1, 4);
 
-            r += (await rand(0, 360)) + (360 * extraSpins);
+            const newSpin = (await rand(0, 360)) + (360 * extraSpins)
+
+            r += newSpin;
             arrow.style.transform = "translate(-50%, -100%) rotate(" + r + "deg)";
 
             // Results
             let newRotation = arrow.style.transform.match(/rotate\((.+)\)/)[1];
             let degreesRotated = parseInt(newRotation, 10) % 360;
+
+            // Sound effects
+            const thresholds = [1560, 1300, 1040, 780, 520, 260];
+			for (let i = 0; i < thresholds.length; i++) {
+				if (newSpin >= thresholds[i]) {
+					let sound = `spin${i+1}`;
+					soundEffects[sound].play();
+					break;
+				}
+			}
 
             await wait(1500);
             const results = await logResults(discId, degreesRotated);

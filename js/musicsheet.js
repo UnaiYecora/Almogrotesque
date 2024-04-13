@@ -33,6 +33,24 @@ var soundEffects = {
 	poison : new Howl({
 		src: ['./assets/audio/effects/poison.mp3'],
 	}),
+	spin1 : new Howl({
+		src: ['./assets/audio/effects/spin1.mp3'],
+	}),
+	spin2 : new Howl({
+		src: ['./assets/audio/effects/spin2.mp3'],
+	}),
+	spin3 : new Howl({
+		src: ['./assets/audio/effects/spin3.mp3'],
+	}),
+	spin4 : new Howl({
+		src: ['./assets/audio/effects/spin4.mp3'],
+	}),
+	spin5 : new Howl({
+		src: ['./assets/audio/effects/spin5.mp3'],
+	}),
+	spin6 : new Howl({
+		src: ['./assets/audio/effects/spin6.mp3'],
+	}),
 }
 
 var soundtrack = {
