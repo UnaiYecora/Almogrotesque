@@ -29,7 +29,7 @@ export async function setLevel(lvl, fromSavedState = false) {
 		book.style.display = "flex";
 		await wait(100);
 		book.classList.add("booking");
-		await wait (350);
+		await wait(350);
 
 		// Save new level
 		state.currentLevel = lvl;
@@ -83,17 +83,17 @@ function createLvlArray(lvl, fromSavedState = false) {
 				state.currentLevelArray = [...levelArray];
 				resolve();
 			}
-			
-			
+
+
 			else if (!fromSavedState) {
 				const lvlData = db.levels[lvl];
 				const arrayOfMobs = [...lvlData.spawns.map(mob => ({ type: "mob", mobId: mob }))];
-				
+
 				const saferoomsArray = [
 					...Array(lvlData.stores).fill({ type: "store" }),
 					...lvlData.doors.map(door => ({ type: "door", level: door }))
 				];
-				
+
 				levelArray = [];
 				levelArray = injectArrInArr(arrayOfMobs, saferoomsArray);
 				state.currentLevelArray = [...levelArray];
@@ -223,16 +223,16 @@ async function setLevelUI(lvl) {
 	return new Promise((resolve, reject) => {
 		try {
 			const lvlData = db.levels[lvl];
-		
+
 			// Background
 			document.querySelector("#crossroadBg").src = `./assets/img/bg/${lvl}.png`;
-		
+
 			// Title and description
 			const title = document.querySelector("#crossroad .level-title");
 			const desc = document.querySelector("#crossroad .level-desc");
 			title.textContent = lvlData.name;
 			desc.textContent = lvlData.desc;
-		
+
 			updateHP();
 
 			resolve();
@@ -322,14 +322,14 @@ export async function takeDoor(path) {
 	const crossroad = document.querySelector("#crossroad");
 
 	crossroad.style.pointerEvents = "none";
-	
+
 	await burnPath(path);
-	
+
 	// Reset saved paths
 	state.paths = { path1: false, path2: false, path3: false };
-	
+
 	state.endOfTheRoad = false;
-	
+
 	await setLevel(door);
 
 	crossroad.style.pointerEvents = "auto";

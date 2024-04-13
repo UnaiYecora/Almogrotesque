@@ -405,7 +405,7 @@ export function setVolume(group, volume) {
 /*===========================================================================*/
 // Change music
 /*===========================================================================*/
-export function changeMusic(currentSong, nextSong){
+export function changeMusic(currentSong, nextSong) {
 	const current = soundtrack[currentSong];
 	const next = soundtrack[nextSong];
 	const volume = global.musicVolume;
@@ -423,14 +423,14 @@ export function changeMusic(currentSong, nextSong){
 /*===========================================================================*/
 // Damage effect
 /*===========================================================================*/
-export async function damageEffect(target, amount, variant){
+export async function damageEffect(target, amount, variant) {
 	if (amount > 0) {
 
 		// Get parent element to append
 		let parent;
 		if (target === "mob") {
 			parent = document.querySelector("#mobBoard");
-		} else if (target === "player"){
+		} else if (target === "player") {
 			parent = document.querySelector("#encounter .bottombar");
 		} else {
 			return;

@@ -58,28 +58,28 @@ export async function generateInventory() {
 export async function generateCard(cardId) {
 	return new Promise(async (resolve, reject) => {
 		try {
-				// Get card data
-				const card = db.cards[cardId];
+			// Get card data
+			const card = db.cards[cardId];
 
-				// Get card disc
-				const disc = await generateCardDisc(cardId);
+			// Get card disc
+			const disc = await generateCardDisc(cardId);
 
-				// Generate card HTML
-				let cardHTML = "";
-				cardHTML += "<div class='card'>";
-				cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '" data-type="' + card.type +'">';
-				if (card.mana_cost > 0) {
-					cardHTML += '<div class="card-mana-cost">'+ card.mana_cost +'</div>';
-				}
-				cardHTML += '<div class="card-inventory-disc-wrapper">'+ disc +'</div>';
-				cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
-				cardHTML += '<div class="card-inventory-icon">';
-				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
-				cardHTML += '</div>';
-				cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
-				cardHTML += '<img src="./assets/img/cards/' + cardId + '.png" class="card-background">';
-				cardHTML += '</div>';
-				cardHTML += '</div>';
+			// Generate card HTML
+			let cardHTML = "";
+			cardHTML += "<div class='card'>";
+			cardHTML += '<div class="inventory-card" data-cardid="' + cardId + '" data-type="' + card.type + '">';
+			if (card.mana_cost > 0) {
+				cardHTML += '<div class="card-mana-cost">' + card.mana_cost + '</div>';
+			}
+			cardHTML += '<div class="card-inventory-disc-wrapper">' + disc + '</div>';
+			cardHTML += '<p class="card-inventory-title">' + card.name + '</p>';
+			cardHTML += '<div class="card-inventory-icon">';
+			cardHTML += '<img src="./assets/img/cards/' + cardId + '.png">';
+			cardHTML += '</div>';
+			cardHTML += '<div class="card-inventory-desc"><p>' + iconify(card.desc) + '</p></div>';
+			cardHTML += '<img src="./assets/img/cards/' + cardId + '.png" class="card-background">';
+			cardHTML += '</div>';
+			cardHTML += '</div>';
 
 			resolve(cardHTML);
 		} catch (error) {

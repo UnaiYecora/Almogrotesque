@@ -74,7 +74,7 @@ export function updateSkilltree() {
 				if (state.player.skills.includes("skillslot3")) {
 					skillElement.dataset.skillstate = 1;
 				}
-			} else if (skillId === "skillslot5"){
+			} else if (skillId === "skillslot5") {
 				if (state.player.skills.includes("skillslot4")) {
 					skillElement.dataset.skillstate = 1;
 				}

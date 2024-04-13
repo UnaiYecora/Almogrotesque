@@ -95,7 +95,7 @@ export async function generateStore(storeid) {
 					if (i === 0 && state.player.skills.includes("skilleco2")) {
 						price = Math.floor(price - (price * 25 / 100));
 					}
-					if ( state.player.skills.includes("skilleco3")) {
+					if (state.player.skills.includes("skilleco3")) {
 						price = Math.floor(price - (price * 25 / 100));
 					}
 

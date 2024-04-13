@@ -1257,7 +1257,7 @@ export async function applyDiscsEffects() {
 			// Damage effect
 			if (target === state.mob && totalDamage > 0) {
 				damageEffect("mob", totalDamage);
-			} else if (target === state.player && totalDamage > 0){
+			} else if (target === state.player && totalDamage > 0) {
 				damageEffect("player", totalDamage);
 			}
 
@@ -1342,8 +1342,8 @@ export async function applyDiscsEffects() {
 export async function victory() {
 	// Save stat
 	if (!global.mobsKilled.includes(state.mob.mobid)) {
-        global.mobsKilled.push(state.mob.mobid);
-    }
+		global.mobsKilled.push(state.mob.mobid);
+	}
 
 	// Reset data 
 	state.turn = false;

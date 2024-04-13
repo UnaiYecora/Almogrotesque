@@ -32,12 +32,12 @@ export function loadCollection() {
 				const killed = global.mobsKilled.includes(mob);
 				const killedClass = killed ? "" : " unknown";
 
-				mobCollectionHTML += '<div class="mob-collection-item'+ killedClass +'">';
+				mobCollectionHTML += '<div class="mob-collection-item' + killedClass + '">';
 				mobCollectionHTML += '<div class="mob-image-wrapper"><img src="./assets/img/mobs/' + mob + '.png" class="mob-image"></div>';
 				mobCollectionHTML += '<div class="mob-info">';
 				mobCollectionHTML += '<div class="mob-info-name">';
 				if (killed) {
-					mobCollectionHTML += '<p>'+ mobData.name +'</p>';
+					mobCollectionHTML += '<p>' + mobData.name + '</p>';
 				} else {
 					mobCollectionHTML += '<p>??????</p>';
 				}
