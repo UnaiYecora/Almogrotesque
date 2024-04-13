@@ -39,12 +39,10 @@ var soundtrack = {
 	crossroad : new Howl({
 		src: ['./assets/audio/music/shadowsanddust.mp3'],
 		loop: true,
-		html5: true,
-		preload: "metadata",
+		preload: true,
 	}),
 	battle1 : new Howl({
 		src: ['./assets/audio/music/battle.mp3'],
 		loop: true,
-		html5: true,
 	}),
 }
