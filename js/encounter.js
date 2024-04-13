@@ -5,12 +5,12 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify, damageEffect } from "./helpers.js?v=0.27";
-import { db, state, save, global, saveGlobal } from "./db.js?v=0.27";
-import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.27";
-import { generateCard } from "./inventory.js?v=0.27";
-import { burnPath, fillPaths } from "./crossroad.js?v=0.27";
-import { Draggable } from "./lib/drag.js?v=0.27";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify, damageEffect } from "./helpers.js?v=0.28";
+import { db, state, save, global, saveGlobal } from "./db.js?v=0.28";
+import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.28";
+import { generateCard } from "./inventory.js?v=0.28";
+import { burnPath, fillPaths } from "./crossroad.js?v=0.28";
+import { Draggable } from "./lib/drag.js?v=0.28";
 
 
 /* ··········································································*/
