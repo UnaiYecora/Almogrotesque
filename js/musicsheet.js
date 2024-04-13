@@ -18,6 +18,21 @@ var soundEffects = {
 	burnPath : new Howl({
 		src: ['./assets/audio/effects/burnPath.mp3'],
 	}),
+	slash1 : new Howl({
+		src: ['./assets/audio/effects/slash1.mp3'],
+	}),
+	slash2 : new Howl({
+		src: ['./assets/audio/effects/slash2.mp3'],
+	}),
+	slash3 : new Howl({
+		src: ['./assets/audio/effects/slash3.mp3'],
+	}),
+	slash4 : new Howl({
+		src: ['./assets/audio/effects/slash4.mp3'],
+	}),
+	poison : new Howl({
+		src: ['./assets/audio/effects/poison.mp3'],
+	}),
 }
 
 var soundtrack = {

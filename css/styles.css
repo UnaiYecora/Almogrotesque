@@ -433,6 +433,7 @@ section#encounter {
 .bottombar{
 	padding: 1.5rem 1rem 0rem;
 	height: 4.2rem;
+	position: relative;
 }
 
 section#encounter .right-side {
@@ -1228,7 +1229,34 @@ button.close-inventory {
 }
 
 
+.damage-effect {
+	pointer-events: none;
+	color: #860909bf;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 4rem;
+	opacity: 0;
+	z-index: 10;
+	animation: damage-effect 1s;
+}
+.damage-effect.poison-damage{
+	color: #1d3b00bf;
+}
 
+@keyframes damage-effect {
+	80%{
+		opacity: 1;
+		transform: translate(-50%, -170%);
+		scale: 1.7;
+	}
+	100%{
+		opacity: 0;
+		transform: translate(-50%, -170%);
+		scale: 1.7;
+	}
+}
 
 /*===========================================================================
 // XP SCREEN 

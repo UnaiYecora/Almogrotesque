@@ -418,3 +418,48 @@ export function changeMusic(currentSong, nextSong){
 	next.fade(0, volume, 3000);
 	next.play();
 }
+
+
+/*===========================================================================*/
+// Damage effect
+/*===========================================================================*/
+export async function damageEffect(target, amount, variant){
+	if (amount > 0) {
+
+		// Get parent element to append
+		let parent;
+		if (target === "mob") {
+			parent = document.querySelector("#mobBoard");
+		} else if (target === "player"){
+			parent = document.querySelector("#encounter .bottombar");
+		} else {
+			return;
+		}
+
+		// Create element
+		const damageEffectElement = document.createElement("div");
+		damageEffectElement.classList.add("damage-effect");
+		if (variant === "poison") {
+			damageEffectElement.classList.add("poison-damage");
+		}
+
+		// Add damage amount
+		damageEffectElement.textContent = "-" + amount;
+
+		// Display
+		parent.append(damageEffectElement);
+
+		// Sound effect
+		if (variant === "poison") {
+			soundEffects.poison.play();
+		} else {
+			const randomSlashSound = "slash" + await rand(1, 4);
+			soundEffects[randomSlashSound].play();
+		}
+
+		// Remove element
+		setTimeout(() => {
+			damageEffectElement.remove();
+		}, 2000);
+	}
+}

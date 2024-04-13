@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify } from "./helpers.js?v=0.27";
+import { goTo, shuffleArray, updateHP, updateFate, updateMana, updateCoins, wait, removeSuccessDiscStates, secondaryAction, rand, heartPulse, cardManaCheck, checkAttackAvailability, changeMusic, iconify, damageEffect } from "./helpers.js?v=0.27";
 import { db, state, save, global, saveGlobal } from "./db.js?v=0.27";
 import { generatePlayingDisc, spin, checkDiscsForMana } from "./discs.js?v=0.27";
 import { generateCard } from "./inventory.js?v=0.27";
@@ -332,8 +332,15 @@ export async function toggleTurn(start) {
 		const poisonWrapper = encounter.querySelector(`.${state.turn}-hp .poison-wrapper`);
 		const poisonAmountElement = poisonWrapper.querySelector(".poison-amount");
 		turnCharacter.hp = Math.max(turnCharacter.hp - turnCharacter.poison, 0);
+
+		// Damage effect
+		await wait(500);
+		damageEffect(state.turn, turnCharacter.poison, "poison");
+
 		turnCharacter.poison = Math.max(turnCharacter.poison - 1, 0);
 		poisonAmountElement.textContent = turnCharacter.poison;
+
+
 		await updateHP();
 		if (state.player.hp <= 0) {
 			death();
@@ -1247,6 +1254,13 @@ export async function applyDiscsEffects() {
 			// Log damage
 			console.log("Initial damage: " + (state.turnDamage + state.turnPiercingDamage + state.turnFireDamage) + ". Dealt: " + totalDamage + ".");
 
+			// Damage effect
+			if (target === state.mob && totalDamage > 0) {
+				damageEffect("mob", totalDamage);
+			} else if (target === state.player && totalDamage > 0){
+				damageEffect("player", totalDamage);
+			}
+
 
 			/////////////////
 			// Take self damage
@@ -1336,6 +1350,9 @@ export async function victory() {
 	state.player.poison = 0;
 	state.player.shield = 0;
 	state.player.mana = 0;
+
+	// Wait for damage effect
+	await wait(1000);
 
 	// Display XP Screen
 	document.querySelector("#playerBoard").style.display = "none";
