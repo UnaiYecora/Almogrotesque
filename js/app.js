@@ -5,14 +5,14 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume, changeMusic, toggleMusic } from "./helpers.js?v=0.29";
-import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.29";
-import { generateInventory } from "./inventory.js?v=0.29";
-import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.29";
-import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.29";
-import { buySkill, updateSkilltree } from "./skills.js?v=0.29";
-import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.29";
-import { loadCollection } from "./stats.js?v=0.29";
+import { updateFate, updateCoins, goTo, updateHP, updateTokens, iconify, handleDragScroll, setVolume, changeMusic, toggleMusic } from "./helpers.js?v=0.30";
+import { generateStore, buy, checkIfAbleToBuy } from "./store.js?v=0.30";
+import { generateInventory } from "./inventory.js?v=0.30";
+import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.30";
+import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.30";
+import { buySkill, updateSkilltree } from "./skills.js?v=0.30";
+import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.30";
+import { loadCollection } from "./stats.js?v=0.30";
 
 
 /* ··········································································*/
