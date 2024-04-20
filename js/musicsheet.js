@@ -61,6 +61,16 @@ var soundtrack = {
 		loop: true,
 		preload: true,
 	}),
+	swordsong_overture: new Howl({
+		src: ['./assets/audio/music/swordsong_overture.mp3'],
+		loop: true,
+		preload: true,
+	}),
+	victory: new Howl({
+		src: ['./assets/audio/music/victory.mp3'],
+		loop: true,
+		preload: true,
+	}),
 	battle1: new Howl({
 		src: ['./assets/audio/music/battle.mp3'],
 		loop: true,

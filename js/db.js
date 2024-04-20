@@ -603,6 +603,38 @@ export const db = {
 			self_damage: 5,
 			colors: ["#000", "#00312f"],
 		},
+		epiphany: {
+			name: "Epiphany",
+			get desc() { return "{banish} Gain " + this.mana + "{mana}." },
+			type: "mana",
+			price: 20,
+			mana_cost: 0,
+			mana: 6,
+			banish: true,
+			hitrate: [74],
+			colors: ["#000", "#460d59"],
+		},
+		shield_transmuter: {
+			name: "Shield Transmuter",
+			get desc() { return "Exchange your {shield} for {mana}." },
+			type: "mana",
+			price: 20,
+			mana_cost: 0,
+			hitrate: [66],
+			colors: ["#000", "#460d59"],
+		},
+		prayer_haven: {
+			name: "Prayer Haven",
+			get desc() { return "If you have {shield}, gain " + this.mana + "/" + this.mana2 + "/" + this.mana3 + "{mana}." },
+			type: "mana",
+			price: 20,
+			mana_cost: 0,
+			mana: 1,
+			mana2: 2,
+			mana3: 3,
+			hitrate: [12, 20, 12],
+			colors: ["#000", "#691386", "#460d59", "#23062d"],
+		}
 	},
 
 	/* ··········································································*/

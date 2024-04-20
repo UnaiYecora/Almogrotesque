@@ -301,7 +301,6 @@ img.screen-background {
 	width: 100%;
 	font-size: 1rem;
 	padding: 1rem;
-	font-weight: 700;
 	margin-top: auto;
 }
 
@@ -1996,7 +1995,8 @@ section#collection .collection-content{
 }
 
 .mob-collection-item.unknown .mob-image-wrapper{
-	filter: invert(1) opacity(0.2) blur(1rem) contrast(100) grayscale(1);
+	mix-blend-mode: multiply;
+	filter: invert(1) opacity(0.35) blur(1rem) contrast(3.5) grayscale(1) brightness(1.5);
 }
 
 .mob-info {

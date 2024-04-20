@@ -201,6 +201,10 @@ document.querySelector("#xpscreen button").addEventListener("click", async funct
 	await updateHP();
 	document.querySelector("#xpscreen").style.display = "none";
 	document.querySelector("#playerBoard").style.display = "flex";
+
+	// Change music
+	changeMusic("victory", "crossroad");
+
 	await goTo("crossroad");
 	await burnPath(path);
 	save();

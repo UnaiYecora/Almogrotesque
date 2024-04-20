@@ -55,7 +55,7 @@ export async function loadEncounter(mobId) {
 		goTo("encounter");
 
 		// Change music
-		//changeMusic("crossroad", "battle1");
+		changeMusic("crossroad", "swordsong_overture");
 
 		// Save places visited stat
 		if (!global.mobsSeen.includes(mobId)) {
@@ -377,7 +377,9 @@ export async function toggleTurn(start) {
 		//Move cards to cemetery
 		document.querySelectorAll("#playerDiscs .slot.charged > .disc").forEach(usedCard => {
 			let usedCardId = usedCard.dataset.cardid;
-			state.player.cemetery.push(usedCardId);
+			if (!db.cards[usedCardId].banish) {
+				state.player.cemetery.push(usedCardId);
+			}
 		});
 	}
 
@@ -1345,6 +1347,10 @@ export async function victory() {
 		global.mobsKilled.push(state.mob.mobid);
 	}
 
+	// Music
+	changeMusic("swordsong_overture", "victory");
+
+
 	// Reset data 
 	state.turn = false;
 	state.player.poison = 0;
@@ -2224,6 +2230,78 @@ class Effects {
 			case 2:
 				this.effect("selfPiercingDamage", db.cards.bloodletting.self_damage);
 				state.player.poison = 0;
+				this.successful();
+				break;
+		}
+	}
+	epiphany() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				this.effect("mana");
+				this.successful();
+				break;
+		}
+	}
+	shield_transmuter() {
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				let target;
+				let shieldEl;
+				let manaEl;
+				let previousShield;
+
+				if (state.turn === "player") {
+					target = state.player;
+					shieldEl = document.querySelector("#encounter .player-hp .shield-wrapper");
+					manaEl = document.querySelector("#encounter .bottombar .mana-left-wrapper");
+					previousShield = state.player.shield;
+				} else {
+					target = state.mob;
+					shieldEl = document.querySelector("#encounter .mob-hp .shield-wrapper");
+					manaEl = document.querySelector("#encounter .topbar .mana-left-wrapper");
+					previousShield = state.mob.shield;
+				}
+
+				if (!state.turnRemoveAllShield) {
+					state.turnMana += previousShield + state.turnShield;
+				} else {
+					state.turnMana += state.turnShield;
+				}
+
+				state.turnRemoveAllShield = true;
+				state.turnShield = 0;
+				shieldEl.querySelector(".shield-amount").textContent = 0;
+				manaEl.querySelector(".mana-left").textContent = target.mana - state.turnManaToConsume + state.turnMana;
+				shieldEl.classList.add("damaged");
+				this.successful();
+				break;
+		}
+	}
+	prayer_haven() {
+		let amount;
+		switch (this.result) {
+			case 1:
+				this.unsuccessful();
+				break;
+			case 2:
+				amount = db.cards[this.cardId].mana;
+				this.effect("mana", amount);
+				this.successful();
+				break;
+			case 3:
+				amount = db.cards[this.cardId].mana2;
+				this.effect("mana", amount);
+				this.successful();
+				break;
+			case 4:
+				amount = db.cards[this.cardId].mana3;
+				this.effect("mana", amount);
 				this.successful();
 				break;
 		}
