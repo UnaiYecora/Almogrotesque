@@ -5,7 +5,7 @@
 /* ··········································································*/
 /* ··········································································*/
 /* ··········································································*/
-export var state = {
+export var newGameState = {
 	mob: {},
 	player: {
 		hp: 24,
@@ -40,8 +40,10 @@ export var state = {
 		path2: false,
 		path3: false,
 	},
-	endOfTheRoad: 0,
+	endOfTheRoad: false,
 }
+
+export var state = {...newGameState};
 
 export var global = {
 	musicVolume: 0.65,
@@ -127,6 +129,18 @@ export function loadGlobal() {
 	}
 }
 
+/*===========================================================================*/
+// RESET
+/*===========================================================================*/
+export function resetState() {
+	try {
+		state = {...newGameState};
+		return Promise.resolve();
+	} catch (error) {
+		console.error("An error occurred reseting game state: " + error.message);
+		throw error;
+	}
+}
 
 
 /* ··········································································*/

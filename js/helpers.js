@@ -359,7 +359,7 @@ export function heartPulse() {
 export function cardManaCheck() {
 	const currentMana = state.player.mana + state.turnMana - state.turnManaToConsume;
 	const cardsInHand = document.querySelectorAll(".hand .inventory-card");
-	const cardsInPlay = document.querySelectorAll("#playerDiscs .charged .inventory-card");
+	const cardsInPlay = document.querySelectorAll("#playerDiscs .charged:not(.successful, .unsuccessful) .inventory-card");
 	const allCards = [...cardsInHand, ...cardsInPlay];
 
 	allCards.forEach(card => {

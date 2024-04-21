@@ -54,9 +54,6 @@ export async function loadEncounter(mobId) {
 		// Navigate to the encounter screen
 		goTo("encounter");
 
-		// Change music
-		changeMusic("crossroad", "swordsong_overture");
-
 		// Save places visited stat
 		if (!global.mobsSeen.includes(mobId)) {
 			global.mobsSeen.push(mobId);
@@ -134,6 +131,9 @@ async function generateEncounterCard(mobId) {
 			} else {
 				encounter.classList.remove("on-conversation");
 				conversation.classList.add("hidden");
+
+				// Change music
+				changeMusic("crossroad", "swordsong_overture");
 			}
 
 			resolve();
@@ -228,6 +228,9 @@ async function transitionConversation(end) {
 	} else if (end === "combat") {
 		document.querySelector("#encounter #conversation").classList.add("fade-out");
 		document.querySelector("#encounter").classList.remove("on-conversation");
+
+		// Change music
+		changeMusic("crossroad", "swordsong_overture");
 
 		setTimeout(() => {
 			document.querySelector("#encounter #conversation .message").innerHTML = "";

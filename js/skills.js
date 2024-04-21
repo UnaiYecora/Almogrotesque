@@ -61,6 +61,8 @@ export function updateSkilltree() {
 		// Already bought
 		if (state.player.skills.includes(skillId)) {
 			skillElement.dataset.skillstate = 2;
+		} else {
+			skillElement.dataset.skillstate = 0;
 		}
 
 		// Available
@@ -81,6 +83,11 @@ export function updateSkilltree() {
 			} else {
 				skillElement.dataset.skillstate = 1;
 			}
+		}
+
+		// Default
+		if ((skillId === "skillmaxhp1" || skillId === "skillmana1") && skillElement.dataset.skillstate < 2) {
+			skillElement.dataset.skillstate = 1;
 		}
 	});
 }

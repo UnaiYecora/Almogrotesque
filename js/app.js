@@ -11,7 +11,7 @@ import { generateInventory } from "./inventory.js?v=0.30";
 import { loadEncounter, attack, changeFate, applyDiscsEffects, victory, death, toggleTurn } from "./encounter.js?v=0.30";
 import { setLevel, takeDoor, burnPath, fillPaths } from "./crossroad.js?v=0.30";
 import { buySkill, updateSkilltree } from "./skills.js?v=0.30";
-import { db, state, save, load, global, saveGlobal, loadGlobal } from "./db.js?v=0.30";
+import { db, state, save, load, global, saveGlobal, loadGlobal, resetState } from "./db.js?v=0.30";
 import { loadCollection } from "./stats.js?v=0.30";
 
 
@@ -68,9 +68,9 @@ Howler.autoUnlock = true;
 /*===========================================================================*/
 // Start button
 /*===========================================================================*/
-document.querySelector("#start #newGame").addEventListener("click", function () {
-	state.endOfTheRoad = false;
-	setLevel("crossroad", false);
+document.querySelector("#start #newGame").addEventListener("click", async function () {
+	await resetState();
+	await setLevel("crossroad", false);
 
 	// Music
 	if (!soundtrack.crossroad.playing()) {
@@ -90,7 +90,7 @@ document.querySelector("#start #newGame").addEventListener("click", function () 
 /*===========================================================================*/
 document.querySelector("#start #continue").addEventListener("click", async function () {
 	await load();
-	setLevel(state.currentLevel, true);
+	await setLevel(state.currentLevel, true);
 
 	// Music
 	if (!soundtrack.crossroad.playing()) {
@@ -262,12 +262,14 @@ document.querySelector(".close-inventory").addEventListener("click", function ()
 });
 
 // Open
-document.querySelector(".deck-icon").addEventListener("click", async function (e) {
-	// Generate inventory
-	await generateInventory();
-
-	// Display inventory
-	document.querySelector(".inventory").style.display = "flex";
+document.querySelectorAll(".deck-icon").forEach(icon => {
+	icon.addEventListener("click", async function (e) {
+		// Generate inventory
+		await generateInventory();
+	
+		// Display inventory
+		document.querySelector(".inventory").style.display = "flex";
+	});
 });
 
 /*===========================================================================*/
